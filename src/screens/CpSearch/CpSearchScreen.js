@@ -7,8 +7,7 @@
 // SHORT FORMS: SS - SearchScreen, CPSS - CpSearchScreen
 
 // TO DO: add filter/sort options
-// add loading icon
-// clear exisiting results
+// add grace period, parking rate, postal code
 
 import React, { useState, useEffect } from "react";
 import {
@@ -28,7 +27,9 @@ import * as SQLite from "expo-sqlite";
 import createSearchHistoryTable from "../../utils/db/CreateSearchHistoryTable";
 import getLocationPermission from "../../utils/locationServices/GetLocationPermission";
 import getLocation from "../../utils/locationServices/GetLocation";
-import ModalPicker from "../../components/ModalPicker";
+// import ModalPicker from "../../components/ModalPicker";
+import { ButtonGroup, Chip } from "react-native-elements";
+import { ScrollView } from "react-native-gesture-handler";
 
 const db = SQLite.openDatabase("cp.db");
 
@@ -102,7 +103,7 @@ const CpSearchScreen = ({ route, navigation }) => {
     setTxtStyle(true); // change font to black
     setDefaultAddress(route.params.data["ADDRESS"]); // set address on search bar
     setTimeout(() => setTable(info["latLong"]), 3000); ///////////////////////////////////// figure out a better way
-    setTimeout(() => flListHandler(), 12000); ///////////////////////////////////////////// figure out a better way
+    setTimeout(() => flListHandler(0), 12000); ///////////////////////////////////////////// figure out a better way
   };
 
   // to navigate to "SearchScreen" if user clicks on "Search Here"
@@ -117,27 +118,35 @@ const CpSearchScreen = ({ route, navigation }) => {
   };
 
   // to display list of nearby carparks
-  const flListHandler = (result) => {
-    console.log("getting list");
+  const flListHandler = (index) => {
+    var sortMode;
+    switch (index) {
+      case 0:
+        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY c_lots_available DESC";
+        break;
+      case 1:
+        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY total_distance ASC";
+        break;
+      case 2:
+        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY parking_rate ASC"; // to be added later
+        break;
+    }
+    console.log("getting list", sortMode);
     db.transaction((tx) => {
       loading = false;
-      tx.executeSql(
-        "SELECT * FROM nearbyCpInfo ORDER BY c_lots_available DESC",
-        [],
-        (tx, results) => {
-          if (results.rows["_array"].length == 0) {
-            setList([
-              {
-                address: "No nearby car parks found",
-                c_lots_available: "",
-                total_distance: "",
-              },
-            ]);
-          } else {
-            setList(results.rows["_array"]);
-          }
+      tx.executeSql(sortMode, [], (tx, results) => {
+        if (results.rows["_array"].length == 0) {
+          setList([
+            {
+              address: "No nearby car parks found",
+              c_lots_available: "",
+              total_distance: "",
+            },
+          ]);
+        } else {
+          setList(results.rows["_array"]);
         }
-      );
+      });
     });
   };
 
@@ -176,17 +185,19 @@ const CpSearchScreen = ({ route, navigation }) => {
       </TouchableOpacity>
     );
   };
-  // To choose between the sorts/filters
-  const [sortFilter, setSortFilter] = useState("Vacancy");
-  const [isModalVisible, setisModalVisible] = useState(false);
 
-  // change mode of visibility of the dropdown menu
-  const changeModalVisibility = (bool) => {
-    setisModalVisible(bool);
+  const buttons = ["Vacancy", "Distance", "Parking Rate"];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const onPress = (selectedIndex) => {
+    setSelectedIndex(selectedIndex);
+    flListHandler(selectedIndex);
   };
-
-  const setData = (option) => {
-    setSortFilter(option);
+  const [outline, setOutline] = useState([true, true, true, true, true, true]);
+  const onPressChip = (title, index) => {
+    console.log("pressed", title);
+    var temp = [...outline];
+    temp[index] = !outline[index];
+    setOutline(temp);
   };
 
   return (
@@ -198,23 +209,51 @@ const CpSearchScreen = ({ route, navigation }) => {
       >
         {defaultAddress}
       </Text>
-      <TouchableOpacity
-        onPress={() => changeModalVisibility(true)}
-        style={styles.touchableOpacity}
-      >
-        <Text>{sortFilter}</Text>
-      </TouchableOpacity>
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={isModalVisible}
-        onRequestClose={() => changeModalVisibility(false)}
-      >
-        <ModalPicker
-          changeModalVisibility={changeModalVisibility}
-          setData={setData}
-        ></ModalPicker>
-      </Modal>
+
+      <ButtonGroup
+        buttons={buttons}
+        onPress={onPress}
+        selectedIndex={selectedIndex}
+      />
+      <View style={{ height: "7%" }}>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          style={styles.svFilter}
+        >
+          <Chip
+            title="Heavy Vehicles"
+            type={outline[0] ? "outline" : "solid"}
+            onPress={() => onPressChip("Heavy Vehicles", 0)}
+          />
+          <Chip
+            title="Motorcycles"
+            type={outline[1] ? "outline" : "solid"}
+            onPress={() => onPressChip("Motorcycles", 1)}
+          />
+          <Chip
+            title="Free Parking"
+            type={outline[2] ? "outline" : "solid"}
+            onPress={() => onPressChip("Free Parking", 2)}
+          />
+          <Chip
+            title="Night Parking"
+            type={outline[3] ? "outline" : "solid"}
+            onPress={() => onPressChip("Night Parking", 3)}
+          />
+          <Chip
+            title="Electronic System"
+            type={outline[4] ? "outline" : "solid"}
+            onPress={() => onPressChip("Electronic System", 4)}
+          />
+          <Chip
+            title="Coupon System"
+            type={outline[5] ? "outline" : "solid"}
+            onPress={() => onPressChip("Coupon System", 5)}
+          />
+        </ScrollView>
+      </View>
+
       <View
         style={{
           flex: 1,

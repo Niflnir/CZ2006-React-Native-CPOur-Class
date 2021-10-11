@@ -7,31 +7,8 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: "center",
   },
-  touchableOpacity: {
-    alignSelf: "flex-end",
-    paddingHorizontal: 20,
-    marginHorizontal: 20,
-  },
-  modalPickerContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
 
-  modal: {
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-
-  modalOption: {
-    alignItems: "flex-start",
-  },
-
-  modalText: {
-    margin: 20,
-    fontSize: 20,
-    fontWeight: "bold",
-  },
+  svFilter: { flex: 1, flexDirection: "row" },
 
   txtSearchDefault: {
     width: "100%",

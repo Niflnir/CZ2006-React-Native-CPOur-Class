@@ -11,8 +11,6 @@ import {
 import styles from "../styles/AppStyles";
 
 const OPTIONS = ["Distance", "Vacancy", "Parking rate"];
-const WIDTH = Dimensions.get("window").width;
-const HEIGHT = Dimensions.get("window").height;
 const ModalPicker = (props) => {
   console.log(props);
   const onPressItem = (option) => {
@@ -35,7 +33,7 @@ const ModalPicker = (props) => {
       onPress={() => props.changeModalVisibility(false)}
       style={styles.container}
     >
-      <View style={[styles.modal, { width: WIDTH - 20, height: HEIGHT / 2 }]}>
+      <View style={styles.modal}>
         <ScrollView>{option}</ScrollView>
       </View>
     </TouchableOpacity>
