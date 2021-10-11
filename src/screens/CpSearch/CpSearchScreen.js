@@ -215,16 +215,24 @@ const CpSearchScreen = ({ route, navigation }) => {
           setData={setData}
         ></ModalPicker>
       </Modal>
-      {loading ? (
-        <ActivityIndicator size="large" color="black" />
-      ) : displaying ? (
-        <FlatList
-          style={styles.containerFlatList}
-          keyExtractor={(item, index) => index.toString()}
-          data={list}
-          renderItem={renderListItems}
-        />
-      ) : undefined}
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator size="large" color="darkblue" />
+        ) : displaying ? (
+          <FlatList
+            style={styles.containerFlatList}
+            keyExtractor={(item, index) => index.toString()}
+            data={list}
+            renderItem={renderListItems}
+          />
+        ) : undefined}
+      </View>
     </View>
   );
 };

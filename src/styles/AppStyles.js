@@ -128,8 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     paddingHorizontal: 10,
     paddingVertical: 15,
-    // borderBottomColor: "#DCDCDC",
-    // borderBottomWidth: 1,
   },
 
   containerCurrentLocation: {
@@ -158,8 +156,6 @@ const styles = StyleSheet.create({
   containerFlatListItems: {
     paddingHorizontal: 20,
     paddingVertical: 15,
-    // borderBottomColor: "#DCDCDC",
-    // borderBottomWidth: 1,
   },
   txtNoCarparks: {
     fontWeight: "bold",
