@@ -7,9 +7,22 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: "center",
   },
-
-  svFilter: { flex: 1, flexDirection: "row" },
-
+  btnSort: { flex: 0.07 },
+  containerFilters: {
+    flex: 0.07,
+    alignContent: "center",
+  },
+  containerFl: {
+    flex: 1,
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  chipFilters: {
+    marginHorizontal: 5,
+  },
+  btnFilters: {
+    backgroundColor: "white",
+  },
   txtSearchDefault: {
     width: "100%",
     backgroundColor: "#FFF",
@@ -127,7 +140,7 @@ const styles = StyleSheet.create({
   containerFlatList: {
     backgroundColor: "#FFF",
     borderRadius: 20,
-    marginTop: 25,
+    marginTop: 5,
   },
 
   containerFlatListItems: {
@@ -137,7 +150,7 @@ const styles = StyleSheet.create({
   txtNoCarparks: {
     fontWeight: "bold",
     fontSize: 18,
-    padding: 30,
+    paddingHorizontal: 30,
   },
   txtCPSummary: {
     fontWeight: "bold",

@@ -1,7 +1,7 @@
 // Displays detailed information about carpark
 
 // TO DO: design and lot info for heavy vehicles and motorcycles
-import React from "react";
+import React, { Component } from "react";
 import {
   View,
   TextInput,
@@ -9,45 +9,60 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Button } from "react-native-elements";
 import styles from "../styles/AppStyles";
 
-const CpSummaryScreen = ({ route, navigation }) => {
-  const cpInfo = route.params.cpInfo;
-  return (
-    <View style={styles.container}>
-      <View syle={styles.containerWhite}>
-        <Text style={styles.txtCPSummary}>Car Park Summary</Text>
-        <Text style={styles.txtListItemsAddress}>
-          Address: {cpInfo.address}
-        </Text>
-        <Text style={styles.txtListItemsAddress}>
-          Available car lots:{" "}
-          {cpInfo["c_lots_available"] != null
-            ? cpInfo["c_lots_available"]
-            : "No information available"}
-        </Text>
-        {/* <Text style={styles.txtListItemsAddress}>Available motorcycle lots: {cpInfo["c_lot_ratio"].split("/")[0]}</Text>
-        <Text style={styles.txtListItemsAddress}>Total motorcyle lots: {cpInfo["c_lot_ratio"].split("/")[1]}</Text>
-        <Text style={styles.txtListItemsAddress}>Available heavy vehicle lots: {cpInfo["c_lot_ratio"].split("/")[0]}</Text>
-        <Text style={styles.txtListItemsAddress}>Total heavy vehicle lots: {cpInfo["c_lot_ratio"].split("/")[1]}</Text> */}
-        <Text style={styles.txtListItemsAddress}>
-          Car park type: {cpInfo.car_park_type}
-        </Text>
-        <Text style={styles.txtListItemsAddress}>
-          Payment type: {cpInfo.type_of_parking_system}
-        </Text>
-        <Text style={styles.txtListItemsAddress}>
-          Short term parking: {cpInfo.short_term_parking}
-        </Text>
-        <Text style={styles.txtListItemsAddress}>
-          Free parking: {cpInfo.free_parking}
-        </Text>
-        <Text style={styles.txtListItemsAddress}>
-          Night parking: {cpInfo.night_parking}
-        </Text>
-      </View>
-    </View>
-  );
-};
+export default class CpSummaryScreen extends Component {
+  #cpInfo = this.props.route.params.cpInfo;
+  #navigation = this.props.navigation;
+  #url = "https://www.google.com/maps/dir/?api=1&parameters";
 
-export default CpSummaryScreen;
+  render() {
+    const proceedToMapsHandler = () => {
+      console.log("GMaps");
+      console.log(this.#cpInfo);
+    };
+    return (
+      <View style={styles.container}>
+        <View syle={styles.containerWhite}>
+          <Text style={styles.txtCPSummary}>Car Park Summary</Text>
+          <Text style={styles.txtListItemsAddress}>
+            Address: {this.#cpInfo.address}
+          </Text>
+          <Text style={styles.txtListItemsAddress}>
+            Available car lots:
+            {this.#cpInfo["c_lots_available"] != null
+              ? this.#cpInfo["c_lots_available"]
+              : "No information available"}
+          </Text>
+          {this.#cpInfo["h_lots_available"] != null ? (
+            <Text style={styles.txtListItemsAddress}>
+              Available heavy vehicle lots: {this.#cpInfo["h_lots_available"]}
+            </Text>
+          ) : undefined}
+          {this.#cpInfo["y_lots_available"] != null ? (
+            <Text style={styles.txtListItemsAddress}>
+              Available motorcycle lots: {this.#cpInfo["y_lots_available"]}
+            </Text>
+          ) : undefined}
+          <Text style={styles.txtListItemsAddress}>
+            Car park type: {this.#cpInfo.car_park_type}
+          </Text>
+          <Text style={styles.txtListItemsAddress}>
+            Payment type: {this.#cpInfo.type_of_parking_system}
+          </Text>
+          <Text style={styles.txtListItemsAddress}>
+            Short term parking: {this.#cpInfo.short_term_parking}
+          </Text>
+          <Text style={styles.txtListItemsAddress}>
+            Free parking: {this.#cpInfo.free_parking}
+          </Text>
+          <Text style={styles.txtListItemsAddress}>
+            Night parking: {this.#cpInfo.night_parking}
+          </Text>
+        </View>
+        <Button onPress={proceedToMapsHandler} title="Proceed to Google Maps" />
+      </View>
+    );
+  }
+}

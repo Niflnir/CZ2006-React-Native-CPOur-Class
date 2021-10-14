@@ -1,42 +1,38 @@
-// To create cpInfo table in database
-// Basically all the info from the csv dataset
-
-// TO DO: figure out if can import pre-existing sql or db file
-
 import * as SQLite from "expo-sqlite";
+db = SQLite.openDatabase("cp.db");
 
-const db = SQLite.openDatabase("cp.db");
-
-const createCpInfoTable = () => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS cpInfo (" +
-        "car_park_no character varying(10) PRIMARY KEY," +
-        "address character varying(80)," +
-        "x_coord double precision," +
-        "y_coord double precision," +
-        "car_park_type character varying(40)," +
-        "type_of_parking_system character varying(20)," +
-        "short_term_parking character varying(30)," +
-        "free_parking character varying(30)," +
-        "night_parking character varying(30)," +
-        "car_park_decks integer," +
-        "gantry_height double precision," +
-        "car_park_basement character varying(1)," +
-        "lat_long character varying(50));"
-    );
-    tx.executeSql(
-      "SELECT COUNT(*) FROM (SELECT 0 FROM cpInfo LIMIT 1)",
-      [],
-      (tx, results) => {
-        if (results.rows.item(0)["COUNT(*)"] == 0) {
-          populate();
+export default class CpInfoTable {
+  createCpInfoTable() {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS cpInfo (" +
+          "car_park_no character varying(10) PRIMARY KEY," +
+          "address character varying(80)," +
+          "x_coord double precision," +
+          "y_coord double precision," +
+          "car_park_type character varying(40)," +
+          "type_of_parking_system character varying(20)," +
+          "short_term_parking character varying(30)," +
+          "free_parking character varying(30)," +
+          "night_parking character varying(30)," +
+          "car_park_decks integer," +
+          "gantry_height double precision," +
+          "car_park_basement character varying(1)," +
+          "lat_long character varying(50));"
+      );
+      tx.executeSql(
+        "SELECT COUNT(*) FROM (SELECT 0 FROM cpInfo LIMIT 1)",
+        [],
+        (tx, results) => {
+          if (results.rows.item(0)["COUNT(*)"] == 0) {
+            this.populate();
+          }
         }
-      }
-    );
-  });
+      );
+    });
+  }
 
-  const populate = () => {
+  populate() {
     console.log("populating");
     db.transaction((tx) => {
       tx.executeSql(
@@ -8688,7 +8684,5 @@ const createCpInfoTable = () => {
           "VALUES('Y9','BLK 747/752 YISHUN STREET 72',28077.2305,45507.8047,'SURFACE CAR PARK','ELECTRONIC PARKING','WHOLE DAY','SUN & PH FR 7AM-10.30PM','YES',0,4.5,'N','1.4278309135192575,103.83401256586953');"
       );
     });
-  };
-};
-
-export default createCpInfoTable;
+  }
+}

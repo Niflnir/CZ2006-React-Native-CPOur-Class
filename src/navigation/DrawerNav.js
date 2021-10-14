@@ -10,7 +10,7 @@ import {
 } from "@react-navigation/drawer";
 import FavouritesScreen from "../screens/FavouritesScreen";
 import StackNav from "./StackNav";
-import clearSearchHistory from "../utils/db/ClearSearchHistory";
+import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 
 const Drawer = createDrawerNavigator();
 
@@ -36,6 +36,12 @@ function ActualDrawer() {
       <Drawer.Screen name="Favourites" component={FavouritesScreen} />
     </Drawer.Navigator>
   );
+}
+
+function clearSearchHistory() {
+  const searchHistoryTable = new SearchHistoryTable();
+  searchHistoryTable.dropSearchHistoryTable();
+  setTimeout(() => searchHistoryTable.createSearchHistoryTable(), 500);
 }
 
 // Allows access to logout and clear search history
