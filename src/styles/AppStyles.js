@@ -157,6 +157,57 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
   },
+  containerOTP: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 50,
+    justifyContent: "space-around",
+    bottom: "10%",
+    padding: 10,
+  },
+  txtInpOTP: {
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    marginHorizontal: 10,
+    textAlign: "center",
+    fontSize: 14,
+  },
+  logo: {
+    height: "65%",
+    top: "-10%",
+  },
+  containerLogo: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  txtInpPhoneNumber: {
+    backgroundColor: "#FAFAFA",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 14,
+    left: 5,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderRadius: 5,
+    borderColor: "#F3F3F3",
+    width: "85%",
+    bottom: "10%",
+    padding: 10,
+  },
+  btnContinue: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  txtContinue: {
+    color: "#4f8BFF",
+    alignContent: "center",
+    justifyContent: "center",
+    fontSize: 18,
+    bottom: "5%",
+  },
 });
 
 export default styles;

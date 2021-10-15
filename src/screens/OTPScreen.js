@@ -1,170 +1,189 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  Component,
+  createRef,
+} from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  Button,
+  Image,
+  Alert,
 } from "react-native";
+import styles from "../styles/AppStyles";
+import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
+import * as firebase from "firebase";
 
-export default function OTPScreen() {
-  //   const lengthInput = 6;
-  //   const defaultCountdown = 5;
-  //   let clockCall = null;
-  //   let textInput = useRef(null);
-  //   const [internalVal, setInternalVal] = useState("");
-  //   const [countdown, setCountdown] = useState(defaultCountdown);
-  //   const [enableResend, setEnableResend] = useState(false);
-  //   const onChangeText = (val) => {
-  //     setInternalVal(val);
-  //   };
-  //   useEffect(() => {
-  //     clockCall = setInternalVal(() => {
-  //       decrementClock();
-  //     }, 1000);
-  //     return () => {
-  //       clearInterval(clockCall);
-  //     };
-  //   }, []);
-  //   const decrementClock = () => {
-  //     if (countdown == 0) {
-  //       setEnableResend = true;
-  //       setCountdown(0);
-  //       clearInterval(clockCall);
-  //     } else {
-  //       setCountdown(countdown - 1);
-  //     }
-  //   };
-  //   useEffect(() => {
-  //     textInput.focus();
-  //   }, []);
-  //   const onResendOTP = () => {
-  //     if (enableResend) {
-  //       setCountdown(defaultCountdown);
-  //       setEnableResend(false);
-  //       clearInterval(clockCall);
-  //       clockCall = setInterval(() => {
-  //         decrementClock(0);
-  //       }, 1000);
-  //     }
-  //   };
-  //   const onChangeNumber = () => {
-  //     setInternalVal("");
-  //   };
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={styles.otpText}>Input your OTP code sent via SMS</Text>
-  //       <View>
-  //         <TextInput
-  //           ref={(input) => (textInput = input)}
-  //           onChangeText={onChangeText}
-  //           style={{ width: 0, height: 0 }}
-  //           value={internalVal}
-  //           maxLength={lengthInput}
-  //           returnKeyType="done"
-  //           keyboardType="numeric"
-  //         />
-  //         <View style={styles.containerInput}>
-  //           {Array(lengthInput)
-  //             .fill()
-  //             .map((data, index) => (
-  //               <View key={index} styles={styles.cellView}>
-  //                 <Text
-  //                   style={styles.cellText}
-  //                   onPress={() => textInput.focus()}
-  //                 ></Text>
-  //               </View>
-  //             ))}
-  //         </View>
-  //       </View>
-  //       <View style={styles.bottomView}>
-  //         <TouchableOpacity onPress={onChangeNumber}>
-  //           <View style={styles.btnChangeNumber}>
-  //             <Text style={styles.textChange}>Change number</Text>
-  //           </View>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity onPress={onResendOTP}>
-  //           <View style={styles.btnResend}>
-  //             <Text
-  //               style={[
-  //                 styles.textResend,
-  //                 {
-  //                   color: enableResend ? "#234D87" : "gray",
-  //                 },
-  //               ]}
-  //             >
-  //               Resend OTP ({countdown})
-  //             </Text>
-  //           </View>
-  //         </TouchableOpacity>
-  //       </View>
-  //     </View>
-  //   );
+export default class OTPScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      otpDigit: [],
+    };
+  }
+  ref1 = createRef();
+  ref2 = createRef();
+  ref3 = createRef();
+  ref4 = createRef();
+  ref5 = createRef();
+  ref6 = createRef();
+  #otpArray = [];
+  #FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
+    authDomain: "otpauth-a7ce0.firebaseapp.com",
+    projectId: "otpauth-a7ce0",
+    storageBucket: "otpauth-a7ce0.appspot.com",
+    messagingSenderId: "872099527391",
+    appId: "1:872099527391:web:c9f35e7bef7d4b599c876a",
+  };
+
+  #recaptchaVerifier = createRef(null);
+  #navigation = this.props.navigation;
+  #phoneNumber = this.props.route.params.phoneNumber;
+  // #phoneNumber = "81962165";
+  #verificationId = "";
+  componentDidMount() {
+    if (this.ref1.current) {
+      setTimeout(() => this.ref1.current.focus(), 200);
+    }
+    try {
+      if (this.#FIREBASE_CONFIG.apiKey) {
+        firebase.initializeApp(this.#FIREBASE_CONFIG);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    this.sendOTP();
+  }
+  async sendOTP() {
+    const phoneProvider = new firebase.auth.PhoneAuthProvider();
+    try {
+      this.#verificationId = "";
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        "+65" + this.#phoneNumber,
+        this.#recaptchaVerifier.current
+      );
+      console.log(verificationId);
+      this.#verificationId = verificationId;
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
+  }
+
+  async verifyOTP() {
+    var otp = [];
+    for (var i = 0; i < 6; i++) {
+      otp += this.#otpArray[i];
+    }
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(
+        this.#verificationId,
+        otp
+      );
+      const authResult = await firebase.auth().signInWithCredential(credential);
+      this.setState({ verificationId: "", verificationCode: "" });
+      this.#navigation.navigate("CpSearch");
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
+  }
+
+  render() {
+    const onPressBtn = () => {
+      this.verifyOTP();
+    };
+
+    const onOTPInput = (digit, index) => {
+      const refs = [
+        this.ref1,
+        this.ref2,
+        this.ref3,
+        this.ref4,
+        this.ref5,
+        this.ref6,
+      ];
+
+      this.setState({ otpDigit: digit });
+      if (index <= 5 && !isNaN(digit) && digit != "") {
+        if (index < 5) {
+          refs[index + 1].current.focus();
+        }
+        this.#otpArray[index] = digit;
+      } else if (index > 0 && digit == "") {
+        refs[index - 1].current.focus();
+        this.#otpArray[index] = null;
+      }
+      console.log(this.#otpArray);
+    };
+    return (
+      <View style={styles.containerLogo}>
+        <FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
+          ref={this.#recaptchaVerifier}
+          firebaseConfig={this.#FIREBASE_CONFIG}
+        />
+        <Image
+          style={styles.logo}
+          source={require("../assets/images/carparkourlogo.png")}
+        ></Image>
+        <View style={styles.containerOTP}>
+          <TextInput
+            ref={this.ref1}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 0)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          <TextInput
+            ref={this.ref2}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 1)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          <TextInput
+            ref={this.ref3}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 2)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          <TextInput
+            ref={this.ref4}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 3)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          <TextInput
+            ref={this.ref5}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 4)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          <TextInput
+            ref={this.ref6}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 5)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+        </View>
+        <TouchableOpacity style={styles.btnContinue} onPress={onPressBtn}>
+          <Text style={styles.txtContinue}>Verify OTP</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  otpText: {
-    justifyContent: "center",
-    alignItems: "center",
-    top: "15%",
-    left: "19.5%",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  containerInput: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  cellView: {
-    paddingVertical: "11",
-    width: "40",
-    margin: "5",
-    justifyContent: "center",
-    alignItems: "center",
-    borderBottomWidth: 1.5,
-    borderBottomColor: "#fff",
-  },
-  cellText: {
-    textAlign: "center",
-    fontSize: 16,
-  },
-
-  bottomView: {
-    flexDirection: "row",
-    flex: 1,
-    justifyContent: "flex-end",
-    marginBottom: 50,
-    alignItems: "center",
-  },
-
-  btnChangeNumber: {
-    width: 150,
-    height: 50,
-    borderRadius: 10,
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
-  textChange: {
-    color: "#234DB7",
-    alignItems: "center",
-    right: "50%",
-  },
-  btnResend: {
-    width: 150,
-    height: 50,
-    borderRadius: 10,
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-
-  textResend: {
-    alignItems: "center",
-    right: "30%",
-  },
-});

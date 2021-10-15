@@ -8,19 +8,48 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Button,
+  Alert,
 } from "react-native";
-import { Button } from "react-native-elements";
 import styles from "../styles/AppStyles";
+import * as Linking from "expo-linking";
 
 export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
+  #locationInfo = this.props.route.params.locationInfo;
+  #currentLatLong = this.#locationInfo.currentLatLong;
+  #status = this.props.route.params.status;
   #navigation = this.props.navigation;
-  #url = "https://www.google.com/maps/dir/?api=1&parameters";
 
   render() {
     const proceedToMapsHandler = () => {
-      console.log("GMaps");
-      console.log(this.#cpInfo);
+      if (this.#status != "granted") {
+        Alert.alert(
+          "Warning",
+          "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
+        );
+        return;
+      }
+      const url = Platform.select({
+        ios: `maps:0,0?saddr=${this.#currentLatLong}&daddr=${
+          this.#cpInfo.lat_long
+        }&directionsmode=driving`,
+        android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
+      });
+      Linking.openURL(url);
+    };
+
+    const seeMapsHandler = () => {
+      console.log(this.#locationInfo);
+      const url = Platform.select({
+        ios: `maps:0,0?q=Carpark@${this.#cpInfo.lat_long}`,
+        android: `geo:0,0?q=${this.#currentLatLong}(Carpark)`,
+      });
+      Linking.openURL(url);
+    };
+
+    const budgetHandler = () => {
+      this.#navigation.navigate("Budgeting");
     };
     return (
       <View style={styles.container}>
@@ -62,6 +91,8 @@ export default class CpSummaryScreen extends Component {
           </Text>
         </View>
         <Button onPress={proceedToMapsHandler} title="Proceed to Google Maps" />
+        <Button onPress={seeMapsHandler} title="See on Google Maps" />
+        <Button onPress={budgetHandler} title="Budgeting" />
       </View>
     );
   }

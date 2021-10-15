@@ -2,9 +2,6 @@ import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cp.db");
 
 export default class SearchHistoryTable {
-  constructor(locationInfo) {
-    this.locationInfo = locationInfo;
-  }
   createSearchHistoryTable() {
     console.log("creating searchHistoryTable");
     db.transaction((tx) => {
@@ -43,7 +40,7 @@ export default class SearchHistoryTable {
     });
   }
 
-  setSearchHistoryTable() {
+  setSearchHistoryTable(locationInfo) {
     db.transaction((tx) => {
       tx.executeSql(
         "INSERT INTO searchHistory (" +
@@ -51,16 +48,16 @@ export default class SearchHistoryTable {
           "ROAD_NAME, SEARCHVAL, X, Y)" +
           "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
         [
-          this.locationInfo["ADDRESS"],
-          this.locationInfo["BLK_NO"],
-          this.locationInfo["BUILDING"],
-          this.locationInfo["LATITUDE"],
-          this.locationInfo["LONGITUDE"],
-          this.locationInfo["POSTAL"],
-          this.locationInfo["ROAD_NAME"],
-          this.locationInfo["SEARCHVAL"],
-          this.locationInfo["X"],
-          this.locationInfo["Y"],
+          locationInfo["ADDRESS"],
+          locationInfo["BLK_NO"],
+          locationInfo["BUILDING"],
+          locationInfo["LATITUDE"],
+          locationInfo["LONGITUDE"],
+          locationInfo["POSTAL"],
+          locationInfo["ROAD_NAME"],
+          locationInfo["SEARCHVAL"],
+          locationInfo["X"],
+          locationInfo["Y"],
         ]
       );
       // tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) =>

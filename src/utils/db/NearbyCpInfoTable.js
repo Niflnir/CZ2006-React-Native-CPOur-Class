@@ -5,11 +5,6 @@ import GetRoute from "../api/GetRoute";
 db = SQLite.openDatabase("cp.db");
 
 export default class NearbyCpInfoTable {
-  constructor(car_park_no, cpLots, toLatLong) {
-    this.car_park_no = car_park_no;
-    this.cpLots = cpLots;
-    this.toLatLong = toLatLong;
-  }
   createNearbyCpInfoTable() {
     console.log("creating nearbyCpTable");
     db.transaction((tx) => {
@@ -33,11 +28,10 @@ export default class NearbyCpInfoTable {
     });
   }
 
-  async setTable() {
+  async setTable(toLatLong) {
     console.log("getting");
     const getLots = new GetLots();
     const lotData = await getLots.getLots();
-    const toLatLong = this.toLatLong;
 
     // to get distance of carpark from destination
     const getDistance = (toLatLong, fromLatLong) => {
@@ -107,21 +101,13 @@ export default class NearbyCpInfoTable {
                   );
                   // to store distance, time, and other route info
 
-                  const getRoute = new GetRoute(
-                    lat_long,
-                    toLatLong,
-                    car_park_no
-                  );
-                  getRoute.getRoute();
+                  const getRoute = new GetRoute();
+                  getRoute.getRoute(lat_long, toLatLong, car_park_no);
                   const cpLots = lotData.filter(
                     (d) => d.carpark_number == car_park_no
                   );
                   if (cpLots.length != 0) {
-                    const temp = new NearbyCpInfoTable(
-                      car_park_no,
-                      cpLots[0]["carpark_info"]
-                    );
-                    temp.setLots();
+                    this.setLots(car_park_no, cpLots[0]["carpark_info"]);
                   }
                 });
               }
@@ -139,26 +125,26 @@ export default class NearbyCpInfoTable {
     });
   }
 
-  setLots() {
-    var typeC = this.cpLots.filter((d) => d.lot_type == "C")[0];
+  setLots(car_park_no, cpLots) {
+    var typeC = cpLots.filter((d) => d.lot_type == "C")[0];
     db.transaction((tx) => {
       tx.executeSql(
         "UPDATE nearbyCpInfo SET c_lots_available=? WHERE car_park_no=?",
-        [typeC["lots_available"], this.car_park_no],
+        [typeC["lots_available"], car_park_no],
         () => {},
         (error) => {
           console.log(error);
         }
       );
 
-      if (this.cpLots.length > 1) {
-        var typeY = this.cpLots.filter((d) => d.lot_type == "Y")[0];
-        var typeH = this.cpLots.filter((d) => d.lot_type == "H")[0];
+      if (cpLots.length > 1) {
+        var typeY = cpLots.filter((d) => d.lot_type == "Y")[0];
+        var typeH = cpLots.filter((d) => d.lot_type == "H")[0];
 
         if (typeY != {}) {
           tx.executeSql(
             "UPDATE nearbyCpInfo SET y_lots_available=? WHERE car_park_no=?",
-            [typeY["lots_available"], this.car_park_no],
+            [typeY["lots_available"], car_park_no],
             () => {},
             (error) => {
               console.log(error);
@@ -168,7 +154,7 @@ export default class NearbyCpInfoTable {
         if (typeH != {}) {
           tx.executeSql(
             "UPDATE nearbyCpInfo SET h_lots_available=? WHERE car_park_no=?",
-            [typeH["lots_available"], this.car_park_no],
+            [typeH["lots_available"], car_park_no],
             () => {},
             (error) => {
               console.log(error);
