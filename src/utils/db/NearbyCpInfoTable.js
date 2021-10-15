@@ -1,6 +1,7 @@
 import * as SQLite from "expo-sqlite";
 import GetLots from "../api/GetLots";
 import GetRoute from "../api/GetRoute";
+import ParkingRates from "../ParkingRates";
 
 db = SQLite.openDatabase("cp.db");
 
@@ -21,8 +22,12 @@ export default class NearbyCpInfoTable {
           "total_time integer," +
           "total_distance integer," +
           "c_lots_available integer," +
+          "c_parking_rates_current," +
+          "c_parking_rates_general," +
           "h_lots_available integer," +
+          "h_parking_rates_general," +
           "y_lots_available integer," +
+          "y_parking_rates_general," +
           "route_info character varying);"
       );
     });
@@ -112,6 +117,8 @@ export default class NearbyCpInfoTable {
                 });
               }
               if (i == 2161) {
+                const parkingRates = new ParkingRates();
+                parkingRates.vehicles();
                 console.log("done getting");
               }
             }

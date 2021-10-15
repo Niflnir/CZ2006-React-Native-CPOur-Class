@@ -6,13 +6,10 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SearchScreen from "../screens/CpSearch/SearchScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
-// import { useFonts } from "expo-font";
 import OTPScreen from "../screens/OTPScreen";
 import CpSummaryScreen from "../screens/CpSummaryScreen";
 import MainSearchScreen from "../screens/CpSearch/MainSearchScreen";
 import BudgetingScreen from "../screens/BudgetingScreen";
-import Login from "../utils/Login";
-import { useEffect } from "react";
 import * as firebase from "firebase";
 import { useState } from "react";
 

@@ -7,7 +7,7 @@ db = SQLite.openDatabase("cp.db");
 export default class GetRoute {
   async getRoute(lat_long, toLatLong, car_park_no) {
     const TOKEN =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzM4NzIwNzgsImV4cCI6MTYzNDMwNDA3OCwibmJmIjoxNjMzODcyMDc4LCJqdGkiOiIwMzZjMDAwZTI3NDA0NGUzNWQxN2ZmYTIxODIxOWRhYSJ9.fIGQPxMUVyAQ-u56CibBjDlqJl0o2SNZafPxChlxH6M";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
     const URL =
       "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
       lat_long +
