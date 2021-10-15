@@ -44,22 +44,26 @@ export default function StackNav() {
   });
   if (loggedIn) {
     return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="CpSearch" component={MainSearchScreen} />
+          <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
+          <Stack.Screen name="Summary" component={CpSummaryScreen} />
+          <Stack.Screen name="Budgeting" component={BudgetingScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+  return (
+    <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+        <Stack.Screen name="OTPScreen" component={OTPScreen} />
         <Stack.Screen name="CpSearch" component={MainSearchScreen} />
         <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
         <Stack.Screen name="Summary" component={CpSummaryScreen} />
         <Stack.Screen name="Budgeting" component={BudgetingScreen} />
       </Stack.Navigator>
-    );
-  }
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-      <Stack.Screen name="OTPScreen" component={OTPScreen} />
-      <Stack.Screen name="CpSearch" component={MainSearchScreen} />
-      <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
-      <Stack.Screen name="Summary" component={CpSummaryScreen} />
-      <Stack.Screen name="Budgeting" component={BudgetingScreen} />
-    </Stack.Navigator>
+    </NavigationContainer>
   );
 }
