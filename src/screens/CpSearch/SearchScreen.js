@@ -107,9 +107,10 @@ export default class SearchScreen extends Component {
     // app redirects user back to CpSearchScreen and sends the address info as parameters
     const selectItem = (item) => {
       this.#nearbyCpInfoTable.recreateNearbyCpInfoTable();
-
-      const searchHistoryTable = new SearchHistoryTable(item);
-      searchHistoryTable.setSearchHistoryTable();
+      if (item["BUILDING"] != "Current location") {
+        const searchHistoryTable = new SearchHistoryTable();
+        searchHistoryTable.setSearchHistoryTable(item);
+      }
       setTimeout(
         () =>
           this.#navigation.navigate("CpSearch", {

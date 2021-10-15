@@ -1,7 +1,7 @@
 // Login/Registration page
 // When user opens app for first time, prompted to enter phone number for login/registration
 // When user presses continue, redirected to OTP page and OTP sent to registered phone number
-import React, { useState } from "react";
+import React, { Component, useState } from "react";
 import {
   Button,
   StyleSheet,
@@ -11,122 +11,59 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
-import { set } from "react-native-reanimated";
+import styles from "../styles/AppStyles";
 
-export default function WelcomeScreen({ navigation }) {
-  state = {
-    username: "",
-    password: "",
-    token: "",
-  };
+export default class WelcomeScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      phoneNumber: "",
+    };
+  }
+  #navigation = this.props.navigation;
 
-  // to update value of phone number as it is entered by user
-  const [phoneNumber, setPhoneNumber] = useState();
-  const [value, setValue] = useState("");
-  const saveValue = () => {
-    if (phoneNumber) {
-      AsyncStorage.setItem("any_key_here", phoneNumber);
-      setPhoneNumber("");
-      alert("Data Saved");
-    } else {
-      alert("Please fill in data");
-    }
-  };
+  render() {
+    const onChangePhoneNumber = (number) => {
+      // updates value of phone number
+      this.setState({ phoneNumber: number });
+    };
 
-  const getValue = () => {
-    AsyncStorage.getItem("any_key_here").then((value) => {
-      setValue(value);
-    });
-  };
-  const onChangePhone = (number) => {
-    // updates value of phone number
-    setPhoneNumber(number);
-  };
+    // when user presses "Continue" redirected to OTP page
+    const onPressContinueHandler = () => {
+      if (this.state.phoneNumber.length != 8 || this.state.phoneNumber.isNaN) {
+        Alert.alert(
+          "Error",
+          "Please enter a valid 8 digit Singapore-registered phone number"
+        );
+      } else {
+        this.#navigation.navigate("OTPScreen", {
+          phoneNumber: this.state.phoneNumber,
+        });
+      }
+    };
+    return (
+      <View style={styles.containerLogo}>
+        <Image
+          style={styles.logo}
+          source={require("../assets/images/carparkourlogo.png")}
+        ></Image>
 
-  // when user presses "Continue" redirected to OTP page
-  const handleContinue = () => {
-    if (phoneNumber) {
-      console.log(" continue pressed ");
-      navigation.navigate("OTPScreen");
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../assets/images/carparkourlogo.png")}
-      ></Image>
-
-      <View style={styles.textInputContainer}>
         <TextInput
-          style={styles.textInput}
+          style={styles.txtInpPhoneNumber}
           placeholder="Phone number"
-          keyboardType="numeric"
-          onChangeText={(data) => setPhoneNumber(data)}
-          value={phoneNumber}
+          keyboardType="phone-pad"
+          onChangeText={onChangePhoneNumber}
           secureTextEntry={false}
         />
-      </View>
-      <View>
-        <TouchableOpacity onPress={handleContinue}>
-          <View onPress={saveValue} style={styles.btnContinue}>
-            <Text style={styles.textContinue}>continue</Text>
-          </View>
+        <TouchableOpacity
+          style={styles.btnContinue}
+          onPress={onPressContinueHandler}
+        >
+          <Text style={styles.txtContinue}>Continue</Text>
         </TouchableOpacity>
       </View>
-    </View>
-  );
+    );
+  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  containerAvoidingView: {
-    flex: 1,
-
-    alignItems: "center",
-    padding: 10,
-  },
-  logo: {
-    height: "65%",
-    top: "-10%",
-  },
-  textInput: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: 14,
-    fontFamily: "lexendexa",
-    left: 5,
-  },
-  textInputContainer: {
-    backgroundColor: "#FAFAFA",
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderRadius: 5,
-    borderColor: "#F3F3F3",
-    width: "85%",
-    bottom: "10%",
-  },
-
-  btnContinue: {
-    bottom: "50%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  textContinue: {
-    color: "#4f8BFF",
-    alignContent: "center",
-    justifyContent: "center",
-    fontSize: 18,
-    fontFamily: "lexendexa",
-    bottom: "5%",
-  },
-});

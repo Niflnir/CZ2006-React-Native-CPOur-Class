@@ -11,17 +11,17 @@ import styles from "../../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
 import { ButtonGroup, Chip } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
-
 import LocationServices from "../../utils/locationServices/LocationServices";
 import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
 import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import CpInfoTable from "../../utils/db/CpInfoTable";
+import SortFilter from "../../utils/SortFilter";
 db = SQLite.openDatabase("cp.db");
 
 export default class MainSearchScreen extends Component {
-  #info = { locationData: {}, latLong: {}, address: "" };
+  #info = { locationData: {}, latLong: {}, address: "", currentLatLong: "" };
   #rendered = false;
-  #status;
+  #status = {};
   #loading = false;
   #displaying = false;
   #navigation = this.props.navigation;
@@ -29,6 +29,19 @@ export default class MainSearchScreen extends Component {
   #searchHistoryTable = new SearchHistoryTable();
   #cpInfoTable = new CpInfoTable();
   #buttons = ["Vacancy", "Distance", "Parking Rate"];
+  #sortOption = 0;
+  #filterOption = [true, true, true, true, true];
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      defaultAddress: "Search Here",
+      txtStyle: false,
+      list: [],
+      sortOption: 0,
+      outline: [true, true, true, true, true, true],
+    };
+  }
 
   componentDidMount() {
     this.#getLocationServices
@@ -37,28 +50,29 @@ export default class MainSearchScreen extends Component {
         this.#status = data;
       })
       .catch((error) => console.log(error));
+    if (this.#status !== "granted") {
+      this.#info["currentLatLong"] = "no permission";
+    } else {
+      this.#getLocationServices.getLocation().then((data) => {
+        // to get actual location of user
+        this.#info["currentLatLong"] =
+          JSON.stringify(data["coords"]["latitude"]) +
+          "," +
+          JSON.stringify(data["coords"]["longitude"]);
+      });
+    }
 
     this.#cpInfoTable.createCpInfoTable();
     this.#searchHistoryTable.createSearchHistoryTable();
   }
 
-  flListHandler(index) {
-    var sortMode;
-    switch (index) {
-      case 0:
-        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY c_lots_available DESC";
-        break;
-      case 1:
-        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY total_distance ASC";
-        break;
-      case 2:
-        sortMode = "SELECT * FROM nearbyCpInfo ORDER BY parking_rate ASC"; // to be added later
-        break;
-    }
+  flListHandler() {
+    const sortfilter = new SortFilter();
+    const query = sortfilter.sortFilter(this.#sortOption, this.#filterOption);
     console.log("getting list");
     db.transaction((tx) => {
       this.#loading = false;
-      tx.executeSql(sortMode, [], (tx, results) => {
+      tx.executeSql(query, [], (tx, results) => {
         if (results.rows["_array"].length == 0) {
           this.setState({
             list: [
@@ -113,15 +127,11 @@ export default class MainSearchScreen extends Component {
     }); // change font to black, set address on search bar
 
     setTimeout(() => {
-      const nearbyCpInfoTable = new NearbyCpInfoTable(
-        null,
-        null,
-        this.#info["latLong"]
-      );
-      nearbyCpInfoTable.setTable();
+      const nearbyCpInfoTable = new NearbyCpInfoTable();
+      nearbyCpInfoTable.setTable(this.#info["latLong"]);
     }, 3000); ///////////////////////////////////// figure out a better way
 
-    setTimeout(() => this.flListHandler(0), 12000); ///////////////////////////////////////////// figure out a better way
+    setTimeout(() => this.flListHandler(), 12000); ///////////////////////////////////////////// figure out a better way
   }
 
   componentDidUpdate() {
@@ -130,16 +140,7 @@ export default class MainSearchScreen extends Component {
       this.paramHandler();
     }
   }
-  constructor(props) {
-    super(props);
-    this.state = {
-      defaultAddress: "Search Here",
-      txtStyle: false,
-      list: [],
-      selectedIndex: 0,
-      outline: [true, true, true, true, true, true],
-    };
-  }
+
   render() {
     const onPressDestinationHandler = () => {
       this.#navigation.navigate("SearchSuggestions", {
@@ -151,6 +152,8 @@ export default class MainSearchScreen extends Component {
     const selectItem = (item) => {
       this.#navigation.navigate("Summary", {
         cpInfo: item,
+        locationInfo: this.#info,
+        status: this.#status,
       });
     };
 
@@ -166,32 +169,46 @@ export default class MainSearchScreen extends Component {
         );
       }
       return (
-        <TouchableOpacity
-          style={styles.containerFlatListItems}
-          onPress={() => selectItem(item)}
-        >
-          <Text style={styles.txtListItemsBuilding}>{item["address"]}</Text>
-          <Text style={styles.txtListItemsAddress}>
-            Lot availability:{" "}
-            {item["c_lots_available"] != null
-              ? item["c_lots_available"]
-              : "No information available"}
-          </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Distance: {item["total_distance"]} km
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          {/* <TouchableOpacity
+            style={{
+              backgroundColor: "black",
+              width: "2%",
+              marginHorizontal: 10,
+              height: "80%",
+              alignSelf: "center",
+            }}
+          /> */}
+          <TouchableOpacity
+            style={styles.containerFlatListItems}
+            onPress={() => selectItem(item)}
+          >
+            <Text style={styles.txtListItemsBuilding}>{item["address"]}</Text>
+            <Text style={styles.txtListItemsAddress}>
+              Lot availability:{" "}
+              {item["c_lots_available"] != null
+                ? item["c_lots_available"]
+                : "No information available"}
+            </Text>
+            <Text style={styles.txtListItemsAddress}>
+              Distance: {item["total_distance"]} km
+            </Text>
+          </TouchableOpacity>
+        </View>
       );
     };
     const onPress = (selectedIndex) => {
-      this.setState({ selectedIndex: selectedIndex });
-      this.flListHandler(selectedIndex);
+      this.setState({ sortOption: selectedIndex });
+      this.#sortOption = selectedIndex;
+      this.flListHandler();
     };
 
     const onPressChip = (title, index) => {
       var temp = [...this.state.outline];
       temp[index] = !this.state.outline[index];
       this.setState({ outline: temp });
+      this.#filterOption = temp;
+      this.flListHandler();
     };
     return (
       <View style={styles.container}>
@@ -208,7 +225,7 @@ export default class MainSearchScreen extends Component {
         <ButtonGroup
           buttons={this.#buttons}
           onPress={onPress}
-          selectedIndex={this.state.selectedIndex}
+          selectedIndex={this.state.sortOption}
           style={styles.btnSort}
         />
         <View style={styles.containerFilters}>
