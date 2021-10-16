@@ -16,10 +16,17 @@ import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
 import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import CpInfoTable from "../../utils/db/CpInfoTable";
 import SortFilter from "../../utils/SortFilter";
+import GetData from "../../utils/api/GetData";
 db = SQLite.openDatabase("cp.db");
 
 export default class MainSearchScreen extends Component {
-  #info = { locationData: {}, latLong: {}, address: "", currentLatLong: "" };
+  #info = {
+    locationData: {},
+    latLong: {},
+    address: "",
+    currentLatLong: "",
+    currentPostalCode: "",
+  };
   #rendered = false;
   #status = {};
   #loading = false;
@@ -110,6 +117,17 @@ export default class MainSearchScreen extends Component {
           JSON.stringify(data["coords"]["latitude"]) +
           "," +
           JSON.stringify(data["coords"]["longitude"]);
+        const getData = new GetData();
+        const TOKEN =
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
+        const URL =
+          "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
+          this.#info["latLong"] +
+          "&token=" +
+          TOKEN;
+        getData.getData(URL).then((data) => {
+          this.#info.currentPostalCode = data["GeocodeInfo"][0]["POSTALCODE"];
+        });
       });
       this.#info["locationData"]["ADDRESS"] = "Current location";
       this.#info["address"] = "";
@@ -192,6 +210,9 @@ export default class MainSearchScreen extends Component {
             </Text>
             <Text style={styles.txtListItemsAddress}>
               Distance: {item["total_distance"]} km
+            </Text>
+            <Text style={styles.txtListItemsAddress}>
+              Parking rate: ${item["c_parking_rates_current"]}
             </Text>
           </TouchableOpacity>
         </View>

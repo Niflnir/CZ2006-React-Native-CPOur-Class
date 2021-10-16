@@ -1,7 +1,8 @@
 import * as SQLite from "expo-sqlite";
 import GetLots from "../api/GetLots";
 import GetRoute from "../api/GetRoute";
-import ParkingRates from "../ParkingRates";
+import GetGracePeriod from "../GetGracePeriod";
+import GetParkingRates from "../GetParkingRates";
 
 db = SQLite.openDatabase("cp.db");
 
@@ -13,21 +14,23 @@ export default class NearbyCpInfoTable {
         "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
           "car_park_no character varying(10) PRIMARY KEY," +
           "address character varying(80)," +
+          "postal character varying," +
           "car_park_type character varying(40)," +
           "type_of_parking_system character varying(20)," +
           "short_term_parking character varying(30)," +
           "free_parking character varying(30)," +
           "night_parking character varying(30)," +
+          "grace_period integer," +
           "lat_long character varying(50)," +
           "total_time integer," +
           "total_distance integer," +
           "c_lots_available integer," +
-          "c_parking_rates_current," +
-          "c_parking_rates_general," +
+          "c_parking_rates_current double_precision," +
+          "c_parking_rates_general character varying," +
           "h_lots_available integer," +
-          "h_parking_rates_general," +
+          "h_parking_rates_general double precision," +
           "y_lots_available integer," +
-          "y_parking_rates_general," +
+          "y_parking_rates_general double precision," +
           "route_info character varying);"
       );
     });
@@ -117,8 +120,10 @@ export default class NearbyCpInfoTable {
                 });
               }
               if (i == 2161) {
-                const parkingRates = new ParkingRates();
-                parkingRates.vehicles();
+                const getParkingRates = new GetParkingRates();
+                getParkingRates.vehicles();
+                const getGracePeriod = new GetGracePeriod();
+                getGracePeriod.getGracePeriod();
                 console.log("done getting");
               }
             }
@@ -179,17 +184,23 @@ export default class NearbyCpInfoTable {
         "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
           "car_park_no character varying(10) PRIMARY KEY," +
           "address character varying(80)," +
+          "postal character varying," +
           "car_park_type character varying(40)," +
           "type_of_parking_system character varying(20)," +
           "short_term_parking character varying(30)," +
           "free_parking character varying(30)," +
           "night_parking character varying(30)," +
+          "grace_period integer," +
           "lat_long character varying(50)," +
           "total_time integer," +
           "total_distance integer," +
           "c_lots_available integer," +
+          "c_parking_rates_current double_precision," +
+          "c_parking_rates_general character varying," +
           "h_lots_available integer," +
+          "h_parking_rates_general double precision," +
           "y_lots_available integer," +
+          "y_parking_rates_general double precision," +
           "route_info character varying);"
       );
     });

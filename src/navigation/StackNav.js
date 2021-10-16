@@ -35,7 +35,6 @@ export default function StackNav() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLoggedIn(true);
-      console.log(loggedIn);
     }
   });
   if (loggedIn) {

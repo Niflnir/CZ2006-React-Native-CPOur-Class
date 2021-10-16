@@ -17,7 +17,7 @@ export default class SortFilter {
     } else if (sortOption == 1) {
       sortQuery = "total_distance ASC";
     } else {
-      sortQuery = "parking_rate ASC";
+      sortQuery = "c_parking_rate_current ASC";
     }
 
     for (var i = 0; i < 6; i++) {
@@ -26,7 +26,6 @@ export default class SortFilter {
       }
     }
 
-    console.log(filterQueryArray);
     if (filterQueryArray.length > 0) {
       filterQuery = "WHERE " + filterQueryArray[0];
       for (var i = 1; i < filterQueryArray.length; i++) {

@@ -24,6 +24,7 @@ export default class OTPScreen extends Component {
     super(props);
     this.state = {
       otpDigit: [],
+      timeLeft: 60,
     };
   }
   ref1 = createRef();
@@ -61,6 +62,7 @@ export default class OTPScreen extends Component {
     this.sendOTP();
   }
   async sendOTP() {
+    this.setState({ timeLeft: 60 });
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
     try {
       this.#verificationId = "";
@@ -68,10 +70,19 @@ export default class OTPScreen extends Component {
         "+65" + this.#phoneNumber,
         this.#recaptchaVerifier.current
       );
-      console.log(verificationId);
       this.#verificationId = verificationId;
+      this.timer();
     } catch (err) {
       Alert.alert("Error", err.message);
+    }
+  }
+
+  async timer() {
+    for (var i = 0; i < 60; i++) {
+      setTimeout(
+        () => this.setState({ timeLeft: --this.state.timeLeft }),
+        1000 * i
+      );
     }
   }
 
@@ -95,9 +106,19 @@ export default class OTPScreen extends Component {
 
   render() {
     const onPressBtn = () => {
+      if (this.state.timeLeft == 0) {
+        Alert.alert(
+          "Error",
+          "OTP has expired. Please press 'Resend OTP' to retry"
+        );
+        return;
+      }
       this.verifyOTP();
     };
 
+    const resendOTP = () => {
+      this.sendOTP();
+    };
     const onOTPInput = (digit, index) => {
       const refs = [
         this.ref1,
@@ -118,7 +139,6 @@ export default class OTPScreen extends Component {
         refs[index - 1].current.focus();
         this.#otpArray[index] = null;
       }
-      console.log(this.#otpArray);
     };
     return (
       <View style={styles.containerLogo}>
@@ -179,6 +199,19 @@ export default class OTPScreen extends Component {
             secureTextEntry={true}
             maxLength={1}
           />
+        </View>
+        {this.state.timeLeft > 0 ? (
+          <Text style={styles.txtGrey}>
+            This OTP will expire in {this.state.timeLeft}s
+          </Text>
+        ) : (
+          <Text style={styles.txtRed}>Warning: OTP has expired</Text>
+        )}
+        <View style={styles.containerResendOTP}>
+          <Text style={styles.txtGrey}>Didn't receive OTP? </Text>
+          <TouchableOpacity style={styles.btnContinue} onPress={resendOTP}>
+            <Text style={styles.txtResendOTP}>Resend OTP</Text>
+          </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.btnContinue} onPress={onPressBtn}>
           <Text style={styles.txtContinue}>Verify OTP</Text>

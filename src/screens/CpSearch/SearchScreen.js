@@ -76,9 +76,9 @@ export default class SearchScreen extends Component {
         "https://developers.onemap.sg/commonapi/search?searchVal=" +
         address +
         "&getAddrDetails=Y&returnGeom=Y&pageNum=1";
-      const getData = new GetData(URL);
+      const getData = new GetData();
       var resultPromise = getData
-        .getData() // to store promise returned by GetData
+        .getData(URL) // to store promise returned by GetData
         .then((data) => {
           if (data["found"] == 0) {
             // if no results

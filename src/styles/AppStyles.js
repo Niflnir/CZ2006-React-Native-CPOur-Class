@@ -152,18 +152,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingHorizontal: 30,
   },
-  txtCPSummary: {
-    fontWeight: "bold",
-    fontSize: 18,
-    textAlign: "center",
-  },
   containerOTP: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 50,
     justifyContent: "space-around",
     bottom: "10%",
-    padding: 10,
   },
   txtInpOTP: {
     borderBottomColor: "black",
@@ -171,6 +164,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     textAlign: "center",
     fontSize: 14,
+    paddingHorizontal: 5,
   },
   logo: {
     height: "65%",
@@ -207,6 +201,77 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     fontSize: 18,
     bottom: "5%",
+  },
+  txtDestinationTitle: {
+    fontSize: 15,
+    marginBottom: 6,
+    alignSelf: "center",
+  },
+  txtDestination: {
+    width: "100%",
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 10,
+    paddingHorizontal: 15,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    color: "#000000",
+    fontSize: 15,
+  },
+  txtCpSummaryHeadings: {
+    fontSize: 16,
+    marginTop: 23,
+    alignSelf: "flex-start",
+    fontWeight: "bold",
+  },
+  txtCpSummaryInfo: {
+    fontSize: 15,
+    alignSelf: "flex-start",
+    marginTop: 2,
+  },
+  svContainer: {
+    backgroundColor: "#E8EAED",
+    width: "100%",
+    marginVertical: 10,
+  },
+  containerBtnCpSummary: {
+    flexDirection: "row",
+  },
+  btnCpSummary: {
+    flex: 1,
+  },
+  btnCpSummaryMaps: {
+    alignContent: "center",
+    justifyContent: "center",
+    marginVertical: 15,
+  },
+  txtBtnCpSummary1: {
+    color: "#4f8BFF",
+    fontSize: 15,
+    bottom: "5%",
+    alignSelf: "flex-start",
+    padding: 10,
+  },
+  txtBtnCpSummary2: {
+    color: "#4f8BFF",
+    fontSize: 15,
+    bottom: "5%",
+    alignSelf: "flex-end",
+    padding: 10,
+  },
+  containerResendOTP: {
+    flexDirection: "row",
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  txtResendOTP: {
+    color: "#4f8BFF",
+  },
+  txtGrey: {
+    color: "#767676",
+  },
+  txtRed: {
+    color: "#D0342C",
   },
 });
 
