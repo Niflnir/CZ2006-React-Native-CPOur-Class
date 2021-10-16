@@ -49,9 +49,6 @@ export default class OTPScreen extends Component {
   // #phoneNumber = "81962165";
   #verificationId = "";
   componentDidMount() {
-    if (this.ref1.current) {
-      setTimeout(() => this.ref1.current.focus(), 200);
-    }
     try {
       if (this.#FIREBASE_CONFIG.apiKey) {
         firebase.initializeApp(this.#FIREBASE_CONFIG);
@@ -62,6 +59,16 @@ export default class OTPScreen extends Component {
     this.sendOTP();
   }
   async sendOTP() {
+    if (this.ref1.current) {
+      setTimeout(() => this.ref1.current.focus(), 200);
+    }
+    this.ref1.current.clear();
+    this.ref2.current.clear();
+    this.ref3.current.clear();
+    this.ref4.current.clear();
+    this.ref5.current.clear();
+    this.ref6.current.clear();
+
     this.setState({ timeLeft: 60 });
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
     try {
