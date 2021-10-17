@@ -6,10 +6,6 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SearchScreen from "../screens/CpSearch/SearchScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
-<<<<<<< HEAD
-//import { useFonts } from "expo-font";
-=======
->>>>>>> 2e77d7ec02a2b53ca0c5abd6b97be5d4ac668b50
 import OTPScreen from "../screens/OTPScreen";
 import CpSummaryScreen from "../screens/CpSummaryScreen";
 import MainSearchScreen from "../screens/CpSearch/MainSearchScreen";

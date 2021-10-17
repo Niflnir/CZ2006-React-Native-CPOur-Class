@@ -9,12 +9,8 @@ import {
   TouchableOpacity,
   Button,
   Alert,
-<<<<<<< HEAD
-  Platform,
-=======
   ScrollView,
   View,
->>>>>>> 2e77d7ec02a2b53ca0c5abd6b97be5d4ac668b50
 } from "react-native";
 import styles from "../styles/AppStyles";
 import * as Linking from "expo-linking";

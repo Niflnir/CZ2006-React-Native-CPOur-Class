@@ -179,7 +179,6 @@ export default class NearbyCpInfoTable {
   recreateNearbyCpInfoTable() {
     db.transaction((tx) => {
       console.log("recreating nearbyCpInfoTable");
-      tx.executeSql("DROP TABLE nearbyCpInfo;");
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
           "car_park_no character varying(10) PRIMARY KEY," +
@@ -203,6 +202,7 @@ export default class NearbyCpInfoTable {
           "y_parking_rates_general double precision," +
           "route_info character varying);"
       );
+      tx.executeSql("DROP TABLE nearbyCpInfo;");
     });
   }
 }
