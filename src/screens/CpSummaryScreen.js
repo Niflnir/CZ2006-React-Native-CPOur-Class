@@ -3,14 +3,18 @@
 // TO DO: design and lot info for heavy vehicles and motorcycles
 import React, { Component } from "react";
 import {
-  View,
   TextInput,
   Text,
   StyleSheet,
   TouchableOpacity,
   Button,
   Alert,
+<<<<<<< HEAD
   Platform,
+=======
+  ScrollView,
+  View,
+>>>>>>> 2e77d7ec02a2b53ca0c5abd6b97be5d4ac668b50
 } from "react-native";
 import styles from "../styles/AppStyles";
 import * as Linking from "expo-linking";
@@ -50,50 +54,151 @@ export default class CpSummaryScreen extends Component {
     };
 
     const budgetHandler = () => {
-      this.#navigation.navigate("Budgeting");
+      this.#navigation.navigate("Budgeting", {
+        cpInfo: this.#cpInfo,
+      });
+    };
+
+    const favouritesHandler = () => {
+      this.#navigation.navigate("Favourites", {
+        cpInfo: this.#cpInfo,
+      });
     };
     return (
       <View style={styles.container}>
-        <View syle={styles.containerWhite}>
-          <Text style={styles.txtCPSummary}>Car Park Summary</Text>
-          <Text style={styles.txtListItemsAddress}>
-            Address: {this.#cpInfo.address}
+        <Text style={styles.txtDestinationTitle}>Destination</Text>
+        <Text style={styles.txtDestination} numberOfLines={1}>
+          {this.#locationInfo.address == ""
+            ? "Current location"
+            : this.#locationInfo.address}
+        </Text>
+        <Text style={styles.txtDestinationTitle}>Carpark</Text>
+        <Text style={styles.txtDestination} numberOfLines={1}>
+          {this.#cpInfo.address}
+        </Text>
+        <ScrollView style={styles.svContainer}>
+          <Text style={styles.txtCpSummaryHeadings}>
+            Destination / Carpark Postal Code
           </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Available car lots:
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#locationInfo.address == ""
+              ? this.#locationInfo.currentPostalCode
+              : this.#locationInfo.locationData.POSTAL}{" "}
+            / {this.#cpInfo.postal}
+          </Text>
+
+          <Text style={styles.txtCpSummaryHeadings}>Available lots (car)</Text>
+          <Text style={styles.txtCpSummaryInfo}>
             {this.#cpInfo["c_lots_available"] != null
               ? this.#cpInfo["c_lots_available"]
               : "No information available"}
           </Text>
+
+          <Text style={styles.txtCpSummaryHeadings}>Parking rate (car)</Text>
+
+          {this.#cpInfo["c_parking_rates_current"] != 0 ? (
+            <Text style={styles.txtCpSummaryInfo}>
+              ${this.#cpInfo.c_parking_rates_current}
+            </Text>
+          ) : (
+            <Text style={styles.txtCpSummaryInfo}>
+              Free parking available now
+            </Text>
+          )}
+
           {this.#cpInfo["h_lots_available"] != null ? (
-            <Text style={styles.txtListItemsAddress}>
-              Available heavy vehicle lots: {this.#cpInfo["h_lots_available"]}
+            <Text style={styles.txtCpSummaryHeadings}>
+              Avalilable lots (heavy vehicle)
+            </Text>
+          ) : undefined}
+          {this.#cpInfo["h_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryInfo}>
+              {this.#cpInfo["y_lots_available"]}
+            </Text>
+          ) : undefined}
+
+          {this.#cpInfo["h_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryHeadings}>
+              Parking rate (heavy vehicle)
+            </Text>
+          ) : undefined}
+          {this.#cpInfo["h_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryInfo}>
+              ${this.#cpInfo.h_parking_rates_general}
+            </Text>
+          ) : undefined}
+
+          {this.#cpInfo["y_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryHeadings}>
+              Avalilable lots (motorcycle)
             </Text>
           ) : undefined}
           {this.#cpInfo["y_lots_available"] != null ? (
-            <Text style={styles.txtListItemsAddress}>
-              Available motorcycle lots: {this.#cpInfo["y_lots_available"]}
+            <Text style={styles.txtCpSummaryInfo}>
+              {this.#cpInfo["y_lots_available"]}
             </Text>
           ) : undefined}
-          <Text style={styles.txtListItemsAddress}>
-            Car park type: {this.#cpInfo.car_park_type}
+
+          {this.#cpInfo["y_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryHeadings}>
+              Parking rate (motorcycle)
+            </Text>
+          ) : undefined}
+          {this.#cpInfo["y_lots_available"] != null ? (
+            <Text style={styles.txtCpSummaryInfo}>
+              ${this.#cpInfo.y_parking_rates_general}
+            </Text>
+          ) : undefined}
+
+          <Text style={styles.txtCpSummaryHeadings}>Car park type</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.car_park_type}
           </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Payment type: {this.#cpInfo.type_of_parking_system}
+
+          <Text style={styles.txtCpSummaryHeadings}>
+            Type of parking system
           </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Short term parking: {this.#cpInfo.short_term_parking}
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.type_of_parking_system}
           </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Free parking: {this.#cpInfo.free_parking}
+
+          <Text style={styles.txtCpSummaryHeadings}>Short term parking</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.short_term_parking}
           </Text>
-          <Text style={styles.txtListItemsAddress}>
-            Night parking: {this.#cpInfo.night_parking}
+
+          <Text style={styles.txtCpSummaryHeadings}>Free parking</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.free_parking}
           </Text>
+
+          <Text style={styles.txtCpSummaryHeadings}>Night parking</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.night_parking}
+          </Text>
+
+          <Text style={styles.txtCpSummaryHeadings}>Grace period</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.grace_period} minutes
+          </Text>
+        </ScrollView>
+        <TouchableOpacity
+          style={styles.btnCpSummaryMaps}
+          onPress={proceedToMapsHandler}
+        >
+          <Text style={styles.txtContinue}>Proceed to Google Maps</Text>
+        </TouchableOpacity>
+        <View style={styles.containerBtnCpSummary}>
+          <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
+            <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnCpSummary}
+            onPress={favouritesHandler}
+          >
+            <Text style={styles.txtBtnCpSummary2}>Add to Favourites</Text>
+          </TouchableOpacity>
         </View>
-        <Button onPress={proceedToMapsHandler} title="Proceed to Google Maps" />
-        <Button onPress={seeMapsHandler} title="See on Google Maps" />
-        <Button onPress={budgetHandler} title="Budgeting" />
       </View>
     );
   }

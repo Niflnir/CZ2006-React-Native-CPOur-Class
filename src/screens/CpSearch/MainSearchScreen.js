@@ -16,10 +16,17 @@ import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
 import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import CpInfoTable from "../../utils/db/CpInfoTable";
 import SortFilter from "../../utils/SortFilter";
+import GetData from "../../utils/api/GetData";
 db = SQLite.openDatabase("cp.db");
 
 export default class MainSearchScreen extends Component {
-  #info = { locationData: {}, latLong: {}, address: "", currentLatLong: "" };
+  #info = {
+    locationData: {},
+    latLong: {},
+    address: "",
+    currentLatLong: "",
+    currentPostalCode: "",
+  };
   #rendered = false;
   #status = {};
   #loading = false;
@@ -44,23 +51,13 @@ export default class MainSearchScreen extends Component {
   }
 
   componentDidMount() {
+    // fbtest.fbTest();
     this.#getLocationServices
       .getLocationPermission() // to get user's permission to access location services
       .then((data) => {
         this.#status = data;
       })
       .catch((error) => console.log(error));
-    if (this.#status !== "granted") {
-      this.#info["currentLatLong"] = "no permission";
-    } else {
-      this.#getLocationServices.getLocation().then((data) => {
-        // to get actual location of user
-        this.#info["currentLatLong"] =
-          JSON.stringify(data["coords"]["latitude"]) +
-          "," +
-          JSON.stringify(data["coords"]["longitude"]);
-      });
-    }
 
     this.#cpInfoTable.createCpInfoTable();
     this.#searchHistoryTable.createSearchHistoryTable();
@@ -106,10 +103,26 @@ export default class MainSearchScreen extends Component {
       }
       this.#getLocationServices.getLocation().then((data) => {
         // to get actual location of user
-        this.#info["latLong"] =
+        this.#info.latLong =
           JSON.stringify(data["coords"]["latitude"]) +
           "," +
           JSON.stringify(data["coords"]["longitude"]);
+        const getData = new GetData();
+        const TOKEN =
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
+        const URL =
+          "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
+          this.#info.latLong +
+          "&token=" +
+          TOKEN;
+        getData.getData(URL).then((data) => {
+          data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
+            ? (this.#info.currentPostalCode =
+                data["GeocodeInfo"][0]["POSTALCODE"])
+            : (this.#info.currentPostalCode = "Postal code unavailable");
+        });
+
+        console.log(this.#info);
       });
       this.#info["locationData"]["ADDRESS"] = "Current location";
       this.#info["address"] = "";
@@ -150,6 +163,7 @@ export default class MainSearchScreen extends Component {
     };
 
     const selectItem = (item) => {
+      console.log(this.#info.currentPostalCode);
       this.#navigation.navigate("Summary", {
         cpInfo: item,
         locationInfo: this.#info,
@@ -193,6 +207,15 @@ export default class MainSearchScreen extends Component {
             <Text style={styles.txtListItemsAddress}>
               Distance: {item["total_distance"]} km
             </Text>
+            {item["c_parking_rates_current"] != 0 ? (
+              <Text style={styles.txtListItemsAddress}>
+                Parking rate: ${item["c_parking_rates_current"]}
+              </Text>
+            ) : (
+              <Text style={styles.txtListItemsAddress}>
+                Free parking available now
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       );

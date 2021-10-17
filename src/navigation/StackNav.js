@@ -6,14 +6,15 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SearchScreen from "../screens/CpSearch/SearchScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
+<<<<<<< HEAD
 //import { useFonts } from "expo-font";
+=======
+>>>>>>> 2e77d7ec02a2b53ca0c5abd6b97be5d4ac668b50
 import OTPScreen from "../screens/OTPScreen";
 import CpSummaryScreen from "../screens/CpSummaryScreen";
 import MainSearchScreen from "../screens/CpSearch/MainSearchScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import BudgetingScreen from "../screens/BudgetingScreen";
-import Login from "../utils/Login";
-import { useEffect } from "react";
 import * as firebase from "firebase";
 import { useState } from "react";
 
@@ -39,7 +40,6 @@ export default function StackNav() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLoggedIn(true);
-      console.log(loggedIn);
     }
   });
   if (loggedIn) {
