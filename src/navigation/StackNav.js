@@ -12,6 +12,8 @@ import MainSearchScreen from "../screens/CpSearch/MainSearchScreen";
 import BudgetingScreen from "../screens/BudgetingScreen";
 import * as firebase from "firebase";
 import { useState } from "react";
+import FavouritesScreen from "../screens/FavouritesScreen";
+import MapScreen from "../screens/MapScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +46,8 @@ export default function StackNav() {
         <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
         <Stack.Screen name="Summary" component={CpSummaryScreen} />
         <Stack.Screen name="Budgeting" component={BudgetingScreen} />
+        <Stack.Screen name="Favourites" component={FavouritesScreen} />
+        <Stack.Screen name="Maps" component={MapScreen} />
       </Stack.Navigator>
     );
   }
@@ -55,6 +59,8 @@ export default function StackNav() {
       <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
       <Stack.Screen name="Summary" component={CpSummaryScreen} />
       <Stack.Screen name="Budgeting" component={BudgetingScreen} />
+      <Stack.Screen name="Favourites" component={FavouritesScreen} />
+      <Stack.Screen name="Maps" component={MapScreen} />
     </Stack.Navigator>
   );
 }

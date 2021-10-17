@@ -24,3 +24,7 @@ expo install expo-firebase-recaptcha
 
 fiction-expo-restart
 npm install fiction-expo-restart
+
+expo-leaflet
+expo install expo-asset expo-file-system react-native-webview
+npm install --save expo-leaflet

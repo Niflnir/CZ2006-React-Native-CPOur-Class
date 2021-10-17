@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite";
-db = SQLite.openDatabase("cp.db");
+db = SQLite.openDatabase("cpour.db");
 
 export default class CpInfoTable {
   createCpInfoTable() {

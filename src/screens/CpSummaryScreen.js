@@ -23,7 +23,7 @@ export default class CpSummaryScreen extends Component {
   #navigation = this.props.navigation;
 
   render() {
-    const proceedToMapsHandler = () => {
+    const proceedToMapsHandler = (route) => {
       if (this.#status != "granted") {
         Alert.alert(
           "Warning",
@@ -31,22 +31,16 @@ export default class CpSummaryScreen extends Component {
         );
         return;
       }
-      const url = Platform.select({
-        ios: `maps:0,0?saddr=${this.#currentLatLong}&daddr=${
-          this.#cpInfo.lat_long
-        }&directionsmode=driving`,
-        android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
-      });
-      Linking.openURL(url);
-    };
-
-    const seeMapsHandler = () => {
-      console.log(this.#locationInfo);
-      const url = Platform.select({
-        ios: `maps:0,0?q=Carpark@${this.#cpInfo.lat_long}`,
-        android: `geo:0,0?q=${this.#currentLatLong}(Carpark)`,
-      });
-      Linking.openURL(url);
+      if (route == 0) {
+        const url = Platform.select({
+          ios: `maps:0,0?saddr=${this.#currentLatLong}&daddr=${
+            this.#cpInfo.lat_long
+          }&directionsmode=driving`,
+          android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
+        });
+        Linking.openURL(url);
+      }
+      // String url = "http://maps.google.com/maps?saddr=" + lat_A+ "," + lng_B + "&daddr=" + lat_B + "," + lng_B + "&dirflg=h,t";
     };
 
     const budgetHandler = () => {
@@ -59,6 +53,12 @@ export default class CpSummaryScreen extends Component {
       this.#navigation.navigate("Favourites", {
         cpInfo: this.#cpInfo,
       });
+    };
+
+    const mapHandler = () => {
+      // this.#navigation.navigate("Maps", {
+      //   cpInfo: this.#cpInfo,
+      // });
     };
     return (
       <View style={styles.container}>
@@ -180,19 +180,28 @@ export default class CpSummaryScreen extends Component {
         </ScrollView>
         <TouchableOpacity
           style={styles.btnCpSummaryMaps}
-          onPress={proceedToMapsHandler}
+          onPress={proceedToMapsHandler(0)}
         >
-          <Text style={styles.txtContinue}>Proceed to Google Maps</Text>
+          <Text style={styles.txtContinue}>Google Maps - Fastest</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.btnCpSummaryMaps}
+          onPress={proceedToMapsHandler(1)}
+        >
+          <Text style={styles.txtContinue}>Google Maps - Cheapest</Text>
         </TouchableOpacity>
         <View style={styles.containerBtnCpSummary}>
           <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
             <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.btnCpSummary} onPress={mapHandler}>
+            <Text style={styles.txtBtnCpSummary3}>Routes</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnCpSummary}
             onPress={favouritesHandler}
           >
-            <Text style={styles.txtBtnCpSummary2}>Add to Favourites</Text>
+            <Text style={styles.txtBtnCpSummary2}>Favourite</Text>
           </TouchableOpacity>
         </View>
       </View>

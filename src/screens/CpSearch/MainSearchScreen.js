@@ -17,7 +17,7 @@ import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import CpInfoTable from "../../utils/db/CpInfoTable";
 import SortFilter from "../../utils/SortFilter";
 import GetData from "../../utils/api/GetData";
-db = SQLite.openDatabase("cp.db");
+db = SQLite.openDatabase("cpour.db");
 
 export default class MainSearchScreen extends Component {
   #info = {
@@ -51,7 +51,6 @@ export default class MainSearchScreen extends Component {
   }
 
   componentDidMount() {
-    // fbtest.fbTest();
     this.#getLocationServices
       .getLocationPermission() // to get user's permission to access location services
       .then((data) => {
