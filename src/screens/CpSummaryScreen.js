@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Button,
   Alert,
+  Platform,
 } from "react-native";
 import styles from "../styles/AppStyles";
 import * as Linking from "expo-linking";
