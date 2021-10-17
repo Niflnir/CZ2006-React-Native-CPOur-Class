@@ -16,7 +16,8 @@ import * as SQLite from "expo-sqlite";
 import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
 import GetData from "../../utils/api/GetData";
 import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
-db = SQLite.openDatabase("cp.db");
+
+db = SQLite.openDatabase("cpour.db");
 
 export default class SearchScreen extends Component {
   #navigation = this.props.navigation;

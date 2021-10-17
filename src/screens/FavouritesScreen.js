@@ -2,16 +2,16 @@
 
 // TO DO: everything
 
-import React from "react";
+import React, { Component } from "react";
 import { View, Text } from "react-native";
 import styles from "../styles/AppStyles";
 
-const FavouritesScreen = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <Text>Fav</Text>
-    </View>
-  );
-};
-
-export default FavouritesScreen;
+export default class FavouritesScreen extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text>Fav</Text>
+      </View>
+    );
+  }
+}

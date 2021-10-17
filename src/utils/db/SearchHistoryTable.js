@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
-db = SQLite.openDatabase("cp.db");
+
+db = SQLite.openDatabase("cpour.db");
 
 export default class SearchHistoryTable {
   createSearchHistoryTable() {
@@ -60,9 +61,9 @@ export default class SearchHistoryTable {
           locationInfo["Y"],
         ]
       );
-      // tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) =>
-      //   console.log("search history: ", results)
-      // );
+      tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) =>
+        console.log("search history: ", results)
+      );
     });
   }
 }

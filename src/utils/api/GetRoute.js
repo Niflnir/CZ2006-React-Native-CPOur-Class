@@ -2,10 +2,16 @@
 
 import * as SQLite from "expo-sqlite";
 import GetData from "../api/GetData";
-db = SQLite.openDatabase("cp.db");
+db = SQLite.openDatabase("cpour.db");
 
 export default class GetRoute {
   async getRoute(lat_long, toLatLong, car_park_no) {
+    db.transaction((tx) => {
+      tx.executeSql("SELECT * from nearbyCpInfo", (tx, results) =>
+        console.log("ROUTE: ", results)
+      );
+    });
+
     const TOKEN =
       "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
     const URL =
@@ -39,8 +45,8 @@ export default class GetRoute {
             "UPDATE nearbyCpInfo SET total_distance=? WHERE car_park_no=?",
             [data["route_summary"]["total_distance"] / 1000, car_park_no],
             () => {},
-            (error) => {
-              console.log(error);
+            () => {
+              console.log("Route error");
             }
           );
 
@@ -49,13 +55,13 @@ export default class GetRoute {
             "UPDATE nearbyCpInfo SET total_time=? WHERE car_park_no=?",
             [data["route_summary"]["total_time"] / 60, car_park_no],
             () => {},
-            (error) => {
-              console.log(error);
+            () => {
+              console.log("Route error");
             }
           );
         });
       })
-      .catch((error) => console.log(error));
+      .catch(() => console.log("Route error"));
     await getData
       .getData(URL2)
       .then((data) => {
@@ -65,11 +71,11 @@ export default class GetRoute {
             [data["GeocodeInfo"][0]["POSTALCODE"], car_park_no],
             () => {},
             (error) => {
-              console.log(error);
+              console.log("Route error");
             }
           );
         });
       })
-      .catch((error) => console.log(error));
+      .catch(() => console.log("Route error"));
   }
 }

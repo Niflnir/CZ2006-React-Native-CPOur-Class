@@ -243,21 +243,28 @@ const styles = StyleSheet.create({
   btnCpSummaryMaps: {
     alignContent: "center",
     justifyContent: "center",
-    marginVertical: 15,
+    marginVertical: 5,
   },
   txtBtnCpSummary1: {
     color: "#4f8BFF",
     fontSize: 15,
     bottom: "5%",
     alignSelf: "flex-start",
-    padding: 10,
+    marginHorizontal: 10,
   },
   txtBtnCpSummary2: {
     color: "#4f8BFF",
     fontSize: 15,
     bottom: "5%",
     alignSelf: "flex-end",
-    padding: 10,
+    marginHorizontal: 10,
+  },
+  txtBtnCpSummary3: {
+    color: "#4f8BFF",
+    fontSize: 15,
+    bottom: "5%",
+    alignSelf: "center",
+    marginHorizontal: 10,
   },
   containerResendOTP: {
     flexDirection: "row",
