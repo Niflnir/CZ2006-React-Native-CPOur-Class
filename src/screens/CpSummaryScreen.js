@@ -50,7 +50,15 @@ export default class CpSummaryScreen extends Component {
     };
 
     const budgetHandler = () => {
-      this.#navigation.navigate("Budgeting");
+      this.#navigation.navigate("Budgeting", {
+        cpInfo: this.#cpInfo,
+      });
+    };
+
+    const favouritesHandler = () => {
+      this.#navigation.navigate("Favourites", {
+        cpInfo: this.#cpInfo,
+      });
     };
     return (
       <View style={styles.container}>
@@ -75,9 +83,6 @@ export default class CpSummaryScreen extends Component {
             / {this.#cpInfo.postal}
           </Text>
 
-          <Text style={styles.txtCpSummaryHeadings}>Address</Text>
-          <Text style={styles.txtCpSummaryInfo}>{this.#cpInfo.address}</Text>
-
           <Text style={styles.txtCpSummaryHeadings}>Available lots (car)</Text>
           <Text style={styles.txtCpSummaryInfo}>
             {this.#cpInfo["c_lots_available"] != null
@@ -86,9 +91,16 @@ export default class CpSummaryScreen extends Component {
           </Text>
 
           <Text style={styles.txtCpSummaryHeadings}>Parking rate (car)</Text>
-          <Text style={styles.txtCpSummaryInfo}>
-            ${this.#cpInfo.c_parking_rates_current}
-          </Text>
+
+          {this.#cpInfo["c_parking_rates_current"] != 0 ? (
+            <Text style={styles.txtCpSummaryInfo}>
+              ${this.#cpInfo.c_parking_rates_current}
+            </Text>
+          ) : (
+            <Text style={styles.txtCpSummaryInfo}>
+              Free parking available now
+            </Text>
+          )}
 
           {this.#cpInfo["h_lots_available"] != null ? (
             <Text style={styles.txtCpSummaryHeadings}>
@@ -176,7 +188,10 @@ export default class CpSummaryScreen extends Component {
           <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
             <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
+          <TouchableOpacity
+            style={styles.btnCpSummary}
+            onPress={favouritesHandler}
+          >
             <Text style={styles.txtBtnCpSummary2}>Add to Favourites</Text>
           </TouchableOpacity>
         </View>

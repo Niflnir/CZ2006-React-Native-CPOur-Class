@@ -273,6 +273,128 @@ const styles = StyleSheet.create({
   txtRed: {
     color: "#D0342C",
   },
+  txtBudgetingTitle: {
+    fontSize: 25,
+    fontWeight: "bold",
+    padding: 20,
+  },
+
+  txtBudgetingWhiteHeading: {
+    color: "white",
+    fontSize: 33,
+    letterSpacing: 3,
+    paddingVertical: 40,
+  },
+  txtBudgetingGreyHeading: {
+    color: "#767676",
+    fontSize: 33,
+    letterSpacing: 3,
+    paddingVertical: 40,
+  },
+  containerBudgetingWhite: {
+    backgroundColor: "white",
+    alignItems: "center",
+  },
+  containerBudgetingGrey: {
+    backgroundColor: "#444444",
+    alignItems: "center",
+  },
+  // containerBudgeting: {
+  //   height: "40%",
+  //   alignContent: "stretch",
+  //   backgroundColor: "white",
+  // },
+  txtInpBudgetingWhite: {
+    width: "40%",
+    fontWeight: "bold",
+    paddingTop: 10,
+    paddingHorizontal: 10,
+    letterSpacing: 4,
+    fontSize: 50,
+    color: "white",
+    borderBottomColor: "white",
+    borderBottomWidth: 3,
+  },
+  txtInpBudgetingGrey: {
+    fontWeight: "bold",
+    width: "30%",
+    paddingTop: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    letterSpacing: 4,
+    fontSize: 50,
+    color: "#444444",
+    borderBottomColor: "#444444",
+    borderBottomWidth: 3,
+  },
+  txtBudgetingDollar: {
+    marginTop: 10,
+    fontSize: 50,
+    color: "white",
+  },
+  containerBudgetingDollar: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignSelf: "center",
+  },
+  btnBudgetingSwitch: {
+    backgroundColor: "lightgrey",
+    width: "30%",
+    alignSelf: "flex-end",
+    alignItems: "center",
+    padding: 15,
+    marginTop: -25,
+    marginRight: 15,
+    borderRadius: 30,
+  },
+  txtBudgetingSwitch: {
+    fontSize: 17,
+    letterSpacing: 2,
+    color: "#444444",
+  },
+  txtBudgetingTime: {
+    marginTop: 10,
+    fontSize: 50,
+    color: "#444444",
+  },
+  btnBudgetingCalculateGrey: {
+    backgroundColor: "#444444",
+    width: "50%",
+    alignSelf: "center",
+    alignItems: "center",
+    padding: 15,
+    borderRadius: 30,
+    marginBottom: 20,
+  },
+  txtBudgetingCalculateWhite: {
+    fontSize: 20,
+    letterSpacing: 2,
+    color: "white",
+    fontWeight: "bold",
+  },
+  btnBudgetingCalculateWhite: {
+    backgroundColor: "white",
+    width: "50%",
+    alignSelf: "center",
+    alignItems: "center",
+    padding: 15,
+    borderRadius: 30,
+    marginBottom: 20,
+  },
+  txtBudgetingCalculateGrey: {
+    fontSize: 20,
+    letterSpacing: 2,
+    color: "#444444",
+    fontWeight: "bold",
+  },
+  containerBudgetingMainWhite: {
+    height: "100%",
+    backgroundColor: "white",
+  },
+  containerBudgetingMainGrey: {
+    height: "100%",
+    backgroundColor: "#444444",
+  },
 });
 
 export default styles;
