@@ -61,9 +61,6 @@ export default class SearchHistoryTable {
           locationInfo["Y"],
         ]
       );
-      tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) =>
-        console.log("search history: ", results)
-      );
     });
   }
 }

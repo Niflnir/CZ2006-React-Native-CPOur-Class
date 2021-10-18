@@ -402,6 +402,82 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#444444",
   },
+  root: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
+  },
+  header: {
+    height: 44,
+    backgroundColor: "#fff",
+  },
+  common: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+    },
+    shadowOpacity: 0.24,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  closeIcon: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 10,
+  },
+  backDrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 80,
+    // backgroundColor: "rgba(0,0,0, 0.12)",
+  },
+  btnMapRouteDetails: {
+    alignSelf: "center",
+    width: "40%",
+    backgroundColor: "#444444",
+    padding: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginTop: 740,
+  },
+  containerMapBtns: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  txtMapRouteDetails: {
+    color: "white",
+    fontSize: 15,
+    letterSpacing: 1,
+    textAlign: "center",
+  },
+  txtMapLocationHeadings: {
+    fontSize: 20,
+    marginTop: -5,
+    paddingHorizontal: 30,
+    alignSelf: "flex-start",
+    fontWeight: "bold",
+  },
+  txtMapHeadings: {
+    marginTop: 5,
+    fontSize: 16,
+    paddingHorizontal: 30,
+    alignSelf: "flex-start",
+  },
+  txtMapInfo: {
+    marginTop: 5,
+    fontSize: 14,
+    paddingHorizontal: 30,
+    alignSelf: "flex-start",
+  },
+  btnMapRoutes: {
+    paddingVertical: 10,
+  },
 });
 
 export default styles;

@@ -5,7 +5,7 @@ import GetData from "../api/GetData";
 db = SQLite.openDatabase("cpour.db");
 
 export default class GetRoute {
-  async getRoute(lat_long, toLatLong, car_park_no) {
+  async getRoute(lat_long, toLatLong, car_park_no, currentLatLong) {
     db.transaction((tx) => {
       tx.executeSql("SELECT * from nearbyCpInfo", (tx, results) =>
         console.log("ROUTE: ", results)
@@ -26,19 +26,26 @@ export default class GetRoute {
       lat_long +
       "&token=" +
       TOKEN;
+    const URL3 =
+      "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
+      currentLatLong +
+      "&end=" +
+      toLatLong +
+      "&routeType=drive&token=" +
+      TOKEN;
     const getData = new GetData();
     await getData
       .getData(URL)
       .then((data) => {
         db.transaction((tx) => {
-          // tx.executeSql(
-          //   "UPDATE nearbyCpInfo SET route_info=? WHERE car_park_no=?",
-          //   [JSON.stringify(data), car_park_no],
-          //   () => {},
-          //   (error) => {
-          //     console.log(error);
-          //   }
-          // );
+          tx.executeSql(
+            "UPDATE nearbyCpInfo SET route_info=? WHERE car_park_no=?",
+            [JSON.stringify(data), car_park_no],
+            () => {},
+            (error) => {
+              console.log(error);
+            }
+          );
 
           tx.executeSql(
             // to store distance of carpark from destination in database
@@ -65,17 +72,34 @@ export default class GetRoute {
     await getData
       .getData(URL2)
       .then((data) => {
+        if (data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")) {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "UPDATE nearbyCpInfo SET postal=? WHERE car_park_no=?",
+              [data["GeocodeInfo"][0]["POSTALCODE"], car_park_no],
+              () => {},
+              (error) => {
+                console.log("Route error");
+              }
+            );
+          });
+        }
+      })
+
+      .catch(() => console.log("Route error"));
+    if (currentLatLong != lat_long) {
+      await getData.getData(URL3).then((data) => {
         db.transaction((tx) => {
           tx.executeSql(
-            "UPDATE nearbyCpInfo SET postal=? WHERE car_park_no=?",
-            [data["GeocodeInfo"][0]["POSTALCODE"], car_park_no],
+            "UPDATE nearbyCpInfo SET route_info_from_current=? WHERE car_park_no=?",
+            [JSON.stringify(data), car_park_no],
             () => {},
             (error) => {
-              console.log("Route error");
+              console.log(error);
             }
           );
         });
-      })
-      .catch(() => console.log("Route error"));
+      });
+    }
   }
 }

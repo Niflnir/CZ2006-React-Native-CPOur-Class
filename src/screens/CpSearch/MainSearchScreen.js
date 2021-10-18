@@ -56,7 +56,7 @@ export default class MainSearchScreen extends Component {
       .then((data) => {
         this.#status = data;
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log("location error: ", error));
 
     this.#cpInfoTable.createCpInfoTable();
     this.#searchHistoryTable.createSearchHistoryTable();
@@ -89,40 +89,46 @@ export default class MainSearchScreen extends Component {
   async paramHandler() {
     this.#displaying = true;
     this.#loading = true;
-    this.#info = { locationData: {}, latLong: {}, address: "" };
+    this.#info = {
+      locationData: {},
+      latLong: {},
+      address: "",
+      currentLatLong: "",
+    };
     // If user selects current location on SS
-    if (this.props.route.params.data["BUILDING"] == "Current location") {
-      if (this.#status !== "granted") {
-        // check if permission granted
-        Alert.alert(
-          "Warning",
-          "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
-        );
-        return;
-      }
-      this.#getLocationServices.getLocation().then((data) => {
-        // to get actual location of user
-        this.#info.latLong =
-          JSON.stringify(data["coords"]["latitude"]) +
-          "," +
-          JSON.stringify(data["coords"]["longitude"]);
-        const getData = new GetData();
-        const TOKEN =
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
-        const URL =
-          "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
-          this.#info.latLong +
-          "&token=" +
-          TOKEN;
-        getData.getData(URL).then((data) => {
-          data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
-            ? (this.#info.currentPostalCode =
-                data["GeocodeInfo"][0]["POSTALCODE"])
-            : (this.#info.currentPostalCode = "Postal code unavailable");
-        });
+    if (this.#status !== "granted") {
+      // check if permission granted
+      Alert.alert(
+        "Warning",
+        "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
+      );
+      return;
+    }
+    await this.#getLocationServices.getLocation().then((data) => {
+      // to get actual location of user
+      this.#info.currentLatLong =
+        JSON.stringify(data["coords"]["latitude"]) +
+        "," +
+        JSON.stringify(data["coords"]["longitude"]);
 
-        console.log(this.#info);
+      const getData = new GetData();
+      const TOKEN =
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
+      const URL =
+        "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
+        this.#info.currentLatLong +
+        "&token=" +
+        TOKEN;
+      getData.getData(URL).then((data) => {
+        data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
+          ? (this.#info.currentPostalCode =
+              data["GeocodeInfo"][0]["POSTALCODE"])
+          : (this.#info.currentPostalCode = "Postal code unavailable");
       });
+    });
+
+    if (this.props.route.params.data["BUILDING"] == "Current location") {
+      this.#info.latLong = this.#info.currentLatLong;
       this.#info["locationData"]["ADDRESS"] = "Current location";
       this.#info["address"] = "";
     } else {
@@ -140,7 +146,10 @@ export default class MainSearchScreen extends Component {
 
     setTimeout(() => {
       const nearbyCpInfoTable = new NearbyCpInfoTable();
-      nearbyCpInfoTable.setTable(this.#info["latLong"]);
+      nearbyCpInfoTable.setTable(
+        this.#info["latLong"],
+        this.#info.currentLatLong
+      );
     }, 3000); ///////////////////////////////////// figure out a better way
 
     setTimeout(() => this.flListHandler(), 12000); ///////////////////////////////////////////// figure out a better way
@@ -162,7 +171,6 @@ export default class MainSearchScreen extends Component {
     };
 
     const selectItem = (item) => {
-      console.log(this.#info.currentPostalCode);
       this.#navigation.navigate("Summary", {
         cpInfo: item,
         locationInfo: this.#info,

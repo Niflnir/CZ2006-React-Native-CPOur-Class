@@ -30,12 +30,13 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);"
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
     });
   }
 
-  async setTable(toLatLong) {
+  async setTable(toLatLong, currentLatLong) {
     console.log("getting");
     const getLots = new GetLots();
     const lotData = await getLots.getLots();
@@ -109,7 +110,12 @@ export default class NearbyCpInfoTable {
                   // to store distance, time, and other route info
 
                   const getRoute = new GetRoute();
-                  getRoute.getRoute(lat_long, toLatLong, car_park_no);
+                  getRoute.getRoute(
+                    lat_long,
+                    toLatLong,
+                    car_park_no,
+                    currentLatLong
+                  );
                   const cpLots = lotData.filter(
                     (d) => d.carpark_number == car_park_no
                   );
@@ -199,10 +205,8 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);",
-        () => {
-          console.log("recreation nearbyCpInfo DONE");
-        }
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
 
       tx.executeSql("DROP TABLE nearbyCpInfo;");
@@ -227,28 +231,8 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);",
-        () => {
-          console.log("recreation nearbyCpInfo DONE");
-        }
-      );
-      tx.executeSql(
-        "INSERT INTO nearbyCpInfo (car_park_no, grace_period) VALUES('a',10)",
-        [],
-        () => {
-          console.log("success");
-        },
-        () => {
-          "err :(";
-        }
-      );
-      tx.executeSql(
-        "SELECT * FROM nearbyCpInfo",
-        [],
-        (tx, results) => {
-          console.log("res2.1:", results);
-        },
-        (err) => console.log("err2.1")
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
     });
   }

@@ -23,7 +23,7 @@ export default class CpSummaryScreen extends Component {
   #navigation = this.props.navigation;
 
   render() {
-    const proceedToMapsHandler = (route) => {
+    const proceedToMapsHandler = () => {
       if (this.#status != "granted") {
         Alert.alert(
           "Warning",
@@ -31,15 +31,14 @@ export default class CpSummaryScreen extends Component {
         );
         return;
       }
-      if (route == 0) {
-        const url = Platform.select({
-          ios: `maps:0,0?saddr=${this.#currentLatLong}&daddr=${
-            this.#cpInfo.lat_long
-          }&directionsmode=driving`,
-          android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
-        });
-        Linking.openURL(url);
-      }
+      const url = Platform.select({
+        ios: `maps:0,0?saddr=${this.#currentLatLong}&daddr=${
+          this.#cpInfo.lat_long
+        }&directionsmode=driving`,
+        android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
+      });
+      Linking.openURL(url);
+
       // String url = "http://maps.google.com/maps?saddr=" + lat_A+ "," + lng_B + "&daddr=" + lat_B + "," + lng_B + "&dirflg=h,t";
     };
 
@@ -56,9 +55,10 @@ export default class CpSummaryScreen extends Component {
     };
 
     const mapHandler = () => {
-      // this.#navigation.navigate("Maps", {
-      //   cpInfo: this.#cpInfo,
-      // });
+      this.#navigation.navigate("Maps", {
+        cpInfo: this.#cpInfo,
+        locationInfo: this.#locationInfo,
+      });
     };
     return (
       <View style={styles.container}>
@@ -104,7 +104,7 @@ export default class CpSummaryScreen extends Component {
 
           {this.#cpInfo["h_lots_available"] != null ? (
             <Text style={styles.txtCpSummaryHeadings}>
-              Avalilable lots (heavy vehicle)
+              Available lots (heavy vehicle)
             </Text>
           ) : undefined}
           {this.#cpInfo["h_lots_available"] != null ? (
@@ -126,7 +126,7 @@ export default class CpSummaryScreen extends Component {
 
           {this.#cpInfo["y_lots_available"] != null ? (
             <Text style={styles.txtCpSummaryHeadings}>
-              Avalilable lots (motorcycle)
+              Available lots (motorcycle)
             </Text>
           ) : undefined}
           {this.#cpInfo["y_lots_available"] != null ? (
@@ -180,16 +180,16 @@ export default class CpSummaryScreen extends Component {
         </ScrollView>
         <TouchableOpacity
           style={styles.btnCpSummaryMaps}
-          onPress={proceedToMapsHandler(0)}
+          onPress={() => proceedToMapsHandler()}
         >
           <Text style={styles.txtContinue}>Google Maps - Fastest</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.btnCpSummaryMaps}
-          onPress={proceedToMapsHandler(1)}
+          onPress={() => proceedToMapsHandler()}
         >
           <Text style={styles.txtContinue}>Google Maps - Cheapest</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={styles.containerBtnCpSummary}>
           <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
             <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
