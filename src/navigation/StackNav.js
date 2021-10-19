@@ -14,7 +14,6 @@ import BudgetingScreen from "../screens/BudgetingScreen";
 import * as firebase from "firebase";
 import { useState } from "react";
 import FavouritesScreen from "../screens/FavouritesScreen";
-import MapScreen from "../screens/MapScreen";
 
 const Stack = createNativeStackNavigator();
 
