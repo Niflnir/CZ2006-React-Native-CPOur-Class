@@ -23,7 +23,6 @@ import {
   CurrentMarkerInfo,
   DestinationMarkerInfo,
 } from "../components/MapMarkerInfo";
-import Routes from "../components/Routes";
 import WebView from "react-native-webview";
 
 export default class MapsScreen extends Component {
@@ -170,6 +169,14 @@ export default class MapsScreen extends Component {
 
     const displayAmenities = () => {
       this.setState({ amenities: true });
+      // fetch(
+      //   "https://www.edgeprop.sg/analytic/amenities?c=" +
+      //     this.#cpInfo.lat_long +
+      //     "&d=500"
+      // )
+      //   .then((response) => response.text())
+      //   .then((text) => console.log(text));
+
       console.log("amenities");
     };
 

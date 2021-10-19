@@ -14,6 +14,13 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 import * as Linking from "expo-linking";
+import {
+  addToFavourites,
+  checkIfFavourited,
+  removeFromFavourites,
+} from "../utils/DbServices";
+import { Icon } from "react-native-elements";
+import FavouritesTable from "../utils/db/FavouritesTable";
 
 export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
@@ -22,7 +29,26 @@ export default class CpSummaryScreen extends Component {
   #status = this.props.route.params.status;
   #navigation = this.props.navigation;
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      favourited: checkIfFavourited(
+        this.#cpInfo.car_park_no,
+        this.#locationInfo.postal
+      ),
+    };
+  }
+
   render() {
+    var address;
+    var postal;
+    if (this.#locationInfo.address == "") {
+      address = "Current location";
+      postal = "000000";
+    } else {
+      address = this.#locationInfo.address;
+      postal = this.#locationInfo.locationData.POSTAL;
+    }
     const proceedToMapsHandler = () => {
       if (this.#status != "granted") {
         Alert.alert(
@@ -42,6 +68,24 @@ export default class CpSummaryScreen extends Component {
       // String url = "http://maps.google.com/maps?saddr=" + lat_A+ "," + lng_B + "&daddr=" + lat_B + "," + lng_B + "&dirflg=h,t";
     };
 
+    const proceedToMapsHandler2 = () => {
+      if (this.#status != "granted") {
+        Alert.alert(
+          "Warning",
+          "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
+        );
+        return;
+      }
+      const url =
+        "http://maps.google.com/maps?saddr=" +
+        this.#currentLatLong +
+        "&daddr=" +
+        this.#cpInfo.lat_long +
+        "&dirflg=t";
+
+      Linking.openURL(url);
+    };
+
     const budgetHandler = () => {
       this.#navigation.navigate("Budgeting", {
         cpInfo: this.#cpInfo,
@@ -49,9 +93,16 @@ export default class CpSummaryScreen extends Component {
     };
 
     const favouritesHandler = () => {
-      this.#navigation.navigate("Favourites", {
-        cpInfo: this.#cpInfo,
-      });
+      const fav = new FavouritesTable();
+      if (this.state.favourited) {
+        removeFromFavourites(this.#cpInfo.car_park_no, postal);
+
+        this.setState({ favourited: false });
+      } else {
+        addToFavourites(this.#cpInfo, postal, this.#locationInfo);
+        this.setState({ favourited: true });
+      }
+      fav.createFavouritesTable();
     };
 
     const mapHandler = () => {
@@ -177,6 +228,11 @@ export default class CpSummaryScreen extends Component {
           <Text style={styles.txtCpSummaryInfo}>
             {this.#cpInfo.grace_period} minutes
           </Text>
+
+          <Text style={styles.txtCpSummaryHeadings}>Carpark number</Text>
+          <Text style={styles.txtCpSummaryInfo}>
+            {this.#cpInfo.car_park_no}
+          </Text>
         </ScrollView>
         <TouchableOpacity
           style={styles.btnCpSummaryMaps}
@@ -184,12 +240,12 @@ export default class CpSummaryScreen extends Component {
         >
           <Text style={styles.txtContinue}>Google Maps - Fastest</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.btnCpSummaryMaps}
-          onPress={() => proceedToMapsHandler()}
+          onPress={() => proceedToMapsHandler2()}
         >
           <Text style={styles.txtContinue}>Google Maps - Cheapest</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <View style={styles.containerBtnCpSummary}>
           <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
             <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
@@ -202,6 +258,21 @@ export default class CpSummaryScreen extends Component {
             onPress={favouritesHandler}
           >
             <Text style={styles.txtBtnCpSummary2}>Favourite</Text>
+            {this.state.favourited ? (
+              <Icon
+                color="#d0312d"
+                style={{ paddingBottom: 5 }}
+                name="heart"
+                type="font-awesome"
+              />
+            ) : (
+              <Icon
+                color="#d0312d"
+                style={{ paddingBottom: 5 }}
+                name="heart-o"
+                type="font-awesome"
+              />
+            )}
           </TouchableOpacity>
         </View>
       </View>

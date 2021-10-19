@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   txtNoCarparks: {
     fontWeight: "bold",
     fontSize: 18,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
   },
   containerOTP: {
     flexDirection: "row",
@@ -236,9 +236,11 @@ const styles = StyleSheet.create({
   },
   containerBtnCpSummary: {
     flexDirection: "row",
+    paddingTop: 10,
   },
   btnCpSummary: {
     flex: 1,
+    flexDirection: "row",
   },
   btnCpSummaryMaps: {
     alignContent: "center",
@@ -247,23 +249,24 @@ const styles = StyleSheet.create({
   },
   txtBtnCpSummary1: {
     color: "#4f8BFF",
-    fontSize: 15,
+    fontSize: 17,
     bottom: "5%",
     alignSelf: "flex-start",
     marginHorizontal: 10,
   },
   txtBtnCpSummary2: {
     color: "#4f8BFF",
-    fontSize: 15,
+    fontSize: 17,
     bottom: "5%",
     alignSelf: "flex-end",
     marginHorizontal: 10,
   },
   txtBtnCpSummary3: {
     color: "#4f8BFF",
-    fontSize: 15,
+    fontSize: 17,
     bottom: "5%",
     alignSelf: "center",
+    justifyContent: "center",
     marginHorizontal: 10,
   },
   containerResendOTP: {
@@ -477,6 +480,12 @@ const styles = StyleSheet.create({
   },
   btnMapRoutes: {
     paddingVertical: 10,
+  },
+  txtFavHeading: {
+    textAlign: "center",
+    padding: 20,
+    fontWeight: "bold",
+    fontSize: 25,
   },
 });
 

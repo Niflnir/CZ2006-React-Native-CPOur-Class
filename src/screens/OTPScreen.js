@@ -18,6 +18,13 @@ import {
 import styles from "../styles/AppStyles";
 import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
+import {
+  addToFavourites,
+  checkSignedIn,
+  initializeFavourites,
+  setSignedIn,
+  setSignedOut,
+} from "../utils/DbServices";
 
 export default class OTPScreen extends Component {
   constructor(props) {
@@ -37,6 +44,8 @@ export default class OTPScreen extends Component {
   #FIREBASE_CONFIG = {
     apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
     authDomain: "otpauth-a7ce0.firebaseapp.com",
+    databaseURL:
+      "https://otpauth-a7ce0-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "otpauth-a7ce0",
     storageBucket: "otpauth-a7ce0.appspot.com",
     messagingSenderId: "872099527391",
@@ -46,6 +55,7 @@ export default class OTPScreen extends Component {
   #recaptchaVerifier = createRef(null);
   #navigation = this.props.navigation;
   #phoneNumber = this.props.route.params.phoneNumber;
+  #temp;
   // #phoneNumber = "81962165";
   #verificationId = "";
   componentDidMount() {
@@ -86,7 +96,7 @@ export default class OTPScreen extends Component {
 
   async timer() {
     for (var i = 0; i < 60; i++) {
-      setTimeout(
+      this.#temp = setTimeout(
         () => this.setState({ timeLeft: --this.state.timeLeft }),
         1000 * i
       );
@@ -94,6 +104,7 @@ export default class OTPScreen extends Component {
   }
 
   async verifyOTP() {
+    clearTimeout(this.#temp);
     var otp = [];
     for (var i = 0; i < 6; i++) {
       otp += this.#otpArray[i];
@@ -105,7 +116,18 @@ export default class OTPScreen extends Component {
       );
       const authResult = await firebase.auth().signInWithCredential(credential);
       this.setState({ verificationId: "", verificationCode: "" });
-      this.#navigation.navigate("CpSearch");
+      const signedIn = checkSignedIn();
+      if (!signedIn) {
+        initializeFavourites();
+        setSignedIn();
+        this.#navigation.navigate("CpSearch");
+      } else {
+        Alert.alert(
+          "Error",
+          "Existing account found under this phone number is currently logged into another device. Please logout and try again, or register an account under a different phone number."
+        );
+        firebase.auth().signOut();
+      }
     } catch (err) {
       Alert.alert("Error", err.message);
     }

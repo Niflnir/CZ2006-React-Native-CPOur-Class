@@ -21,7 +21,7 @@ export default class GetLots {
       .then((data) => {
         this.#lotData = data;
       })
-      .catch((error) => console.log(error));
+      .catch((err) => console.log(err, URL));
 
     return this.#lotData["items"][0]["carpark_data"];
   }

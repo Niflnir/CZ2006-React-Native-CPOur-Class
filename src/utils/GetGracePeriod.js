@@ -2,7 +2,11 @@ import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
 
 export default class GetGracePeriod {
-  getGracePeriod() {
+  getGracePeriod(index) {
+    var query;
+    index = 0
+      ? (query = "SELECT * FROM nearbyCpInfo")
+      : (query = "SELECT * FROM favourites");
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM nearbyCpInfo", [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {

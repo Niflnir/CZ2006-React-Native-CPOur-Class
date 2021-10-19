@@ -14,11 +14,15 @@ import StackNav from "./StackNav";
 import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
+import { setSignedOut } from "../utils/DbServices";
+import DropAll from "../utils/db/DropAll";
 
 const Drawer = createDrawerNavigator();
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
   authDomain: "otpauth-a7ce0.firebaseapp.com",
+  databaseURL:
+    "https://otpauth-a7ce0-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "otpauth-a7ce0",
   storageBucket: "otpauth-a7ce0.appspot.com",
   messagingSenderId: "872099527391",
@@ -63,6 +67,9 @@ function logout() {
   } catch (err) {
     // ignore app already initialized error on snack
   }
+  const drop = new DropAll();
+  drop.dropAll();
+  setSignedOut();
   firebase.auth().signOut();
   Restart();
 }

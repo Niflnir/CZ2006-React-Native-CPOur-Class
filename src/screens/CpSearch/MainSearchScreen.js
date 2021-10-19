@@ -17,6 +17,7 @@ import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import CpInfoTable from "../../utils/db/CpInfoTable";
 import SortFilter from "../../utils/SortFilter";
 import GetData from "../../utils/api/GetData";
+import FavouritesTable from "../../utils/db/FavouritesTable";
 db = SQLite.openDatabase("cpour.db");
 
 export default class MainSearchScreen extends Component {
@@ -26,6 +27,7 @@ export default class MainSearchScreen extends Component {
     address: "",
     currentLatLong: "",
     currentPostalCode: "",
+    postal: "",
   };
   #rendered = false;
   #status = {};
@@ -60,6 +62,9 @@ export default class MainSearchScreen extends Component {
 
     this.#cpInfoTable.createCpInfoTable();
     this.#searchHistoryTable.createSearchHistoryTable();
+    const fav = new FavouritesTable();
+    fav.createFavouritesTable();
+    // fav.print();
   }
 
   flListHandler() {
@@ -89,12 +94,6 @@ export default class MainSearchScreen extends Component {
   async paramHandler() {
     this.#displaying = true;
     this.#loading = true;
-    this.#info = {
-      locationData: {},
-      latLong: {},
-      address: "",
-      currentLatLong: "",
-    };
     // If user selects current location on SS
     if (this.#status !== "granted") {
       // check if permission granted
@@ -113,21 +112,26 @@ export default class MainSearchScreen extends Component {
 
       const getData = new GetData();
       const TOKEN =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQ2MTk1NzQsImV4cCI6MTYzNTA1MTU3NCwibmJmIjoxNjM0NjE5NTc0LCJqdGkiOiI1ZmRhYzU2MzkxY2NlYTYwNDgyY2QyMWExYzNkM2NiMiJ9.QKQ1j9ozayJYu_TViSO2d0yA_dKvyoyIvan0w6_eDeg";
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         this.#info.currentLatLong +
         "&token=" +
         TOKEN;
-      getData.getData(URL).then((data) => {
-        data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
-          ? (this.#info.currentPostalCode =
-              data["GeocodeInfo"][0]["POSTALCODE"])
-          : (this.#info.currentPostalCode = "Postal code unavailable");
-      });
+      getData
+        .getData(URL)
+        .then((data) => {
+          data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
+            ? (this.#info.currentPostalCode =
+                data["GeocodeInfo"][0]["POSTALCODE"])
+            : (this.#info.currentPostalCode = "Postal code unavailable");
+        })
+        .catch((err) => console.log(err, URL));
     });
+    this.#info.postal = this.props.route.params.data["POSTAL"];
 
     if (this.props.route.params.data["BUILDING"] == "Current location") {
+      this.#info.postal = "000000";
       this.#info.latLong = this.#info.currentLatLong;
       this.#info["locationData"]["ADDRESS"] = "Current location";
       this.#info["address"] = "";
@@ -163,6 +167,9 @@ export default class MainSearchScreen extends Component {
   }
 
   render() {
+    // fav.createFavouritesTable();
+    // setTimeout(() => fav.setFavouritesFromFb(), 1000);
+    // // setTimeout(() => fav.print(), 5000);
     const onPressDestinationHandler = () => {
       this.#navigation.navigate("SearchSuggestions", {
         defaultValue: this.#info["address"],
