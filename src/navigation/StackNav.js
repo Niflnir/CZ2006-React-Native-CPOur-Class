@@ -62,7 +62,6 @@ export default function StackNav() {
         <Stack.Screen name="Summary" component={CpSummaryScreen} />
         <Stack.Screen name="Budgeting" component={BudgetingScreen} />
         <Stack.Screen name="Favourites" component={FavouritesScreen} />
-        <Stack.Screen name="Maps" component={MapScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
