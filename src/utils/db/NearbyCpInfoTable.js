@@ -30,12 +30,13 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);"
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
     });
   }
 
-  async setTable(toLatLong) {
+  async setTable(toLatLong, currentLatLong) {
     console.log("getting");
     const getLots = new GetLots();
     const lotData = await getLots.getLots();
@@ -109,20 +110,25 @@ export default class NearbyCpInfoTable {
                   // to store distance, time, and other route info
 
                   const getRoute = new GetRoute();
-                  getRoute.getRoute(lat_long, toLatLong, car_park_no);
+                  getRoute.getRoute(
+                    lat_long,
+                    toLatLong,
+                    car_park_no,
+                    currentLatLong
+                  );
                   const cpLots = lotData.filter(
                     (d) => d.carpark_number == car_park_no
                   );
                   if (cpLots.length != 0) {
-                    this.setLots(car_park_no, cpLots[0]["carpark_info"]);
+                    this.setLots(0, car_park_no, cpLots[0]["carpark_info"]);
                   }
                 });
               }
               if (i == 2161) {
                 const getParkingRates = new GetParkingRates();
-                getParkingRates.vehicles();
+                getParkingRates.vehicles(0);
                 const getGracePeriod = new GetGracePeriod();
-                getGracePeriod.getGracePeriod();
+                getGracePeriod.getGracePeriod(0);
                 console.log("done getting");
               }
             }
@@ -136,12 +142,29 @@ export default class NearbyCpInfoTable {
     });
   }
 
-  setLots(car_park_no, cpLots) {
+  setLots(index, car_park_no, cpLots, destination_address) {
+    var table = "nearbyCpInfo";
+    var addon = "";
+
+    if (index == 1) {
+      table = "favourites";
+      addon = " AND destination_address=?";
+    }
+    var queries = [
+      "UPDATE " + table + " SET c_lots_available=? WHERE car_park_no=?" + addon,
+      "UPDATE " + table + " SET y_lots_available=? WHERE car_park_no=?" + addon,
+      "UPDATE " + table + " SET h_lots_available=? WHERE car_park_no=?" + addon,
+    ];
+
     var typeC = cpLots.filter((d) => d.lot_type == "C")[0];
     db.transaction((tx) => {
+      var params = [typeC["lots_available"], car_park_no];
+      if (index == 1) {
+        params = [typeC["lots_available"], car_park_no, destination_address];
+      }
       tx.executeSql(
-        "UPDATE nearbyCpInfo SET c_lots_available=? WHERE car_park_no=?",
-        [typeC["lots_available"], car_park_no],
+        queries[0],
+        params,
         () => {},
         () => {
           console.log("set lots error");
@@ -153,9 +176,17 @@ export default class NearbyCpInfoTable {
         var typeH = cpLots.filter((d) => d.lot_type == "H")[0];
 
         if (typeY != {}) {
+          var params = [typeY["lots_available"], car_park_no];
+          if (index == 1) {
+            params = [
+              typeY["lots_available"],
+              car_park_no,
+              destination_address,
+            ];
+          }
           tx.executeSql(
-            "UPDATE nearbyCpInfo SET y_lots_available=? WHERE car_park_no=?",
-            [typeY["lots_available"], car_park_no],
+            queries[1],
+            params,
             () => {},
             () => {
               console.log("set lots error");
@@ -163,9 +194,17 @@ export default class NearbyCpInfoTable {
           );
         }
         if (typeH != {}) {
+          var params = [typeH["lots_available"], car_park_no];
+          if (index == 1) {
+            params = [
+              typeH["lots_available"],
+              car_park_no,
+              destination_address,
+            ];
+          }
           tx.executeSql(
-            "UPDATE nearbyCpInfo SET h_lots_available=? WHERE car_park_no=?",
-            [typeH["lots_available"], car_park_no],
+            queries[2],
+            params,
             () => {},
             () => {
               console.log("set lots error");
@@ -199,10 +238,8 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);",
-        () => {
-          console.log("recreation nearbyCpInfo DONE");
-        }
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
 
       tx.executeSql("DROP TABLE nearbyCpInfo;");
@@ -227,10 +264,8 @@ export default class NearbyCpInfoTable {
           "h_parking_rates_general double precision," +
           "y_lots_available integer," +
           "y_parking_rates_general double precision," +
-          "route_info character varying);",
-        () => {
-          console.log("recreation nearbyCpInfo DONE");
-        }
+          "route_info character varying," +
+          "route_info_from_current character varying);"
       );
     });
   }

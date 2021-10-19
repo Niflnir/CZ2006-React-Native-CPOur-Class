@@ -2,10 +2,11 @@
 
 import * as SQLite from "expo-sqlite";
 import GetData from "../api/GetData";
+import { getToken } from "../DbServices";
 db = SQLite.openDatabase("cpour.db");
 
 export default class GetRoute {
-  async getRoute(lat_long, toLatLong, car_park_no) {
+  async getRoute(lat_long, toLatLong, car_park_no, currentLatLong) {
     db.transaction((tx) => {
       tx.executeSql("SELECT * from nearbyCpInfo", (tx, results) =>
         console.log("ROUTE: ", results)
@@ -13,7 +14,8 @@ export default class GetRoute {
     });
 
     const TOKEN =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQxODMxNDYsImV4cCI6MTYzNDYxNTE0NiwibmJmIjoxNjM0MTgzMTQ2LCJqdGkiOiIyMTZlYWMzNjU1OWE3ODExNTU3NTM0MTYzNDYwNmFjZCJ9.LyR4YXYcQ8MIZ0V6h8AovIwyIFa7JcQZZouMCqp6BLs";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQ2MTk1NzQsImV4cCI6MTYzNTA1MTU3NCwibmJmIjoxNjM0NjE5NTc0LCJqdGkiOiI1ZmRhYzU2MzkxY2NlYTYwNDgyY2QyMWExYzNkM2NiMiJ9.QKQ1j9ozayJYu_TViSO2d0yA_dKvyoyIvan0w6_eDeg";
+
     const URL =
       "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
       lat_long +
@@ -26,19 +28,26 @@ export default class GetRoute {
       lat_long +
       "&token=" +
       TOKEN;
+    const URL3 =
+      "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
+      currentLatLong +
+      "&end=" +
+      toLatLong +
+      "&routeType=drive&token=" +
+      TOKEN;
     const getData = new GetData();
     await getData
       .getData(URL)
       .then((data) => {
         db.transaction((tx) => {
-          // tx.executeSql(
-          //   "UPDATE nearbyCpInfo SET route_info=? WHERE car_park_no=?",
-          //   [JSON.stringify(data), car_park_no],
-          //   () => {},
-          //   (error) => {
-          //     console.log(error);
-          //   }
-          // );
+          tx.executeSql(
+            "UPDATE nearbyCpInfo SET route_info=? WHERE car_park_no=?",
+            [JSON.stringify(data), car_park_no],
+            () => {},
+            (error) => {
+              console.log(error);
+            }
+          );
 
           tx.executeSql(
             // to store distance of carpark from destination in database
@@ -61,21 +70,42 @@ export default class GetRoute {
           );
         });
       })
-      .catch(() => console.log("Route error"));
+      .catch((err) => console.log(err, URL));
+    var postal = "Postal code unavailable";
     await getData
       .getData(URL2)
       .then((data) => {
-        db.transaction((tx) => {
-          tx.executeSql(
-            "UPDATE nearbyCpInfo SET postal=? WHERE car_park_no=?",
-            [data["GeocodeInfo"][0]["POSTALCODE"], car_park_no],
-            () => {},
-            (error) => {
-              console.log("Route error");
-            }
-          );
-        });
+        if (data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")) {
+          postal = data["GeocodeInfo"][0]["POSTALCODE"];
+        }
       })
-      .catch(() => console.log("Route error"));
+      .catch((err) => console.log(err, URL));
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE nearbyCpInfo SET postal=? WHERE car_park_no=?",
+        [postal, car_park_no],
+        () => {},
+        (error) => {
+          console.log("Route error");
+        }
+      );
+    });
+    if (currentLatLong != lat_long) {
+      await getData
+        .getData(URL3)
+        .then((data) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "UPDATE nearbyCpInfo SET route_info_from_current=? WHERE car_park_no=?",
+              [JSON.stringify(data), car_park_no],
+              () => {},
+              (error) => {
+                console.log(error);
+              }
+            );
+          });
+        })
+        .catch((err) => console.log(err, URL));
+    }
   }
 }

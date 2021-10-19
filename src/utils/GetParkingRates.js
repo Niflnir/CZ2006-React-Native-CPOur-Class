@@ -2,7 +2,23 @@ import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
 
 export default class ParkingRates {
-  vehicles() {
+  vehicles(index) {
+    if (index == 0 ? (table = "nearbyCpInfo") : (table = "favourites"))
+      var queries = [
+        "SELECT * FROM " + table,
+        "UPDATE " +
+          table +
+          " SET y_parking_rates_general = ? WHERE car_park_no = ?",
+        "UPDATE " +
+          table +
+          " SET h_parking_rates_general = ? WHERE car_park_no = ?",
+        "UPDATE " +
+          table +
+          " SET c_parking_rates_general = ? WHERE car_park_no = ?",
+        "UPDATE " +
+          table +
+          " SET c_parking_rates_current=? WHERE car_park_no=?",
+      ];
     console.log("getting parking rates");
     const centralArea = [
       "ACB",
@@ -28,7 +44,7 @@ export default class ParkingRates {
     var time = hours * 100 + minutes;
 
     db.transaction((tx) => {
-      tx.executeSql("SELECT * FROM nearbyCpInfo", [], (tx, results) => {
+      tx.executeSql(queries[0], [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {
           const cpInfo = results.rows._array[i];
           var cParkingRateRN = -1;
@@ -64,26 +80,17 @@ export default class ParkingRates {
 
           db.transaction((tx) => {
             if (cpInfo["y_lots_available"] != null) {
-              tx.executeSql(
-                "UPDATE nearbyCpInfo SET y_parking_rates_general = ? WHERE car_park_no = ?",
-                [0.65, cpInfo["car_park_no"]]
-              );
+              tx.executeSql(queries[1], [0.65, cpInfo["car_park_no"]]);
             }
             if (cpInfo["y_lots_available"] != null) {
-              tx.executeSql(
-                "UPDATE nearbyCpInfo SET h_parking_rates_general = ? WHERE car_park_no = ?",
-                [1.2, cpInfo["car_park_no"]]
-              );
+              tx.executeSql(queries[2], [1.2, cpInfo["car_park_no"]]);
             }
 
-            tx.executeSql(
-              "UPDATE nearbyCpInfo SET c_parking_rates_general = ? WHERE car_park_no = ?",
-              [JSON.stringify(cParkingRateGeneral), cpInfo["car_park_no"]]
-            );
-            tx.executeSql(
-              "UPDATE nearbyCpInfo SET c_parking_rates_current=? WHERE car_park_no=?",
-              [cParkingRateRN, cpInfo["car_park_no"]]
-            );
+            tx.executeSql(queries[3], [
+              JSON.stringify(cParkingRateGeneral),
+              cpInfo["car_park_no"],
+            ]);
+            tx.executeSql(queries[4], [cParkingRateRN, cpInfo["car_park_no"]]);
           });
         }
       });
