@@ -23,6 +23,7 @@ export default class BudgetingScreen extends Component {
       minutes: 0,
       budget: 0,
       resultBudget: "",
+      vehicleType: 0,
     };
   }
   render() {
@@ -42,7 +43,10 @@ export default class BudgetingScreen extends Component {
       Keyboard.dismiss();
       const budgetCalculator = new BudgetCalculator();
       this.setState({
-        resultTime: budgetCalculator.calculateTime(this.state.budget),
+        resultTime: budgetCalculator.calculateTime(
+          this.state.budget,
+          this.state.vehicleType
+        ),
       });
     };
     const onPressCalculateBudget = () => {
@@ -51,9 +55,15 @@ export default class BudgetingScreen extends Component {
       this.setState({
         resultBudget: budgetCalculator.calculateBudget(
           this.state.hours,
-          this.state.minutes
+          this.state.minutes,
+          this.state.vehicleType
         ),
       });
+    };
+    const onPressIndicateVehicleType = () => {
+      if (this.state.vehicleType == 0) this.setState({ vehicleType: 1 });
+      else if (this.state.vehicleType == 1) this.setState({ vehicleType: 2 });
+      else if (this.state.vehicleType == 2) this.setState({ vehicleType: 0 });
     };
     if (this.state.calculateTime) {
       return (
@@ -87,6 +97,18 @@ export default class BudgetingScreen extends Component {
             onPress={onPressCalculateTime}
           >
             <Text style={styles.txtBudgetingCalculateWhite}>Calculate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnIndicateVehicleType}
+            onPress={onPressIndicateVehicleType}
+          >
+            <Text>
+              {this.state.vehicleType == 0
+                ? "C"
+                : this.state.vehicleType == 1
+                ? "Y"
+                : "H"}
+            </Text>
           </TouchableOpacity>
         </View>
       );
