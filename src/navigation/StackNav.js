@@ -14,6 +14,7 @@ import BudgetingScreen from "../screens/BudgetingScreen";
 import * as firebase from "firebase";
 import { useState } from "react";
 import FavouritesScreen from "../screens/FavouritesScreen";
+import MapScreen from "../screens/MapScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,27 +44,26 @@ export default function StackNav() {
   });
   if (loggedIn) {
     return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="CpSearch" component={MainSearchScreen} />
-          <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
-          <Stack.Screen name="Summary" component={CpSummaryScreen} />
-          <Stack.Screen name="Budgeting" component={BudgetingScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-  return (
-    <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-        <Stack.Screen name="OTPScreen" component={OTPScreen} />
         <Stack.Screen name="CpSearch" component={MainSearchScreen} />
         <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
         <Stack.Screen name="Summary" component={CpSummaryScreen} />
         <Stack.Screen name="Budgeting" component={BudgetingScreen} />
         <Stack.Screen name="Favourites" component={FavouritesScreen} />
+        <Stack.Screen name="Maps" component={MapScreen} />
       </Stack.Navigator>
-    </NavigationContainer>
+    );
+  }
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <Stack.Screen name="OTPScreen" component={OTPScreen} />
+      <Stack.Screen name="CpSearch" component={MainSearchScreen} />
+      <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
+      <Stack.Screen name="Summary" component={CpSummaryScreen} />
+      <Stack.Screen name="Budgeting" component={BudgetingScreen} />
+      <Stack.Screen name="Favourites" component={FavouritesScreen} />
+      <Stack.Screen name="Maps" component={MapScreen} />
+    </Stack.Navigator>
   );
 }

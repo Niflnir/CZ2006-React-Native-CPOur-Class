@@ -487,6 +487,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 25,
   },
+  btnFavRemove: {
+    // // position: absolute,
+    // marginTop: 80,
+    // marginLeft: -40,
+  },
+  txtFavRemove: {
+    color: "#d0312d",
+  },
 });
 
 export default styles;

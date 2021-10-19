@@ -6,12 +6,12 @@ import React, { Component } from "react";
 import { View, Text } from "react-native";
 import styles from "../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import LocationServices from "../utils/locationServices/LocationServices";
 import GetData from "../utils/api/GetData";
 import FavouritesTable from "../utils/db/FavouritesTable";
-import { getToken } from "../utils/DbServices";
+import { getToken, removeFromFavourites } from "../utils/DbServices";
 import NearbyCpInfoTable from "../utils/db/NearbyCpInfoTable";
 import GetLots from "../utils/api/GetLots";
 db = SQLite.openDatabase("cpour.db");
@@ -28,7 +28,7 @@ export default class FavouritesScreen extends Component {
     currentLatLong: "",
     currentPostalCode: "",
   };
-  #lotData;
+  #loading = true;
   constructor(props) {
     super(props);
     this.state = {
@@ -36,9 +36,14 @@ export default class FavouritesScreen extends Component {
     };
   }
   componentDidMount() {
-    this.initializeInfo();
+    const unsubscribe = this.props.navigation.addListener("focus", () => {
+      this.#loading = true;
+      this.initializeInfo();
+      return;
+    });
   }
   async initializeInfo() {
+    console.log("here");
     this.#fav.createFavouritesTable();
     const TOKEN =
       "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQ2MTk1NzQsImV4cCI6MTYzNTA1MTU3NCwibmJmIjoxNjM0NjE5NTc0LCJqdGkiOiI1ZmRhYzU2MzkxY2NlYTYwNDgyY2QyMWExYzNkM2NiMiJ9.QKQ1j9ozayJYu_TViSO2d0yA_dKvyoyIvan0w6_eDeg";
@@ -70,7 +75,7 @@ export default class FavouritesScreen extends Component {
       });
     });
 
-    setTimeout(() => this.flListHandler(), 5000);
+    setTimeout(() => this.flListHandler(), 2000);
   }
 
   flListHandler() {
@@ -98,6 +103,7 @@ export default class FavouritesScreen extends Component {
         (tx, err) => console.log(err)
       );
     });
+    this.#loading = false;
   }
   render() {
     const selectItem = (item) => {
@@ -126,6 +132,18 @@ export default class FavouritesScreen extends Component {
       });
     };
 
+    const deleteItem = (item) => {
+      var postal;
+      if (item.destination_address == "Current location") {
+        postal = "000000";
+      } else {
+        postal = item.destination_postal;
+      }
+      console.log(item);
+      removeFromFavourites(item.car_park_no, postal);
+      this.#loading = true;
+      this.initializeInfo();
+    };
     const renderListItems = ({ item }) => {
       if (item["address"] == "No carparks in favourites list") {
         return (
@@ -165,6 +183,12 @@ export default class FavouritesScreen extends Component {
               </Text>
             )}
           </TouchableOpacity>
+          <IconButton
+            color="red"
+            icon="close"
+            style={[styles.closeIcon, { marginTop: 10 }]}
+            onPress={() => deleteItem(item)}
+          />
         </View>
       );
     };
@@ -173,12 +197,16 @@ export default class FavouritesScreen extends Component {
       <View style={styles.container}>
         <Text style={styles.txtFavHeading}>Favourites</Text>
         <View style={styles.containerFl}>
-          <FlatList
-            style={styles.containerFlatList}
-            keyExtractor={(item, index) => index.toString()}
-            data={this.state.list}
-            renderItem={renderListItems}
-          />
+          {this.#loading ? (
+            <ActivityIndicator size="large" color="darkblue" />
+          ) : (
+            <FlatList
+              style={styles.containerFlatList}
+              keyExtractor={(item, index) => index.toString()}
+              data={this.state.list}
+              renderItem={renderListItems}
+            />
+          )}
         </View>
       </View>
     );

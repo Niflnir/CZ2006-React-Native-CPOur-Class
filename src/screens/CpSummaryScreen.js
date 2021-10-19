@@ -81,7 +81,7 @@ export default class CpSummaryScreen extends Component {
         this.#currentLatLong +
         "&daddr=" +
         this.#cpInfo.lat_long +
-        "&dirflg=t";
+        "&dirflg=d,t";
 
       Linking.openURL(url);
     };
