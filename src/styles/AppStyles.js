@@ -340,6 +340,7 @@ const styles = StyleSheet.create({
   txtBudgetingDollar: {
     marginTop: 10,
     fontSize: 50,
+    marginRight: 5,
     color: "white",
   },
   containerBudgetingDollar: {
@@ -507,8 +508,23 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     marginRight: 25,
   },
+  btnIndicateVehicleType2: {
+    backgroundColor: "white",
+    width: "12%",
+    alignSelf: "flex-end",
+    alignItems: "center",
+    padding: 15,
+    bottom: 76,
+    borderRadius: 30,
+    marginBottom: 50,
+    marginRight: 25,
+  },
   txtVehicleType: {
     color: "white",
+    fontWeight: "bold",
+  },
+  txtVehicleType2: {
+    color: "#444444",
     fontWeight: "bold",
   },
 });

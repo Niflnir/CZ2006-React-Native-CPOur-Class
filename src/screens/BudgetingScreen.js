@@ -158,10 +158,10 @@ export default class BudgetingScreen extends Component {
           <Text style={styles.txtBudgetingCalculateGrey}>Calculate</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.btnIndicateVehicleType}
+          style={styles.btnIndicateVehicleType2}
           onPress={onPressIndicateVehicleType}
         >
-          <Text style={styles.txtVehicleType}>
+          <Text style={styles.txtVehicleType2}>
             {this.state.vehicleType == 0
               ? "C"
               : this.state.vehicleType == 1

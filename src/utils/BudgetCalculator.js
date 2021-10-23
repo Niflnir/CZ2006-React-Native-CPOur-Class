@@ -49,10 +49,10 @@ export default class BudgetCalculator {
     var hours = today.getHours();
     var day = today.getDay();
     var minutes = today.getMinutes();
-    var time = hours + minutes / 60;
+    var time = (hours + minutes) / 60;
     var duration = durationHours + durationMinutes / 60; //duration in decimal for easier calculation
 
-    if (vehicleType == "C") {
+    if (vehicleType == 0) {
       if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
         if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
           var endTime = time + duration;
@@ -72,11 +72,11 @@ export default class BudgetCalculator {
       // Coupon parking system - per half-hour
       // Night parking scheme - capped at $5
     }
-    if (vehicleType == "Y") {
+    if (vehicleType == 2) {
       return duration * cpInfo["y_parking_rates_general"];
     }
 
-    if (vehicleType == "H") {
+    if (vehicleType == 1) {
       return duration * cpInfo["H_parking_rates_general"];
     }
   }
