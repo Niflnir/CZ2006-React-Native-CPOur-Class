@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
   txtBudgetingTime: {
     marginTop: 10,
     fontSize: 50,
+    marginLeft: 15,
     color: "#444444",
   },
   btnBudgetingCalculateGrey: {
@@ -494,6 +495,21 @@ const styles = StyleSheet.create({
   },
   txtFavRemove: {
     color: "#d0312d",
+  },
+  btnIndicateVehicleType: {
+    backgroundColor: "#444444",
+    width: "12%",
+    alignSelf: "flex-end",
+    alignItems: "center",
+    padding: 15,
+    bottom: 76,
+    borderRadius: 30,
+    marginBottom: 50,
+    marginRight: 25,
+  },
+  txtVehicleType: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

@@ -45,7 +45,8 @@ export default class BudgetingScreen extends Component {
       this.setState({
         resultTime: budgetCalculator.calculateTime(
           this.state.budget,
-          this.state.vehicleType
+          this.state.vehicleType,
+          this.#cpInfo
         ),
       });
     };
@@ -56,7 +57,8 @@ export default class BudgetingScreen extends Component {
         resultBudget: budgetCalculator.calculateBudget(
           this.state.hours,
           this.state.minutes,
-          this.state.vehicleType
+          this.state.vehicleType,
+          this.#cpInfo
         ),
       });
     };
@@ -102,7 +104,7 @@ export default class BudgetingScreen extends Component {
             style={styles.btnIndicateVehicleType}
             onPress={onPressIndicateVehicleType}
           >
-            <Text>
+            <Text style={styles.txtVehicleType}>
               {this.state.vehicleType == 0
                 ? "C"
                 : this.state.vehicleType == 1
@@ -154,6 +156,18 @@ export default class BudgetingScreen extends Component {
           onPress={onPressCalculateBudget}
         >
           <Text style={styles.txtBudgetingCalculateGrey}>Calculate</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.btnIndicateVehicleType}
+          onPress={onPressIndicateVehicleType}
+        >
+          <Text style={styles.txtVehicleType}>
+            {this.state.vehicleType == 0
+              ? "C"
+              : this.state.vehicleType == 1
+              ? "Y"
+              : "H"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
