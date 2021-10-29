@@ -174,8 +174,9 @@ export default class NearbyCpInfoTable {
       if (cpLots.length > 1) {
         var typeY = cpLots.filter((d) => d.lot_type == "Y")[0];
         var typeH = cpLots.filter((d) => d.lot_type == "H")[0];
+        console.log("Y: ", typeY, car_park_no);
 
-        if (typeY != {}) {
+        if (typeY != {} && typeY != undefined) {
           var params = [typeY["lots_available"], car_park_no];
           if (index == 1) {
             params = [
@@ -193,7 +194,7 @@ export default class NearbyCpInfoTable {
             }
           );
         }
-        if (typeH != {}) {
+        if (typeH != {} && typeH != undefined) {
           var params = [typeH["lots_available"], car_park_no];
           if (index == 1) {
             params = [

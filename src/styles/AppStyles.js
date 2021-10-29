@@ -2,14 +2,23 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#E8EAED",
-    padding: 30,
-    alignItems: "center",
+    backgroundColor: "#444444",
+    paddingHorizontal: 10,
+    paddingBottom: 20,
+    alignItems: "flex-start",
+    flexDirection: "row-reverse",
   },
-  btnSort: { flex: 0.07 },
+  btnSortSelect: {
+    backgroundColor: "#444444",
+  },
+  txtSortSelect: {
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  txtSortDisabled: {
+    color: "#444444",
+  },
   containerFilters: {
-    flex: 0.07,
     alignContent: "center",
   },
   containerFl: {
@@ -17,14 +26,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
   },
-  chipFilters: {
+  txtFilters: {
+    color: "#444444",
+  },
+  txtFiltersDisabled: {
+    color: "white",
+  },
+  chipFiltersContainer: {
     marginHorizontal: 5,
+  },
+  chipFilters: {
+    borderColor: "#767676",
+  },
+  chipFiltersDisabled: {
+    backgroundColor: "#444444",
   },
   btnFilters: {
     backgroundColor: "white",
   },
   txtSearchDefault: {
-    width: "100%",
+    width: "86%",
     backgroundColor: "#FFF",
     borderRadius: 40,
     marginTop: 20,
@@ -34,10 +55,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     color: "#C7C7CD",
     fontSize: 15,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+    borderTopColor: "#ccc",
+    borderTopWidth: 1,
+    borderLeftColor: "#ccc",
+    borderLeftWidth: 1,
+    borderRightColor: "#ccc",
+    borderRightWidth: 1,
   },
 
   txtSearch: {
-    width: "100%",
+    width: "86%",
     backgroundColor: "#FFF",
     borderRadius: 40,
     marginTop: 20,
@@ -47,6 +76,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     color: "#000000",
     fontSize: 15,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+    borderTopColor: "#ccc",
+    borderTopWidth: 1,
+    borderLeftColor: "#ccc",
+    borderLeftWidth: 1,
+    borderRightColor: "#ccc",
+    borderRightWidth: 1,
   },
 
   viewSearchMode: {
@@ -95,11 +132,12 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   txtinpSearchBorder: {
-    width: "100%",
+    width: "86%",
     backgroundColor: "#FFF",
     borderRadius: 40,
     marginTop: 20,
-    padding: 6,
+    padding: 10,
+    paddingHorizontal: 15,
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
     borderTopColor: "#ccc",
@@ -111,13 +149,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
     fontSize: 15,
   },
   containerListItems: {
     backgroundColor: "#FFF",
     paddingHorizontal: 10,
     paddingVertical: 15,
+    flexDirection: "row",
   },
 
   containerCurrentLocation: {
@@ -130,7 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   txtListItemsAddress: {
-    fontSize: 15,
+    fontSize: 16,
   },
   containerCurrentLocation: {
     backgroundColor: "#FFF",
@@ -148,9 +186,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   txtNoCarparks: {
-    fontWeight: "bold",
-    fontSize: 18,
-    paddingHorizontal: 20,
+    fontSize: 14,
+    paddingTop: 15,
   },
   containerOTP: {
     flexDirection: "row",
@@ -204,19 +241,28 @@ const styles = StyleSheet.create({
   },
   txtDestinationTitle: {
     fontSize: 15,
-    marginBottom: 6,
+    margin: 6,
     alignSelf: "center",
+    color: "white",
   },
   txtDestination: {
     width: "100%",
     backgroundColor: "#FFF",
     borderRadius: 20,
-    padding: 10,
+    padding: 9,
     paddingHorizontal: 15,
     justifyContent: "flex-start",
     alignItems: "center",
     color: "#000000",
     fontSize: 15,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 0.7,
+    borderTopColor: "#ccc",
+    borderTopWidth: 0.7,
+    borderLeftColor: "#ccc",
+    borderLeftWidth: 0.7,
+    borderRightColor: "#ccc",
+    borderRightWidth: 0.7,
   },
   txtCpSummaryHeadings: {
     fontSize: 16,
@@ -230,44 +276,36 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   svContainer: {
-    backgroundColor: "#E8EAED",
+    backgroundColor: "white",
     width: "100%",
     marginVertical: 10,
   },
   containerBtnCpSummary: {
     flexDirection: "row",
+    padding: 15,
     paddingTop: 10,
   },
   btnCpSummary: {
     flex: 1,
     flexDirection: "row",
-  },
-  btnCpSummaryMaps: {
-    alignContent: "center",
+    backgroundColor: "#444444",
+    paddingVertical: 7,
     justifyContent: "center",
-    marginVertical: 5,
+    alignItems: "center",
+    borderRadius: 30,
+    marginHorizontal: 5,
   },
+
   txtBtnCpSummary1: {
-    color: "#4f8BFF",
-    fontSize: 17,
-    bottom: "5%",
-    alignSelf: "flex-start",
+    color: "white",
+    fontSize: 15,
     marginHorizontal: 10,
   },
   txtBtnCpSummary2: {
-    color: "#4f8BFF",
-    fontSize: 17,
-    bottom: "5%",
-    alignSelf: "flex-end",
-    marginHorizontal: 10,
-  },
-  txtBtnCpSummary3: {
-    color: "#4f8BFF",
-    fontSize: 17,
-    bottom: "5%",
-    alignSelf: "center",
-    justifyContent: "center",
-    marginHorizontal: 10,
+    color: "white",
+    fontSize: 15,
+    marginLeft: 10,
+    marginRight: 5,
   },
   containerResendOTP: {
     flexDirection: "row",
@@ -430,12 +468,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  closeIcon: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    zIndex: 10,
-  },
   backDrop: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 80,
@@ -454,6 +486,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+  },
+  closeIcon: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 10,
   },
   txtMapRouteDetails: {
     color: "white",
@@ -485,9 +523,10 @@ const styles = StyleSheet.create({
   },
   txtFavHeading: {
     textAlign: "center",
-    padding: 20,
-    fontWeight: "bold",
-    fontSize: 25,
+    padding: 10,
+    paddingBottom: 20,
+    fontSize: 30,
+    color: "white",
   },
   btnFavRemove: {
     // // position: absolute,

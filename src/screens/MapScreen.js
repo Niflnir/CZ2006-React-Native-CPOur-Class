@@ -81,7 +81,11 @@ export default class MapsScreen extends Component {
       },
     ];
 
-    if (this.#currentLocationLatLong != this.#locationLatLong) {
+    if (
+      !this.#currentLocationLatLong.every(
+        (val, index) => val === this.#locationLatLong[index]
+      )
+    ) {
       const rInfo = JSON.parse(this.#cpInfo.route_info_from_current);
       const polylinePosCurrent = routeDecoder.routeDecoder(rInfo);
 
@@ -180,16 +184,11 @@ export default class MapsScreen extends Component {
       console.log("amenities");
     };
 
-    const displayRouteCp = () => {};
-    const displayRouteDes = () => {};
-
     var titles = [];
     for (var i = 1; i < mapShape.length; i++) {
       titles = [...titles, { id: i, title: mapShape[i].id }];
     }
 
-    console.log(mapShape[this.state.whichRoute]);
-    console.log(this.state.whichRoute);
     return (
       <Provider>
         <View style={{ height: "100%", paddingTop: 30 }}>
@@ -209,6 +208,8 @@ export default class MapsScreen extends Component {
             mapShapes={
               this.state.whichRoute == -1
                 ? mapShape
+                : this.state.whichRoute == -2
+                ? mapShape.splice(1)
                 : [mapShape[this.state.whichRoute]]
             }
             mapMarkers={mapMarker}
@@ -252,29 +253,43 @@ export default class MapsScreen extends Component {
               enableBackdropDismiss
             >
               <ScrollView>
+                {!this.#currentLocationLatLong.every(
+                  (val, index) => val === this.#locationLatLong[index]
+                ) ? (
+                  <View>
+                    <TouchableOpacity
+                      style={styles.btnMapRoutes}
+                      onPress={() => this.setState({ whichRoute: -2 })}
+                    >
+                      <Text style={styles.txtMapLocationHeadings}>
+                        Current Location to Carpark
+                      </Text>
+                    </TouchableOpacity>
+                    {titles.map((btnInfo) => (
+                      <TouchableOpacity
+                        key={btnInfo.id}
+                        onPress={() => {
+                          this.setState({ whichRoute: btnInfo.id });
+                        }}
+                      >
+                        <Text style={styles.txtMapInfo}>{btnInfo.title}</Text>
+                      </TouchableOpacity>
+                    ))}
+
+                    <TouchableOpacity
+                      onPress={() => this.setState({ whichRoute: -1 })}
+                    >
+                      <Text style={styles.txtMapInfo}>View all routes</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : undefined}
                 <TouchableOpacity
                   style={styles.btnMapRoutes}
-                  onPress={displayRouteCp}
+                  onPress={() => this.setState({ whichRoute: 0 })}
                 >
                   <Text style={styles.txtMapLocationHeadings}>
-                    Current Location to Carpark
+                    Carpark to Destination
                   </Text>
-                </TouchableOpacity>
-                {titles.map((btnInfo) => (
-                  <TouchableOpacity
-                    key={btnInfo.id}
-                    onPress={() => {
-                      this.setState({ whichRoute: btnInfo.id });
-                    }}
-                  >
-                    <Text style={styles.txtMapInfo}>{btnInfo.title}</Text>
-                  </TouchableOpacity>
-                ))}
-
-                <TouchableOpacity
-                  onPress={() => this.setState({ whichRoute: -1 })}
-                >
-                  <Text style={styles.txtMapInfo}>View all routes</Text>
                 </TouchableOpacity>
               </ScrollView>
             </BottomSheet>

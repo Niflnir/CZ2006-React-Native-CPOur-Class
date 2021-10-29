@@ -17,7 +17,7 @@ export default class ParkingRates {
           " SET c_parking_rates_general = ? WHERE car_park_no = ?",
         "UPDATE " +
           table +
-          " SET c_parking_rates_current=? WHERE car_park_no=?",
+          " SET c_parking_rates_current = ? WHERE car_park_no = ?",
       ];
     console.log("getting parking rates");
     const centralArea = [
@@ -42,13 +42,15 @@ export default class ParkingRates {
     var day = today.getDay();
     var minutes = today.getMinutes();
     var time = hours * 100 + minutes;
+    var cParkingRateGeneral;
+    var cParkingRateRN;
 
     db.transaction((tx) => {
       tx.executeSql(queries[0], [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {
           const cpInfo = results.rows._array[i];
-          var cParkingRateRN = -1;
-          var cParkingRateGeneral = {};
+          cParkingRateRN = -1;
+          cParkingRateGeneral = {};
 
           if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
             if ((day == 0 || day == 5) && time >= 700 && time <= 2230) {
@@ -72,26 +74,23 @@ export default class ParkingRates {
             } else {
               cParkingRateGeneral["MonSat7To5"] = 0.6;
               cParkingRateGeneral["Other"] = 0.6;
-
               cParkingRateRN = 0.6;
             }
           }
           cParkingRateGeneral["free_parking"] = cpInfo["free_parking"];
 
-          db.transaction((tx) => {
-            if (cpInfo["y_lots_available"] != null) {
-              tx.executeSql(queries[1], [0.65, cpInfo["car_park_no"]]);
-            }
-            if (cpInfo["y_lots_available"] != null) {
-              tx.executeSql(queries[2], [1.2, cpInfo["car_park_no"]]);
-            }
+          if (cpInfo["y_lots_available"] != null) {
+            tx.executeSql(queries[1], [0.65, cpInfo["car_park_no"]]);
+          }
+          if (cpInfo["y_lots_available"] != null) {
+            tx.executeSql(queries[2], [1.2, cpInfo["car_park_no"]]);
+          }
 
-            tx.executeSql(queries[3], [
-              JSON.stringify(cParkingRateGeneral),
-              cpInfo["car_park_no"],
-            ]);
-            tx.executeSql(queries[4], [cParkingRateRN, cpInfo["car_park_no"]]);
-          });
+          tx.executeSql(queries[3], [
+            JSON.stringify(cParkingRateGeneral),
+            cpInfo["car_park_no"],
+          ]);
+          tx.executeSql(queries[4], [cParkingRateRN, cpInfo["car_park_no"]]);
         }
       });
     });

@@ -11,6 +11,7 @@ import {
   Alert,
   ScrollView,
   View,
+  StatusBar,
 } from "react-native";
 import styles from "../styles/AppStyles";
 import * as Linking from "expo-linking";
@@ -112,19 +113,40 @@ export default class CpSummaryScreen extends Component {
       });
     };
     return (
-      <View style={styles.container}>
-        <Text style={styles.txtDestinationTitle}>Destination</Text>
-        <Text style={styles.txtDestination} numberOfLines={1}>
-          {this.#locationInfo.address == ""
-            ? "Current location"
-            : this.#locationInfo.address}
-        </Text>
-        <Text style={styles.txtDestinationTitle}>Carpark</Text>
-        <Text style={styles.txtDestination} numberOfLines={1}>
-          {this.#cpInfo.address}
-        </Text>
-        <ScrollView style={styles.svContainer}>
-          <Text style={styles.txtCpSummaryHeadings}>
+      <View
+        style={{
+          flex: 1,
+          // padding: 20,
+          alignItems: "center",
+          backgroundColor: "white",
+        }}
+      >
+        <View
+          style={{
+            alignSelf: "stretch",
+            alignItems: "center",
+            backgroundColor: "#444444",
+            paddingHorizontal: 20,
+            paddingBottom: 20,
+          }}
+        >
+          <StatusBar backgroundColor="#444444" />
+
+          <Text style={styles.txtDestinationTitle}>Destination</Text>
+          <Text style={styles.txtDestination} numberOfLines={1}>
+            {this.#locationInfo.address == ""
+              ? "Current location"
+              : this.#locationInfo.address}
+          </Text>
+          <Text style={styles.txtDestinationTitle}>Carpark</Text>
+          <Text style={styles.txtDestination} numberOfLines={1}>
+            {this.#cpInfo.address}
+          </Text>
+        </View>
+        <ScrollView
+          style={[styles.svContainer, { padding: 20, paddingTop: 0 }]}
+        >
+          <Text style={[styles.txtCpSummaryHeadings, { marginTop: 14 }]}>
             Destination / Carpark Postal Code
           </Text>
           <Text style={styles.txtCpSummaryInfo}>
@@ -235,23 +257,23 @@ export default class CpSummaryScreen extends Component {
           </Text>
         </ScrollView>
         <TouchableOpacity
-          style={styles.btnCpSummaryMaps}
+          style={[styles.btnCpSummary, { flex: 0 }]}
           onPress={() => proceedToMapsHandler()}
         >
-          <Text style={styles.txtContinue}>Google Maps - Fastest</Text>
+          <Text style={styles.txtBtnCpSummary1}>Google Maps - Fastest</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.btnCpSummaryMaps}
+          style={[styles.btnCpSummary, { flex: 0, marginTop: 10 }]}
           onPress={() => proceedToMapsHandler2()}
         >
-          <Text style={styles.txtContinue}>Google Maps - Cheapest</Text>
+          <Text style={styles.txtBtnCpSummary1}>Google Maps - Cheapest</Text>
         </TouchableOpacity>
         <View style={styles.containerBtnCpSummary}>
           <TouchableOpacity style={styles.btnCpSummary} onPress={budgetHandler}>
             <Text style={styles.txtBtnCpSummary1}>Budgeting</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.btnCpSummary} onPress={mapHandler}>
-            <Text style={styles.txtBtnCpSummary3}>Routes</Text>
+            <Text style={styles.txtBtnCpSummary1}>Routes</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnCpSummary}
@@ -261,14 +283,16 @@ export default class CpSummaryScreen extends Component {
             {this.state.favourited ? (
               <Icon
                 color="#d0312d"
-                style={{ paddingBottom: 5 }}
+                style={{ marginRight: 4 }}
+                size={20}
                 name="heart"
                 type="font-awesome"
               />
             ) : (
               <Icon
                 color="#d0312d"
-                style={{ paddingBottom: 5 }}
+                style={{ marginRight: 4 }}
+                size={20}
                 name="heart-o"
                 type="font-awesome"
               />

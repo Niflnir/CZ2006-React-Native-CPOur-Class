@@ -20,17 +20,17 @@ export default class SearchHistoryTable {
           "Y character varying)"
       );
 
-      tx.executeSql(
-        "SELECT COUNT(*) FROM (SELECT 0 FROM searchHistory LIMIT 1)",
-        [],
-        (tx, results) => {
-          if (results.rows.item(0)["COUNT(*)"] == 0) {
-            tx.executeSql(
-              "INSERT INTO searchHistory (BUILDING) VALUES ('Current location');"
-            );
-          }
-        }
-      );
+      // tx.executeSql(
+      //   "SELECT COUNT(*) FROM (SELECT 0 FROM searchHistory LIMIT 1)",
+      //   [],
+      //   (tx, results) => {
+      //     if (results.rows.item(0)["COUNT(*)"] == 0) {
+      //       tx.executeSql(
+      //         "INSERT INTO searchHistory (BUILDING) VALUES ('Current location');"
+      //       );
+      //     }
+      //   }
+      // );
     });
   }
 

@@ -19,10 +19,7 @@ export default class RouteDecoder {
       var btnId = "Default route";
       if (route_info.hasOwnProperty("subtitle")) {
         btnId = route_info.subtitle;
-        // console.log("id: ", btnId);
       }
-      // console.log("final id: ", btnId);
-      // console.log(latLong);
       return [latLong, btnId];
     }
   }

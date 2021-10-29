@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  StatusBar,
+  Image,
 } from "react-native";
 import styles from "../../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
@@ -18,6 +20,7 @@ import CpInfoTable from "../../utils/db/CpInfoTable";
 import SortFilter from "../../utils/SortFilter";
 import GetData from "../../utils/api/GetData";
 import FavouritesTable from "../../utils/db/FavouritesTable";
+import { Icon } from "react-native-elements";
 db = SQLite.openDatabase("cpour.db");
 
 export default class MainSearchScreen extends Component {
@@ -47,8 +50,6 @@ export default class MainSearchScreen extends Component {
       defaultAddress: "Search Here",
       txtStyle: false,
       list: [],
-      sortOption: 0,
-      outline: [true, true, true, true, true, true],
     };
   }
 
@@ -74,19 +75,7 @@ export default class MainSearchScreen extends Component {
     db.transaction((tx) => {
       this.#loading = false;
       tx.executeSql(query, [], (tx, results) => {
-        if (results.rows["_array"].length == 0) {
-          this.setState({
-            list: [
-              {
-                address: "No nearby car parks found",
-                c_lots_available: "",
-                total_distance: "",
-              },
-            ],
-          });
-        } else {
-          this.setState({ list: results.rows["_array"] });
-        }
+        this.setState({ list: results.rows["_array"] });
       });
     });
   }
@@ -112,7 +101,7 @@ export default class MainSearchScreen extends Component {
 
       const getData = new GetData();
       const TOKEN =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQ2MTk1NzQsImV4cCI6MTYzNTA1MTU3NCwibmJmIjoxNjM0NjE5NTc0LCJqdGkiOiI1ZmRhYzU2MzkxY2NlYTYwNDgyY2QyMWExYzNkM2NiMiJ9.QKQ1j9ozayJYu_TViSO2d0yA_dKvyoyIvan0w6_eDeg";
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzUyNTY3MTAsImV4cCI6MTYzNTY4ODcxMCwibmJmIjoxNjM1MjU2NzEwLCJqdGkiOiIwMjkzY2ZkYTc4NzFjNTY5NTgwMjkxMDNmN2I4NmM1NCJ9.Ppc_NQFKw5NOkzjNP1xXE8S35dq9faiwzAwlv9GPEek";
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         this.#info.currentLatLong +
@@ -156,7 +145,7 @@ export default class MainSearchScreen extends Component {
       );
     }, 3000); ///////////////////////////////////// figure out a better way
 
-    setTimeout(() => this.flListHandler(), 12000); ///////////////////////////////////////////// figure out a better way
+    setTimeout(() => this.flListHandler(), 9000); ///////////////////////////////////////////// figure out a better way
   }
 
   componentDidUpdate() {
@@ -186,138 +175,368 @@ export default class MainSearchScreen extends Component {
     };
 
     const renderListItems = ({ item }) => {
-      if (item["address"] == "No nearby car parks found") {
-        return (
-          <TouchableOpacity
-            activeOpacity={1}
-            style={styles.containerFlatListItems}
-          >
-            <Text style={styles.txtNoCarparks}>No nearby car parks found</Text>
-          </TouchableOpacity>
-        );
+      var sortColor;
+      if (this.#sortOption == 0) {
+        if (item.c_lots_available > 80) {
+          sortColor = "#006344";
+        } else if (item.c_lots_available > 30) {
+          sortColor = "#D8A800";
+        } else {
+          sortColor = "#BD3B1B";
+        }
+      } else if (this.#sortOption == 1) {
+        if (item.total_distance < 0.25) {
+          sortColor = "#006344";
+        } else if (item.total_distance < 0.6) {
+          sortColor = "#D8A800";
+        } else {
+          sortColor = "#BD3B1B";
+        }
+      } else {
+        if (item.c_parking_rates_current == 0) {
+          sortColor = "#006344";
+        } else if (item.c_parking_rates_current == 0.6) {
+          sortColor = "#D8A800";
+        } else {
+          sortColor = "#BD3B1B";
+        }
       }
       return (
-        <View style={{ flexDirection: "row" }}>
-          {/* <TouchableOpacity
-            style={{
-              backgroundColor: "black",
-              width: "2%",
-              marginHorizontal: 10,
-              height: "80%",
-              alignSelf: "center",
-            }}
-          /> */}
+        <View
+          style={{
+            borderTopColor: "#444444",
+            borderTopWidth: 0.5,
+          }}
+        >
           <TouchableOpacity
-            style={styles.containerFlatListItems}
+            style={[
+              styles.containerFlatListItems,
+              {
+                borderLeftColor: sortColor,
+                borderLeftWidth: 15,
+              },
+            ]}
             onPress={() => selectItem(item)}
           >
-            <Text style={styles.txtListItemsBuilding}>{item["address"]}</Text>
-            <Text style={styles.txtListItemsAddress}>
-              Lot availability:{" "}
-              {item["c_lots_available"] != null
-                ? item["c_lots_available"]
-                : "No information available"}
-            </Text>
-            <Text style={styles.txtListItemsAddress}>
-              Distance: {item["total_distance"]} km
-            </Text>
-            {item["c_parking_rates_current"] != 0 ? (
-              <Text style={styles.txtListItemsAddress}>
-                Parking rate: ${item["c_parking_rates_current"]}
-              </Text>
-            ) : (
-              <Text style={styles.txtListItemsAddress}>
-                Free parking available now
-              </Text>
-            )}
+            <View
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <View style={{ flex: 8 }}>
+                <Text style={styles.txtListItemsBuilding}>
+                  {item["address"]}
+                </Text>
+                {this.#sortOption == 0 ? (
+                  <View>
+                    <Text>{item["total_distance"] * 1000} m</Text>
+                    <Text>
+                      ${item["c_parking_rates_current"].toFixed(2)}/30 min
+                    </Text>
+                  </View>
+                ) : this.#sortOption == 1 ? (
+                  <View>
+                    <Text>
+                      {item["c_lots_available"] != null
+                        ? item["c_lots_available"] + " car lot(s) free"
+                        : "No info"}
+                    </Text>
+                    <Text>
+                      ${item["c_parking_rates_current"].toFixed(2)}/30 min
+                    </Text>
+                  </View>
+                ) : (
+                  <View>
+                    <Text>
+                      {item["c_lots_available"] != null
+                        ? item["c_lots_available"] + " car lot(s) free"
+                        : "No info"}
+                    </Text>
+                    <Text>{item["total_distance"] * 1000} m</Text>
+                  </View>
+                )}
+              </View>
+              <View
+                style={{
+                  flex: 3,
+                  alignSelf: "center",
+                }}
+              >
+                {this.#sortOption == 0 ? (
+                  <Text
+                    style={{
+                      alignSelf: "center",
+                      fontSize: 17,
+                    }}
+                  >
+                    {item["c_lots_available"] != null
+                      ? item["c_lots_available"]
+                      : "-"}{" "}
+                  </Text>
+                ) : this.#sortOption == 1 ? (
+                  <Text
+                    style={{
+                      alignSelf: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    {item["total_distance"] * 1000} m
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      alignSelf: "center",
+                      fontSize: 15,
+                    }}
+                  >
+                    ${item["c_parking_rates_current"].toFixed(2)}
+                  </Text>
+                )}
+              </View>
+            </View>
           </TouchableOpacity>
         </View>
       );
     };
     const onPress = (selectedIndex) => {
-      this.setState({ sortOption: selectedIndex });
       this.#sortOption = selectedIndex;
       this.flListHandler();
     };
 
     const onPressChip = (title, index) => {
-      var temp = [...this.state.outline];
-      temp[index] = !this.state.outline[index];
-      this.setState({ outline: temp });
+      var temp = [...this.#filterOption];
+      temp[index] = !this.#filterOption[index];
       this.#filterOption = temp;
       this.flListHandler();
     };
-    return (
-      <View style={styles.container}>
-        <Text
-          onPress={onPressDestinationHandler}
-          numberOfLines={1}
-          style={
-            this.state.txtStyle ? styles.txtSearch : styles.txtSearchDefault
-          }
-        >
-          {this.state.defaultAddress}
-        </Text>
 
-        <ButtonGroup
-          buttons={this.#buttons}
-          onPress={onPress}
-          selectedIndex={this.state.sortOption}
-          style={styles.btnSort}
-        />
-        <View style={styles.containerFilters}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <Chip
-              title="Heavy Vehicles"
-              type={this.state.outline[0] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              // buttonStyle={styles.btnFilters}
-              onPress={() => onPressChip("Heavy Vehicles", 0)}
-            />
-            <Chip
-              title="Motorcycles"
-              type={this.state.outline[1] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              onPress={() => onPressChip("Motorcycles", 1)}
-            />
-            <Chip
-              title="Free Parking"
-              type={this.state.outline[2] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              onPress={() => onPressChip("Free Parking", 2)}
-            />
-            <Chip
-              title="Night Parking"
-              type={this.state.outline[3] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              onPress={() => onPressChip("Night Parking", 3)}
-            />
-            <Chip
-              title="Electronic System"
-              type={this.state.outline[4] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              onPress={() => onPressChip("Electronic System", 4)}
-            />
-            <Chip
-              title="Coupon System"
-              type={this.state.outline[5] ? "outline" : "solid"}
-              containerStyle={styles.chipFilters}
-              onPress={() => onPressChip("Coupon System", 5)}
-            />
-          </ScrollView>
+    const openMenu = () => {
+      this.#navigation.openDrawer();
+    };
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <StatusBar backgroundColor="#444444" />
+        <View style={styles.container}>
+          <Text
+            onPress={onPressDestinationHandler}
+            numberOfLines={1}
+            style={
+              this.state.txtStyle ? styles.txtSearch : styles.txtSearchDefault
+            }
+          >
+            {this.state.defaultAddress}
+          </Text>
+          <Icon
+            containerStyle={{ paddingHorizontal: 15, marginTop: 24 }}
+            color="white"
+            size={36}
+            name="bars"
+            type="font-awesome"
+            onPress={openMenu}
+          />
         </View>
 
-        <View style={styles.containerFl}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "white",
+          }}
+        >
+          <ButtonGroup
+            buttons={this.#buttons}
+            onPress={onPress}
+            selectedIndex={this.#sortOption}
+            selectedButtonStyle={styles.btnSortSelect}
+            selectedTextStyle={styles.txtSortSelect}
+            textStyle={styles.txtSortDisabled}
+          />
+          <View style={styles.containerFilters}>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              <Chip
+                title="Heavy Vehicles"
+                type={this.#filterOption[0] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[0]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[0]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Heavy Vehicles", 0)}
+              />
+              <Chip
+                title="Motorcycles"
+                type={this.#filterOption[1] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[1]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[1]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Motorcycles", 1)}
+              />
+              <Chip
+                title="Free Parking"
+                type={this.#filterOption[2] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[2]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[2]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Free Parking", 2)}
+              />
+              <Chip
+                title="Night Parking"
+                type={this.#filterOption[3] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[3]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[3]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Night Parking", 3)}
+              />
+              <Chip
+                title="Electronic System"
+                type={this.#filterOption[4] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[4]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[4]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Electronic System", 4)}
+              />
+              <Chip
+                title="Coupon System"
+                type={this.#filterOption[5] ? "outline" : "solid"}
+                containerStyle={styles.chipFiltersContainer}
+                titleStyle={
+                  this.#filterOption[5]
+                    ? styles.txtFilters
+                    : styles.txtFiltersDisabled
+                }
+                buttonStyle={
+                  this.#filterOption[5]
+                    ? styles.chipFilters
+                    : styles.chipFiltersDisabled
+                }
+                onPress={() => onPressChip("Coupon System", 5)}
+              />
+            </ScrollView>
+          </View>
+
           {this.#loading ? (
-            <ActivityIndicator size="large" color="darkblue" />
+            <View style={styles.containerFl}>
+              <ActivityIndicator size="large" color="#444444" />
+            </View>
           ) : this.#displaying ? (
-            <FlatList
-              style={styles.containerFlatList}
-              keyExtractor={(item, index) => index.toString()}
-              data={this.state.list}
-              renderItem={renderListItems}
-            />
-          ) : undefined}
+            <View style={styles.containerFl}>
+              <View style={{ flexDirection: "row" }}>
+                <Text
+                  style={[
+                    styles.txtNoCarparks,
+                    {
+                      paddingLeft: 20,
+                      flex: 8,
+                    },
+                  ]}
+                >
+                  {this.state.list.length} nearby carparks found
+                </Text>
+                {this.state.list.length == 0 ? undefined : this.#sortOption ==
+                  0 ? (
+                  <Text
+                    style={[
+                      styles.txtNoCarparks,
+                      {
+                        flex: 3,
+                        alignSelf: "center",
+                        textAlign: "center",
+                        marginRight: 20,
+                      },
+                    ]}
+                  >
+                    Car lots free
+                  </Text>
+                ) : this.#sortOption == 1 ? (
+                  <Text
+                    style={[
+                      styles.txtNoCarparks,
+                      {
+                        flex: 3,
+                        alignSelf: "center",
+                        textAlign: "center",
+                        marginRight: 20,
+                      },
+                    ]}
+                  >
+                    Distance
+                  </Text>
+                ) : (
+                  <Text
+                    style={[
+                      styles.txtNoCarparks,
+                      {
+                        flex: 3,
+                        alignSelf: "center",
+                        textAlign: "center",
+                        marginRight: 20,
+                      },
+                    ]}
+                  >
+                    Fee/30 min
+                  </Text>
+                )}
+              </View>
+              <FlatList
+                style={styles.containerFlatList}
+                keyExtractor={(item, index) => index.toString()}
+                data={this.state.list}
+                renderItem={renderListItems}
+              />
+            </View>
+          ) : (
+            <View style={styles.containerFl}>
+              <Image
+                style={[styles.logo, { alignSelf: "center", top: "-5%" }]}
+                source={require("../../assets/images/carparkourlogo.png")}
+              ></Image>
+            </View>
+          )}
         </View>
       </View>
     );

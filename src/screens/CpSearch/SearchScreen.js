@@ -10,12 +10,14 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import styles from "../../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
 import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
 import GetData from "../../utils/api/GetData";
 import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
+import { Icon } from "react-native-elements";
 
 db = SQLite.openDatabase("cpour.db");
 
@@ -33,6 +35,7 @@ export default class SearchScreen extends Component {
     this.state = {
       list: [],
       address: "",
+      sHistory: true,
     };
   }
 
@@ -47,17 +50,21 @@ export default class SearchScreen extends Component {
         tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
           this.#searchHistory = results.rows["_array"];
           this.#locationList["data"] = this.#searchHistory;
-          this.setState({ list: this.#searchHistory });
+          this.setState({ list: this.#searchHistory, sHistory: true });
         });
       });
     }
   }
 
   render() {
+    const openMenu = () => {
+      this.#navigation.openDrawer();
+    };
     // updates value of address every time user inputs or deletes a character
     const addressHandler = (address) => {
       this.setState({ address: address });
       if (address == "") {
+        this.setState({ sHistory: true });
         db.transaction((tx) => {
           tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
             this.#searchHistory = results.rows["_array"];
@@ -81,6 +88,8 @@ export default class SearchScreen extends Component {
       var resultPromise = getData
         .getData(URL) // to store promise returned by GetData
         .then((data) => {
+          this.setState({ sHistory: false });
+
           if (data["found"] == 0) {
             // if no results
             this.setState({ list: [] });
@@ -108,13 +117,8 @@ export default class SearchScreen extends Component {
     // app redirects user back to CpSearchScreen and sends the address info as parameters
     const selectItem = (item) => {
       this.#nearbyCpInfoTable.recreateNearbyCpInfoTable();
-      if (
-        item["BUILDING"] != "Current location" &&
-        item["ADDRESS"] != "Current location"
-      ) {
-        const searchHistoryTable = new SearchHistoryTable();
-        searchHistoryTable.setSearchHistoryTable(item);
-      }
+      const searchHistoryTable = new SearchHistoryTable();
+      searchHistoryTable.setSearchHistoryTable(item);
       setTimeout(
         () =>
           this.#navigation.navigate("CpSearch", {
@@ -124,23 +128,62 @@ export default class SearchScreen extends Component {
       );
     };
 
+    const sendCurrentLocation = () => {
+      this.#navigation.navigate("CpSearch", {
+        data: { BUILDING: "Current location" },
+      });
+    };
+
     // if no building name, display address as heading
     const listHeading = (item) => {
       return item["BUILDING"] != "NIL" ? item["BUILDING"] : item["ROAD_NAME"];
     };
 
     return (
-      <View keyboardShouldPersistTap="always" style={styles.containerWhite}>
-        <TextInput
-          ref={this.#textInputRef}
-          style={styles.txtinpSearchBorder}
-          autoFocus={true}
-          placeholder="Search Here"
-          defaultValue={this.#defaultAddress}
-          onChangeText={addressHandler}
-        />
+      // <View keyboardShouldPersistTap="always" style={styles.containerWhite}>
+      <View
+        keyboardShouldPersistTap="always"
+        style={{ backgroundColor: "white", flex: 1 }}
+      >
+        <StatusBar backgroundColor="#444444" />
+        <View style={styles.container}>
+          <TextInput
+            ref={this.#textInputRef}
+            style={styles.txtinpSearchBorder}
+            autoFocus={true}
+            placeholder="Search Here"
+            defaultValue={this.#defaultAddress}
+            onChangeText={addressHandler}
+          />
+          <Icon
+            containerStyle={{ paddingHorizontal: 15, marginTop: 24 }}
+            color="white"
+            size={36}
+            name="bars"
+            type="font-awesome"
+            onPress={openMenu}
+          />
+        </View>
+        <Text
+          style={{
+            alignSelf: "center",
+            padding: 20,
+            fontSize: 17,
+            fontWeight: "bold",
+          }}
+          onPress={sendCurrentLocation}
+        >
+          Current location
+        </Text>
 
-        <ScrollView keyboardShouldPersistTaps="always">
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          style={{
+            borderTopColor: "lightgrey",
+            borderTopWidth: 1,
+            backgroundColor: "white",
+          }}
+        >
           {this.state.list.map((item) => (
             <TouchableOpacity
               key={this.#locationList["data"].findIndex(
@@ -149,10 +192,27 @@ export default class SearchScreen extends Component {
               style={styles.containerListItems}
               onPress={() => selectItem(item)}
             >
-              <Text style={styles.txtListItemsBuilding}>
-                {listHeading(item)}
-              </Text>
-              <Text style={styles.txtListItemsAddress}>{item["ADDRESS"]}</Text>
+              {this.state.sHistory ? (
+                <Icon
+                  name="history"
+                  type="font-awesome"
+                  color="grey"
+                  containerStyle={{
+                    flexDirection: "row",
+                    paddingRight: 20,
+                    paddingLeft: 15,
+                    paddingTop: 3,
+                  }}
+                />
+              ) : undefined}
+              <View style={{ flex: 1 }}>
+                <Text style={styles.txtListItemsBuilding}>
+                  {listHeading(item)}
+                </Text>
+                <Text style={styles.txtListItemsAddress}>
+                  {item["ADDRESS"]}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>

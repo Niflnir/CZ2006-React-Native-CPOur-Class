@@ -1,7 +1,7 @@
 // Sidebar with Favourites, Clear Search History, and Logout
 
 import React from "react";
-import { Alert } from "react-native";
+import { Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   createDrawerNavigator,
@@ -16,6 +16,8 @@ import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
 import { setSignedOut } from "../utils/DbServices";
 import DropAll from "../utils/db/DropAll";
+import styles from "../styles/AppStyles";
+import StackNavFav from "./StackNavFav";
 
 const Drawer = createDrawerNavigator();
 const FIREBASE_CONFIG = {
@@ -42,13 +44,14 @@ function ActualDrawer() {
   return (
     <Drawer.Navigator
       screenOptions={{
+        drawerActiveTintColor: "black",
         headerShown: false,
-        swipeEdgeWidth: 100,
+        swipeEnabled: false,
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen name="Search" component={StackNav} />
-      <Drawer.Screen name="Favourites" component={FavouritesScreen} />
+      <Drawer.Screen name="Favourites" component={StackNavFav} />
     </Drawer.Navigator>
   );
 }
@@ -78,6 +81,7 @@ function logout() {
 function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView>
+      <Image source={require("../assets/images/carparkourlogo.png")}></Image>
       <DrawerItemList {...props} />
       <DrawerItem label="Clear Search History" onPress={clearSearchHistory} />
       <DrawerItem label="Logout" onPress={logout} />

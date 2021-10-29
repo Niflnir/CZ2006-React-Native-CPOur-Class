@@ -3,17 +3,14 @@
 // TO DO: everything
 
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
-import { ActivityIndicator, IconButton } from "react-native-paper";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import LocationServices from "../utils/locationServices/LocationServices";
 import GetData from "../utils/api/GetData";
 import FavouritesTable from "../utils/db/FavouritesTable";
-import { getToken, removeFromFavourites } from "../utils/DbServices";
-import NearbyCpInfoTable from "../utils/db/NearbyCpInfoTable";
-import GetLots from "../utils/api/GetLots";
+import { Icon } from "react-native-elements";
 db = SQLite.openDatabase("cpour.db");
 
 export default class FavouritesScreen extends Component {
@@ -21,6 +18,7 @@ export default class FavouritesScreen extends Component {
   #status = {};
   #getLocationServices = new LocationServices();
   #fav = new FavouritesTable();
+  #grey = false;
   #info = {
     locationData: {},
     latLong: {},
@@ -43,10 +41,9 @@ export default class FavouritesScreen extends Component {
     });
   }
   async initializeInfo() {
-    console.log("here");
     this.#fav.createFavouritesTable();
     const TOKEN =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzQ2MTk1NzQsImV4cCI6MTYzNTA1MTU3NCwibmJmIjoxNjM0NjE5NTc0LCJqdGkiOiI1ZmRhYzU2MzkxY2NlYTYwNDgyY2QyMWExYzNkM2NiMiJ9.QKQ1j9ozayJYu_TViSO2d0yA_dKvyoyIvan0w6_eDeg";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzUyNTY3MTAsImV4cCI6MTYzNTY4ODcxMCwibmJmIjoxNjM1MjU2NzEwLCJqdGkiOiIwMjkzY2ZkYTc4NzFjNTY5NTgwMjkxMDNmN2I4NmM1NCJ9.Ppc_NQFKw5NOkzjNP1xXE8S35dq9faiwzAwlv9GPEek";
     this.#getLocationServices
       .getLocationPermission() // to get user's permission to access location services
       .then((data) => {
@@ -107,7 +104,6 @@ export default class FavouritesScreen extends Component {
   }
   render() {
     const selectItem = (item) => {
-      console.log(item);
       var postal;
       var latLong;
       if (item.destination_address == "") {
@@ -139,7 +135,6 @@ export default class FavouritesScreen extends Component {
       } else {
         postal = item.destination_postal;
       }
-      console.log(item);
       removeFromFavourites(item.car_park_no, postal);
       this.#loading = true;
       this.initializeInfo();
@@ -157,48 +152,115 @@ export default class FavouritesScreen extends Component {
           </TouchableOpacity>
         );
       }
+      var bgc = "white";
+      if (this.#grey) {
+        bgc = "#e5e5e5";
+      }
+      this.#grey = !this.#grey;
       return (
-        <View style={{ flexDirection: "row" }}>
+        <View
+          style={{
+            paddingBottom: 10,
+            backgroundColor: bgc,
+          }}
+        >
           <TouchableOpacity
-            style={styles.containerFlatListItems}
+            style={[styles.containerFlatListItems, { flex: 1 }]}
             onPress={() => selectItem(item)}
           >
-            <Text style={styles.txtListItemsBuilding}>{item["address"]}</Text>
-            <Text style={styles.txtListItemsAddress}>
-              Lot availability:{" "}
-              {item["c_lots_available"] != null
-                ? item["c_lots_available"]
-                : "No information available"}
+            <Text style={[styles.txtDestinationTitle, { color: "black" }]}>
+              Destination
             </Text>
-            <Text style={styles.txtListItemsAddress}>
-              Distance: {item["total_distance"]} km
+            <Text style={styles.txtDestination} numberOfLines={1}>
+              {item.destination_address == ""
+                ? "Current location"
+                : item.destination_address}
             </Text>
-            {item["c_parking_rates_current"] != 0 ? (
-              <Text style={styles.txtListItemsAddress}>
-                Parking rate: ${item["c_parking_rates_current"]}
-              </Text>
-            ) : (
-              <Text style={styles.txtListItemsAddress}>
-                Free parking available now
-              </Text>
-            )}
+            <Text style={[styles.txtDestinationTitle, { color: "black" }]}>
+              Carpark
+            </Text>
+            <Text style={styles.txtDestination} numberOfLines={1}>
+              {item.address}
+            </Text>
           </TouchableOpacity>
-          <IconButton
-            color="red"
-            icon="close"
-            style={[styles.closeIcon, { marginTop: 10 }]}
-            onPress={() => deleteItem(item)}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              justifyContent: "space-between",
+            }}
+          >
+            <View style={{ flexDirection: "column", paddingHorizontal: 10 }}>
+              <Text style={styles.txtListItemsAddress}>
+                {item["c_lots_available"] != null
+                  ? "Lots available: " + item["c_lots_available"]
+                  : "No lot info"}
+              </Text>
+              <Text style={styles.txtListItemsAddress}>
+                Distance: {item["total_distance"] * 1000} m
+              </Text>
+
+              <Text style={styles.txtListItemsAddress}>
+                Parking fee: ${item["c_parking_rates_current"].toFixed(2)}/30
+                min
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#444444",
+                borderRadius: 30,
+                padding: 10,
+                marginHorizontal: 10,
+                marginTop: 30,
+                flexDirection: "row",
+              }}
+              onPress={() => deleteItem(item)}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  marginHorizontal: 10,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Remove
+              </Text>
+              <Icon
+                name="trash"
+                type="font-awesome"
+                size={17}
+                color="#d3d3d3"
+                style={{ marginTop: 3 }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       );
     };
 
     return (
-      <View style={styles.container}>
-        <Text style={styles.txtFavHeading}>Favourites</Text>
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        <View
+          style={{
+            backgroundColor: "#444444",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={styles.txtFavHeading}>Favourites</Text>
+          <Icon
+            color="#d0312d"
+            style={{ paddingBottom: 5 }}
+            size={30}
+            name="heart"
+            type="font-awesome"
+          />
+        </View>
         <View style={styles.containerFl}>
           {this.#loading ? (
-            <ActivityIndicator size="large" color="darkblue" />
+            <ActivityIndicator size="large" color="#444444" />
           ) : (
             <FlatList
               style={styles.containerFlatList}
