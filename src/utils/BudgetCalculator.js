@@ -34,9 +34,7 @@ export default class BudgetCalculator {
     if (vehicleType == 2) {
       duration = budget / cpInfo["h_parking_rates_general"];
     }
-    console.log(vehicleType);
-    console.log(budget);
-    console.log(duration);
+
     return (
       Math.floor(duration) +
       " h " +
@@ -50,7 +48,7 @@ export default class BudgetCalculator {
     var day = today.getDay();
     var minutes = today.getMinutes();
     var time = (hours + minutes) / 60;
-    var duration = durationHours + durationMinutes / 60; //duration in decimal for easier calculation
+    var duration = parseInt(durationHours) + parseInt(durationMinutes) / 60; //duration in decimal for easier calculation
 
     if (vehicleType == 0) {
       if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
@@ -64,7 +62,11 @@ export default class BudgetCalculator {
           } else return 0;
         } else {
           return (
-            duration * JSON.parse(cpInfo["c_parking_rates_general"])["Other"]
+            Math.round(
+              duration *
+                JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
+                100
+            ) / 100
           );
         }
       }
@@ -72,12 +74,16 @@ export default class BudgetCalculator {
       // Coupon parking system - per half-hour
       // Night parking scheme - capped at $5
     }
-    if (vehicleType == 2) {
-      return duration * cpInfo["y_parking_rates_general"];
+    if (vehicleType == 1) {
+      return (
+        Math.round(duration * cpInfo["y_parking_rates_general"] * 100) / 100
+      );
     }
 
-    if (vehicleType == 1) {
-      return duration * cpInfo["H_parking_rates_general"];
+    if (vehicleType == 2) {
+      return (
+        Math.round(duration * cpInfo["H_parking_rates_general"] * 100) / 100
+      );
     }
   }
 }
