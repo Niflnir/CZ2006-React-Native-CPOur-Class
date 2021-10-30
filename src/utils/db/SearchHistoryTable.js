@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 db = SQLite.openDatabase("cpour.db");
-
+// Create table for search history
 export default class SearchHistoryTable {
   createSearchHistoryTable() {
     console.log("creating searchHistoryTable");

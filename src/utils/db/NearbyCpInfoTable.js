@@ -4,7 +4,7 @@ import GetRoute from "../api/GetRoute";
 import GetGracePeriod from "../GetGracePeriod";
 import GetParkingRates from "../GetParkingRates";
 db = SQLite.openDatabase("cpour.db");
-
+// Create info table for carparks nearby the location
 export default class NearbyCpInfoTable {
   createNearbyCpInfoTable() {
     console.log("creating nearbyCpTable");

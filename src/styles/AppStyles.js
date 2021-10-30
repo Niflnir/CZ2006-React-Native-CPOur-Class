@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-
+// Styling for all app components
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#444444",

@@ -1,5 +1,4 @@
-// To get current location info
-
+// Get current location info
 import * as Location from "expo-location";
 import { Alert } from "react-native";
 

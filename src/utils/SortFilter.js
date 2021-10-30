@@ -1,3 +1,4 @@
+//Sort and Filter app feature
 export default class SortFilter {
   sortFilter(sortOption, filterOption) {
     var sortQuery = "";

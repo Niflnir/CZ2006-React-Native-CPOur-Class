@@ -1,4 +1,8 @@
 export default class BudgetCalculator {
+  /* calculates the amount of time the user can park his car
+  @param {number} budget - the user's budget on parking
+  @param {number} vehicleType - the type of vehicle the user chooses to park
+  @param cpInfo - carpark info table */
   calculateTime(budget, vehicleType, cpInfo) {
     var today = new Date();
     var hours = today.getHours();
@@ -38,6 +42,11 @@ export default class BudgetCalculator {
       " mins "
     );
   }
+  /* calculates the cost of parking the car for the duration the user inputs
+  @param {number} durationHours - amount of hours the user inputs
+  @param {number} durationMinutes - amount of minutes the usr inputs
+  @param {number} vehicleType -the type of vehicle the user chooses to park
+  @param {} cpInfo - carpark info table */
   calculateBudget(durationHours, durationMinutes, vehicleType, cpInfo) {
     var today = new Date();
     var hours = today.getHours();

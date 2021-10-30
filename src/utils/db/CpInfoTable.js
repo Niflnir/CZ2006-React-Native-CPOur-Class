@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-
+// Create table for carpark info
 export default class CpInfoTable {
   createCpInfoTable() {
     db.transaction((tx) => {

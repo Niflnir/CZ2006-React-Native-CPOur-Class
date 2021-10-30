@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-
+// Drop all info tables
 export default class DropAll {
   dropAll() {
     db.transaction((tx) => {

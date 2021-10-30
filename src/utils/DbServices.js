@@ -1,5 +1,5 @@
 import firebase from "firebase";
-
+// FIREBASE databse configuration
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
   authDomain: "otpauth-a7ce0.firebaseapp.com",
@@ -17,7 +17,7 @@ try {
 } catch (err) {
   // ignore app already initialized error on snack
 }
-
+// Check whether the user is signed in to the app
 export const checkSignedIn = () => {
   var user = firebase.auth().currentUser.uid;
   var status;
@@ -29,17 +29,17 @@ export const checkSignedIn = () => {
     });
   return status;
 };
-
+// Sign out the user from the app
 export const setSignedOut = () => {
   var user = firebase.auth().currentUser.uid;
   firebase.database().ref(`signedInStatus/${user}`).update({ signedIn: false });
 };
-
+// Sign in the user to the app
 export const setSignedIn = () => {
   var user = firebase.auth().currentUser.uid;
   firebase.database().ref(`signedInStatus/${user}`).update({ signedIn: true });
 };
-
+// Add carpark to the favourites page
 export const addToFavourites = (cpInfo, postal, locationInfo) => {
   var user = firebase.auth().currentUser.uid;
   firebase
@@ -47,12 +47,13 @@ export const addToFavourites = (cpInfo, postal, locationInfo) => {
     .ref(`Favourites/${user}/${cpInfo.car_park_no}/${postal}`)
     .update({ cpInfo: cpInfo, locationInfo: locationInfo });
 };
+//
 export const initializeFavourites = () => {
   var user = firebase.auth().currentUser.uid;
   const temp = { initialized: true };
   firebase.database().ref(`Favourites/${user}`).update(temp);
 };
-
+// Remove carpark from favourties page
 export const removeFromFavourites = (car_park_no, postal) => {
   var user = firebase.auth().currentUser.uid;
   firebase
@@ -60,6 +61,7 @@ export const removeFromFavourites = (car_park_no, postal) => {
     .ref(`Favourites/${user}/${car_park_no}/${postal}`)
     .remove();
 };
+// Check if carpark is favourited
 export const checkIfFavourited = (car_park_no, postal) => {
   var user = firebase.auth().currentUser.uid;
   var status = false;
@@ -77,7 +79,7 @@ export const checkIfFavourited = (car_park_no, postal) => {
     });
   return status;
 };
-
+// Get the list of favourted carparks
 export const getFavourites = () => {
   var user = firebase.auth().currentUser.uid;
   var results;
@@ -89,7 +91,7 @@ export const getFavourites = () => {
     });
   return results;
 };
-
+// Gets token
 export const getToken = () => {
   var token;
   firebase

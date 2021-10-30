@@ -9,7 +9,7 @@ import * as SQLite from "expo-sqlite";
 import NearbyCpInfoTable from "./NearbyCpInfoTable";
 
 db = SQLite.openDatabase("cpour.db");
-
+// Create table for favourite carparks
 export default class FavouritesTable {
   async createFavouritesTable() {
     console.log("creating favourites");

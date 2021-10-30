@@ -1,6 +1,7 @@
 import * as firebase from "firebase";
 import Auth from "firebase/auth";
 import Database from "firebase/database";
+// FIREBASE database configuration
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
   authDomain: "otpauth-a7ce0.firebaseapp.com",
