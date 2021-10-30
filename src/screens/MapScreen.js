@@ -1,7 +1,5 @@
 // Displays list of favourited carparks/locations
 
-// TO DO: everything
-
 import React, { Component } from "react";
 import {
   Button,
