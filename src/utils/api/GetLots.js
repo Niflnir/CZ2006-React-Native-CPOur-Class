@@ -1,4 +1,4 @@
-// To access carpark lot availability API and return data
+// Access carpark lot availability API and return data
 
 import GetData from "../api/GetData";
 

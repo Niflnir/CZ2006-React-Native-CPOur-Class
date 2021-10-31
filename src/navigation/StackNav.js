@@ -44,7 +44,7 @@ export default function StackNav() {
   });
   if (loggedIn) {
     return (
-      // <NavigationContainer>
+      //<NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="CpSearch" component={MainSearchScreen} />
         <Stack.Screen name="SearchSuggestions" component={SearchScreen} />
@@ -53,11 +53,11 @@ export default function StackNav() {
         <Stack.Screen name="Favourites" component={FavouritesScreen} />
         <Stack.Screen name="Maps" component={MapScreen} />
       </Stack.Navigator>
-      // </NavigationContainer>
+      //</NavigationContainer>
     );
   }
   return (
-    // <NavigationContainer>
+    //<NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <Stack.Screen name="OTPScreen" component={OTPScreen} />
@@ -68,6 +68,6 @@ export default function StackNav() {
       <Stack.Screen name="Favourites" component={FavouritesScreen} />
       <Stack.Screen name="Maps" component={MapScreen} />
     </Stack.Navigator>
-    // </NavigationContainer>
+    //</NavigationContainer>
   );
 }

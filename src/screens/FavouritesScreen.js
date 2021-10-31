@@ -12,7 +12,7 @@ import GetData from "../utils/api/GetData";
 import FavouritesTable from "../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
 db = SQLite.openDatabase("cpour.db");
-
+// Displayes screen for Favourites feature
 export default class FavouritesScreen extends Component {
   #navigation = this.props.navigation;
   #status = {};

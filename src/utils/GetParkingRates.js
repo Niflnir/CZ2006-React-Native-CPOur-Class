@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-
+// Gets parking rates of carparks
 export default class ParkingRates {
   vehicles(index) {
     if (index == 0 ? (table = "nearbyCpInfo") : (table = "favourites"))

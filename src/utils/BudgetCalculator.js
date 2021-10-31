@@ -1,4 +1,8 @@
 export default class BudgetCalculator {
+  /* calculates the amount of time the user can park his car
+  @param {number} budget - the user's budget on parking
+  @param {number} vehicleType - the type of vehicle the user chooses to park
+  @param cpInfo - carpark info table */
   calculateTime(budget, vehicleType, cpInfo) {
     var today = new Date();
     var hours = today.getHours();
@@ -6,26 +10,22 @@ export default class BudgetCalculator {
     var minutes = today.getMinutes();
     var time = hours + minutes / 60;
     var duration = 0;
-
     if (vehicleType == 0) {
       if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
         if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
           duration =
             budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"] +
             (22.5 - time);
-        } else {
-          duration =
-            budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
         }
       } else if (cpInfo["free_parking"] == "SUN & PH FR 1PM-10.30PM") {
         if ((day == 0 || day == 5) && time >= 13 && time <= 22.5) {
           duration =
             budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"] +
             (22.5 - time);
-        } else {
-          duration =
-            budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
         }
+      } else {
+        duration =
+          budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
       }
     }
     if (vehicleType == 1) {
@@ -42,6 +42,11 @@ export default class BudgetCalculator {
       " mins "
     );
   }
+  /* calculates the cost of parking the car for the duration the user inputs
+  @param {number} durationHours - amount of hours the user inputs
+  @param {number} durationMinutes - amount of minutes the usr inputs
+  @param {number} vehicleType -the type of vehicle the user chooses to park
+  @param {} cpInfo - carpark info table */
   calculateBudget(durationHours, durationMinutes, vehicleType, cpInfo) {
     var today = new Date();
     var hours = today.getHours();
@@ -60,15 +65,15 @@ export default class BudgetCalculator {
               JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
             return cost <= 5 ? cost : 5; //capped at $5 night parking scheme
           } else return 0;
-        } else {
-          return (
-            Math.round(
-              duration *
-                JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
-                100
-            ) / 100
-          );
         }
+      } else {
+        return (
+          Math.round(
+            duration *
+              JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
+              100
+          ) / 100
+        );
       }
       // Electronic parking system - per minute basis
       // Coupon parking system - per half-hour

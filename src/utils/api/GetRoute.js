@@ -1,4 +1,4 @@
-// To get route info like distance, time, and instructions and store in database (nearbyCpInfo table)
+// Get route info like distance, time, and instructions and store in database (nearbyCpInfo table)
 
 import * as SQLite from "expo-sqlite";
 import GetData from "../api/GetData";
