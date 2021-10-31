@@ -22,7 +22,7 @@ import {
 } from "../utils/DbServices";
 import { Icon } from "react-native-elements";
 import FavouritesTable from "../utils/db/FavouritesTable";
-
+// Displays screen for carpark summary feature
 export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
@@ -86,13 +86,13 @@ export default class CpSummaryScreen extends Component {
 
       Linking.openURL(url);
     };
-
+    // Navigates to the budgeting feature screen
     const budgetHandler = () => {
       this.#navigation.navigate("Budgeting", {
         cpInfo: this.#cpInfo,
       });
     };
-
+    // Remove carpark from favourties or add carpark to favourties
     const favouritesHandler = () => {
       const fav = new FavouritesTable();
       if (this.state.favourited) {
@@ -105,7 +105,7 @@ export default class CpSummaryScreen extends Component {
       }
       fav.createFavouritesTable();
     };
-
+    // Navigates to map feature screen
     const mapHandler = () => {
       this.#navigation.navigate("Maps", {
         cpInfo: this.#cpInfo,

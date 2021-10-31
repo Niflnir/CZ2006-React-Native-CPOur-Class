@@ -30,7 +30,7 @@ export default class WelcomeScreen extends Component {
       this.setState({ phoneNumber: number });
     };
 
-    // when user presses "Continue" redirected to OTP page
+    // User is directed to OTP screen when "continue" is pressed
     const onPressContinueHandler = () => {
       if (this.state.phoneNumber.length != 8 || this.state.phoneNumber.isNaN) {
         Alert.alert(

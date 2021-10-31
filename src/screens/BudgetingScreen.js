@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 import BudgetCalculator from "../utils/BudgetCalculator";
-
+// Displays screen for budgeting feature
 export default class BudgetingScreen extends Component {
   #navigation = this.props.navigation;
   #cpInfo = this.props.route.params.cpInfo;
@@ -27,6 +27,7 @@ export default class BudgetingScreen extends Component {
     };
   }
   render() {
+    // Switches between budget calculator and time calculator;
     const onPressSwitch = () => {
       this.setState({ calculateTime: !this.state.calculateTime });
     };
@@ -39,6 +40,7 @@ export default class BudgetingScreen extends Component {
     const onChangeMins = (minutes) => {
       this.setState({ minutes: minutes });
     };
+    // Calculates the time when button is pressed
     const onPressCalculateTime = () => {
       Keyboard.dismiss();
       const budgetCalculator = new BudgetCalculator();
@@ -50,6 +52,7 @@ export default class BudgetingScreen extends Component {
         ),
       });
     };
+    // Calculates the budget when button is pressed
     const onPressCalculateBudget = () => {
       const budgetCalculator = new BudgetCalculator();
       Keyboard.dismiss();
@@ -62,6 +65,7 @@ export default class BudgetingScreen extends Component {
         ),
       });
     };
+    // Switches among the three vehicle types
     const onPressIndicateVehicleType = () => {
       if (this.state.vehicleType == 0) this.setState({ vehicleType: 1 });
       else if (this.state.vehicleType == 1) this.setState({ vehicleType: 2 });
