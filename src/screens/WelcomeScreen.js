@@ -25,8 +25,8 @@ export default class WelcomeScreen extends Component {
   #navigation = this.props.navigation;
 
   render() {
+    // Updates value of phone number
     const onChangePhoneNumber = (number) => {
-      // updates value of phone number
       this.setState({ phoneNumber: number });
     };
 
