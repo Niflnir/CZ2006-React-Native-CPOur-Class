@@ -190,7 +190,27 @@ export default class FavouritesTable {
       }
     });
     const rate = new ParkingRates();
-    rate.vehicles(1);
+    const table = "favourites";
+    var queries1 = [
+      "SELECT * FROM " + table,
+      "UPDATE " +
+        table +
+        " SET c_parking_rates_general = ? WHERE car_park_no = ?",
+      "UPDATE " +
+        table +
+        " SET c_parking_rates_current = ? WHERE car_park_no = ?",
+    ];
+    var queries2 = [
+      "SELECT * FROM " + table,
+      "UPDATE " +
+        table +
+        " SET y_parking_rates_general = ? WHERE car_park_no = ?",
+      "UPDATE " +
+        table +
+        " SET h_parking_rates_general = ? WHERE car_park_no = ?",
+    ];
+    rate.vehicles(queries1);
+    rate.notCar(queries2);
     const grace = new GetGracePeriod();
     grace.getGracePeriod();
   }

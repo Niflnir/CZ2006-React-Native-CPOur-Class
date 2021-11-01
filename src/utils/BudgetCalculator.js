@@ -3,8 +3,8 @@
 export default class BudgetCalculator {
   /**
    * Calculates duration of time user can expect to park car subject to input budget
-   * @param {*} budget Budget input by user
-   * @param {*} vehicleType Vehicle type selected by user
+   * @param {number} budget Budget input by user
+   * @param {number} vehicleType Vehicle type selected by user
    * @param {*} cpInfo Carpark information of selected carpark
    * @returns {number} Duration of time user can park subject to input budget
    */
@@ -16,19 +16,31 @@ export default class BudgetCalculator {
     var time = hours + minutes / 60;
     var duration = 0;
     if (vehicleType == 0) {
+      console.log(0, cpInfo["free_parking"]);
       if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
+        console.log(1);
         if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
+          console.log(2);
           duration =
             budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"] +
             (22.5 - time);
+        } else {
+          duration =
+            budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
         }
       } else if (cpInfo["free_parking"] == "SUN & PH FR 1PM-10.30PM") {
+        console.log(3);
         if ((day == 0 || day == 5) && time >= 13 && time <= 22.5) {
+          console.log(4);
           duration =
             budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"] +
             (22.5 - time);
+        } else {
+          duration =
+            budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
         }
       } else {
+        console.log(5);
         duration =
           budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
       }
@@ -40,31 +52,33 @@ export default class BudgetCalculator {
         " mins "
       );
     }
-    console.log(duration);
-    var today = new Date();
-    var hours = (today.getHours() + 8) % 24;
-    var day = today.getDay();
-    var minutes = today.getMinutes();
-    var time = hours * 100 + minutes;
 
-    var duration = 0;
+    time = hours * 100 + minutes;
+    duration = 0;
 
     if (vehicleType == 1) {
       const slots = Math.floor(budget / 0.65);
+      if (slots == 0) {
+        return "0 h 0 min";
+      }
       var hoursLeft = 0;
       var minutesLeft = 0;
       var daySlot = true;
       var durationHours = 0;
       durationMinutes = 0;
       if (time >= 700 && time <= 2230) {
-        hoursLeft = 22 - hours;
+        if (minutes >= 30) {
+          hoursLeft = 21 - hours;
+        } else {
+          hoursLeft = 22 - hours;
+        }
+
         minutesLeft = 90 - minutes;
       } else {
         daySlot = false;
         if (time <= 2230 && time >= 2359) {
           hoursLeft = 30 - hours;
           minutesLeft = 60 - minutes;
-          console.log(hoursLeft * 100 + minutesLeft);
         } else if (time >= 0 && time <= 700) {
           hoursLeft = 7 - hours;
           minutesLeft = 60 - minutes;
@@ -83,12 +97,14 @@ export default class BudgetCalculator {
       durationHours += hoursLeft;
       durationMinutes += minutesLeft;
 
+      console.log(durationHours, durationMinutes);
+
       if (durationMinutes >= 60) {
         durationMinutes = durationMinutes % 60;
         durationHours += Math.floor(durationMinutes / 60);
       }
 
-      return durationHours + " h " + durationMinutes + " m";
+      return durationHours + " h " + durationMinutes + " min";
     }
     if (vehicleType == 2) {
       if (cpInfo.type_of_parking_system == "ELECTRONIC PARKING") {

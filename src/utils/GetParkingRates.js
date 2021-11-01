@@ -9,24 +9,7 @@ export default class ParkingRates {
    * Sets value of parking rates for carparks in selected table
    * @param {number} index 1 for favourites table, 0 for nearbyCpInfo table
    */
-  vehicles(index) {
-    if (index == 0 ? (table = "nearbyCpInfo") : (table = "favourites"))
-      var queries = [
-        "SELECT * FROM " + table,
-        "UPDATE " +
-          table +
-          " SET y_parking_rates_general = ? WHERE car_park_no = ?",
-        "UPDATE " +
-          table +
-          " SET h_parking_rates_general = ? WHERE car_park_no = ?",
-        "UPDATE " +
-          table +
-          " SET c_parking_rates_general = ? WHERE car_park_no = ?",
-        "UPDATE " +
-          table +
-          " SET c_parking_rates_current = ? WHERE car_park_no = ?",
-      ];
-    console.log("getting parking rates");
+  vehicles(queries) {
     const centralArea = [
       "ACB",
       "BBB",
@@ -52,23 +35,28 @@ export default class ParkingRates {
     var cParkingRateGeneral;
     var cParkingRateRN;
 
+    console.log("getting parking rates");
+
     db.transaction((tx) => {
       tx.executeSql(queries[0], [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {
           const cpInfo = results.rows._array[i];
           cParkingRateRN = -1;
           cParkingRateGeneral = {};
-
-          if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
-            if ((day == 0 || day == 5) && time >= 700 && time <= 2230) {
-              cParkingRateRN = 0;
-            }
-          } else if (cpInfo["free_parking"] == "SUN & PH FR 1PM-10.30PM") {
-            if ((day == 0 || day == 5) && time >= 1300 && time <= 2230) {
-              cParkingRateRN = 0;
-            }
-          }
-          if (cParkingRateRN == -1) {
+          if (
+            (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM" &&
+              (day == 0 || day == 5) &&
+              time >= 700 &&
+              time <= 2230) ||
+            (cpInfo["free_parking"] == "SUN & PH FR 1PM-10.30PM" &&
+              (day == 0 || day == 5) &&
+              time >= 1300 &&
+              time <= 2230)
+          ) {
+            console.log("free");
+            cParkingRateRN = 0;
+          } else {
+            console.log("no free");
             if (centralArea.includes(cpInfo["car_park_no"])) {
               cParkingRateGeneral["MonSat7To5"] = 1.2;
               cParkingRateGeneral["Other"] = 0.6;
@@ -85,19 +73,27 @@ export default class ParkingRates {
             }
           }
           cParkingRateGeneral["free_parking"] = cpInfo["free_parking"];
-
+          console.log(queries);
+          tx.executeSql(queries[1], [
+            JSON.stringify(cParkingRateGeneral),
+            cpInfo["car_park_no"],
+          ]);
+          tx.executeSql(queries[2], [cParkingRateRN, cpInfo["car_park_no"]]);
+        }
+      });
+    });
+  }
+  notCar(queries) {
+    db.transaction((tx) => {
+      tx.executeSql(queries[0], [], (tx, results) => {
+        for (var i = 0; i < results.rows._array.length; i++) {
+          const cpInfo = results.rows._array[i];
           if (cpInfo["y_lots_available"] != null) {
             tx.executeSql(queries[1], [0.65, cpInfo["car_park_no"]]);
           }
           if (cpInfo["y_lots_available"] != null) {
             tx.executeSql(queries[2], [1.2, cpInfo["car_park_no"]]);
           }
-
-          tx.executeSql(queries[3], [
-            JSON.stringify(cParkingRateGeneral),
-            cpInfo["car_park_no"],
-          ]);
-          tx.executeSql(queries[4], [cParkingRateRN, cpInfo["car_park_no"]]);
         }
       });
     });

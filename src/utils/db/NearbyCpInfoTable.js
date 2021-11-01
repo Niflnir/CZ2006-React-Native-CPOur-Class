@@ -141,7 +141,27 @@ export default class NearbyCpInfoTable {
             }
             if (i == 2161) {
               const getParkingRates = new GetParkingRates();
-              getParkingRates.vehicles(0);
+              const table = "nearbyCpInfo";
+              var queries1 = [
+                "SELECT * FROM " + table,
+                "UPDATE " +
+                  table +
+                  " SET c_parking_rates_general = ? WHERE car_park_no = ?",
+                "UPDATE " +
+                  table +
+                  " SET c_parking_rates_current = ? WHERE car_park_no = ?",
+              ];
+              var queries2 = [
+                "SELECT * FROM " + table,
+                "UPDATE " +
+                  table +
+                  " SET y_parking_rates_general = ? WHERE car_park_no = ?",
+                "UPDATE " +
+                  table +
+                  " SET h_parking_rates_general = ? WHERE car_park_no = ?",
+              ];
+              getParkingRates.vehicles(queries1);
+              getParkingRates.notCar(queries2);
               const getGracePeriod = new GetGracePeriod();
               getGracePeriod.getGracePeriod(0);
               console.log("done getting");
