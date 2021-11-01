@@ -40,7 +40,11 @@ export default class WelcomeScreen extends Component {
      * If user inputs valid phoneNumber, directs user to OTPScreen, otherwise displays relevant error message
      */
     const onPressContinueHandler = () => {
-      if (this.state.phoneNumber.length != 8 || this.state.phoneNumber.isNaN) {
+      if (
+        this.state.phoneNumber.length != 8 ||
+        this.state.phoneNumber.isNaN ||
+        !["3", "6", "8", "9"].includes(this.state.phoneNumber.charAt(0))
+      ) {
         Alert.alert(
           "Error",
           "Please enter a valid 8 digit Singapore-registered phone number"
