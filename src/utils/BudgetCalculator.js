@@ -32,20 +32,74 @@ export default class BudgetCalculator {
         duration =
           budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
       }
+
+      return (
+        Math.floor(duration) +
+        " h " +
+        Math.floor((duration - Math.floor(duration)) * 60) +
+        " mins "
+      );
     }
+    console.log(duration);
+    var today = new Date();
+    var hours = (today.getHours() + 8) % 24;
+    var day = today.getDay();
+    var minutes = today.getMinutes();
+    var time = hours * 100 + minutes;
+
+    var duration = 0;
+
     if (vehicleType == 1) {
-      duration = budget / cpInfo["y_parking_rates_general"];
+      const slots = Math.floor(budget / 0.65);
+      var hoursLeft = 0;
+      var minutesLeft = 0;
+      var daySlot = true;
+      var durationHours = 0;
+      durationMinutes = 0;
+      if (time >= 700 && time <= 2230) {
+        hoursLeft = 22 - hours;
+        minutesLeft = 90 - minutes;
+      } else {
+        daySlot = false;
+        if (time <= 2230 && time >= 2359) {
+          hoursLeft = 30 - hours;
+          minutesLeft = 60 - minutes;
+          console.log(hoursLeft * 100 + minutesLeft);
+        } else if (time >= 0 && time <= 700) {
+          hoursLeft = 7 - hours;
+          minutesLeft = 60 - minutes;
+        }
+      }
+      for (var i = 1; i < slots; i++) {
+        if (daySlot) {
+          durationHours += 15;
+          durationMinutes += 30;
+        } else {
+          durationHours += 8;
+          durationMinutes += 30;
+        }
+        daySlot = !daySlot;
+      }
+      durationHours += hoursLeft;
+      durationMinutes += minutesLeft;
+
+      if (durationMinutes >= 60) {
+        durationMinutes = durationMinutes % 60;
+        durationHours += Math.floor(durationMinutes / 60);
+      }
+
+      return durationHours + " h " + durationMinutes + " m";
     }
     if (vehicleType == 2) {
-      duration = budget / cpInfo["h_parking_rates_general"];
+      if (cpInfo.type_of_parking_system == "ELECTRONIC PARKING") {
+        const perMinute = 1.2 / 30;
+        duration = budget / perMinute;
+      } else {
+        duration = Math.floor(budget / 1.2) * 30;
+      }
+      console.log(Math.floor(duration / 60) + " h " + (duration % 60) + " min");
+      return Math.floor(duration / 60) + " h " + (duration % 60) + " min";
     }
-
-    return (
-      Math.floor(duration) +
-      " h " +
-      Math.floor((duration - Math.floor(duration)) * 60) +
-      " mins "
-    );
   }
 
   /** Calculates the estimated cost of parking the car for the duration the user inputs

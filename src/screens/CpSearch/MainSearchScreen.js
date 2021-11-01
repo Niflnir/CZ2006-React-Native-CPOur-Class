@@ -25,24 +25,7 @@ db = SQLite.openDatabase("cpour.db");
 
 /**
  * Application screen that prompts user to input destination and displays nearby carparks
- * @property {Object} info Location information of user's input destination
- * @property {Object} info.locationData Data retrieved from OneMap Search API by SearchScreen
- * @property {string} info.latLong Latitude and longitude of user's input destination
- * @property {string} info.address Address of user's input destination
- * @property {string} info.currentLatLong Latitude and longitude of user's current location
- * @property {string} info.currentPostalCode Postal code of user's current location
- * @property {string} info.postal Postal code of user's input destination
- * @property {boolean} rendered Whether or not the screen has been rendered
- * @property {string} status Whether or not location permissions have been granted by user
- * @property {boolean} loading Whether or not the carpark list is loading
- * @property {boolean} displaying Whether or not the carpark list is being displayed
- * @property {boolean} loading Whether or not the carpark list is loading
- * @property {LocationServices} getLocationServices Object of LocationServices class
- * @property {SearchHistoryTable} searchHistoryTable Object of SearchHistoryTable class
- * @property {CpInfoTable} cpInfoTable Object of CpInfoTable class
- * @property {string[]} buttons Sorting option names used as button titles
- * @property {number} sortOption Index of user's selected sort criteria
- * @property {boolean[]} filterOption Whether or not each filter criteria available has been selected by user
+ *
  *
  */
 export default class MainSearchScreen extends Component {
