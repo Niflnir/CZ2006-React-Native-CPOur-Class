@@ -1,7 +1,14 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-// Gets parking rates of carparks
+
+/**
+ * Gets parking rates for carparks
+ */
 export default class ParkingRates {
+  /**
+   * Sets value of parking rates for carparks in selected table
+   * @param {number} index 1 for favourites table, 0 for nearbyCpInfo table
+   */
   vehicles(index) {
     if (index == 0 ? (table = "nearbyCpInfo") : (table = "favourites"))
       var queries = [

@@ -1,16 +1,19 @@
-import GetData from "../api/GetData";
-import GetRoute from "../api/GetRoute";
 import { getFavourites } from "../DbServices";
 import GetGracePeriod from "../GetGracePeriod";
-import LocationServices from "../locationServices/LocationServices";
 import ParkingRates from "../GetParkingRates";
 import GetLots from "../api/GetLots";
 import * as SQLite from "expo-sqlite";
 import NearbyCpInfoTable from "./NearbyCpInfoTable";
 
 db = SQLite.openDatabase("cpour.db");
-// Create table for favourite carparks
+
+/**
+ * Manages favourites table in local database to store information of favourited destination-carpark pairs
+ */
 export default class FavouritesTable {
+  /**
+   * Creates new favourites table if not already exisiting and populates it with data stored in user database
+   */
   async createFavouritesTable() {
     console.log("creating favourites");
     const nearby = new NearbyCpInfoTable();
@@ -204,6 +207,4 @@ export default class FavouritesTable {
       );
     });
   }
-
-  // getLocationInfo(car_park_no, address)
 }

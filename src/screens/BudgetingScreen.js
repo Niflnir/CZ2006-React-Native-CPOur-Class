@@ -10,9 +10,13 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 import BudgetCalculator from "../utils/BudgetCalculator";
-// Displays screen for budgeting feature
+
+/**
+ * Allows user to input maximum budget and displays corresponding amount of time user can park
+ * Or allows user to input time they wish to park and displays corresponding estimated parking fee
+ * @property {Object} cpInfo Carpark information received from CpSummaryScreen
+ */
 export default class BudgetingScreen extends Component {
-  #navigation = this.props.navigation;
   #cpInfo = this.props.route.params.cpInfo;
   constructor(props) {
     super(props);
@@ -26,21 +30,44 @@ export default class BudgetingScreen extends Component {
       vehicleType: 0,
     };
   }
+  /**
+   * Displays UI components of screen
+   */
   render() {
-    // Switches between budget calculator and time calculator;
+    /**
+     * Switches between budget calculating and time calculating mode when user presses "Switch" button
+     */
     const onPressSwitch = () => {
       this.setState({ calculateTime: !this.state.calculateTime });
     };
+
+    /**
+     * Updates value of budget every time user inputs or deletes a character
+     * @param {string} budget Value of budget input by user in textInput
+     */
     const onChangeDollar = (budget) => {
       this.setState({ budget: budget });
     };
+
+    /**
+     * Updates value of hours every time user inputs or deletes a character     *
+     * @param {string} hours Value of hours input by user in textInput
+     */
     const onChangeHours = (hours) => {
       this.setState({ hours: hours });
     };
+
+    /**
+     * Updates value of minutes every time user inputs or deletes a character
+     * @param {string} minutes Value of minutes input by user in textInput
+     */
     const onChangeMins = (minutes) => {
       this.setState({ minutes: minutes });
     };
-    // Calculates the time when button is pressed
+
+    /**
+     * Calculates duration of time user can park when user enters maximum budget
+     */
     const onPressCalculateTime = () => {
       Keyboard.dismiss();
       const budgetCalculator = new BudgetCalculator();
@@ -52,7 +79,10 @@ export default class BudgetingScreen extends Component {
         ),
       });
     };
-    // Calculates the budget when button is pressed
+
+    /**
+     * Calculates estimated parking fee when user enters duration they wish to park
+     */
     const onPressCalculateBudget = () => {
       const budgetCalculator = new BudgetCalculator();
       Keyboard.dismiss();
@@ -65,12 +95,16 @@ export default class BudgetingScreen extends Component {
         ),
       });
     };
-    // Switches among the three vehicle types
+
+    /**
+     * Switches between vehicle types when user presses button
+     */
     const onPressIndicateVehicleType = () => {
       if (this.state.vehicleType == 0) this.setState({ vehicleType: 1 });
       else if (this.state.vehicleType == 1) this.setState({ vehicleType: 2 });
       else if (this.state.vehicleType == 2) this.setState({ vehicleType: 0 });
     };
+
     if (this.state.calculateTime) {
       return (
         <View style={styles.containerBudgetingMainWhite}>
@@ -119,6 +153,7 @@ export default class BudgetingScreen extends Component {
         </View>
       );
     }
+
     return (
       <View style={styles.containerBudgetingMainGrey}>
         <View style={[styles.containerBudgetingWhite, { height: "47%" }]}>

@@ -1,7 +1,12 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-// Create table for carpark info
+/**
+ * Manages cpInfo table in local database to store information of all HDB carparks in Singapore
+ */
 export default class CpInfoTable {
+  /**
+   * Creates new cpInfo table if not aready existing
+   */
   createCpInfoTable() {
     db.transaction((tx) => {
       tx.executeSql(
@@ -32,6 +37,9 @@ export default class CpInfoTable {
     });
   }
 
+  /**
+   * Populates cpInfo table with carpark data
+   */
   populate() {
     console.log("populating");
     db.transaction((tx) => {

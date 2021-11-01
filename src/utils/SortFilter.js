@@ -1,5 +1,13 @@
-//Sort and Filter app feature
+/**
+ * Gets query to be made to database for selected sort and filter options
+ */
 export default class SortFilter {
+  /**
+   *
+   * @param {number} sortOption Index of sort criteria selected by user
+   * @param {boolean[]} filterOption Whether or not each filter criteria has been selected by user
+   * @returns {String} Query to be made to database for selected sort/filter options
+   */
   sortFilter(sortOption, filterOption) {
     var sortQuery = "";
     var filterQueryArray = [];

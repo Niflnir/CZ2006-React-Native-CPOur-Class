@@ -1,6 +1,3 @@
-// Login/Registration page
-// When user opens app for first time, prompted to enter phone number for login/registration
-// When user presses continue, redirected to OTP page and OTP sent to registered phone number
 import React, { Component, useState } from "react";
 import {
   Button,
@@ -15,6 +12,9 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 
+/**
+ * When user opens app for first time after app installation or logout, user is prompted to enter phone number for login/registration
+ */
 export default class WelcomeScreen extends Component {
   constructor(props) {
     super(props);
@@ -24,13 +24,21 @@ export default class WelcomeScreen extends Component {
   }
   #navigation = this.props.navigation;
 
+  /**
+   * Displays UI components of screen
+   */
   render() {
-    // Updates value of phone number
+    /**
+     * Updates value of phoneNumber as user inputs or deletes character
+     * @param {number} number Phonenumber input by user
+     */
     const onChangePhoneNumber = (number) => {
       this.setState({ phoneNumber: number });
     };
 
-    // User is directed to OTP screen when "continue" is pressed
+    /**
+     * If user inputs valid phoneNumber, directs user to OTPScreen, otherwise displays relevant error message
+     */
     const onPressContinueHandler = () => {
       if (this.state.phoneNumber.length != 8 || this.state.phoneNumber.isNaN) {
         Alert.alert(

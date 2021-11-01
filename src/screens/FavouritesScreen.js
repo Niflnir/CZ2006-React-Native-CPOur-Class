@@ -1,7 +1,3 @@
-// Displays list of favourited carparks/locations
-
-// TO DO: everything
-
 import React, { Component } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../styles/AppStyles";
@@ -12,17 +8,25 @@ import GetData from "../utils/api/GetData";
 import FavouritesTable from "../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
 db = SQLite.openDatabase("cpour.db");
-// Displayes screen for Favourites feature
+
+/**
+ * Displays list of destination-carpark pairs in user's favourites list
+ * @property {string} status Whether or not user has granted location permissions
+ * @property {LocationServices} getLocationServices Object of LocationServices class
+ * @property {FavouritesTable} fav Object of FavouritesTable class
+ * @property {boolean} grey Whether or not current item in favourites list should be displayed with grey background
+ * @property {Object} info Current location data
+ * @property {string} info.currentLatLong Latitude and longitude of current location
+ * @property {string} info.currentPostalCode Postal code of current location
+ * @property {boolean} loading Whether or not the favourites list is loading
+ */
 export default class FavouritesScreen extends Component {
   #navigation = this.props.navigation;
-  #status = {};
+  #status = "";
   #getLocationServices = new LocationServices();
   #fav = new FavouritesTable();
   #grey = false;
   #info = {
-    locationData: {},
-    latLong: {},
-    address: "",
     currentLatLong: "",
     currentPostalCode: "",
   };
@@ -40,19 +44,22 @@ export default class FavouritesScreen extends Component {
       return;
     });
   }
+
+  /**
+   * Sets values of relevant variables so favourites list can be displayed
+   */
   async initializeInfo() {
     this.#fav.createFavouritesTable();
     const TOKEN =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzUyNTY3MTAsImV4cCI6MTYzNTY4ODcxMCwibmJmIjoxNjM1MjU2NzEwLCJqdGkiOiIwMjkzY2ZkYTc4NzFjNTY5NTgwMjkxMDNmN2I4NmM1NCJ9.Ppc_NQFKw5NOkzjNP1xXE8S35dq9faiwzAwlv9GPEek";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzU3MzcxMjksImV4cCI6MTYzNjE2OTEyOSwibmJmIjoxNjM1NzM3MTI5LCJqdGkiOiJhZmRlYWY3NGFkMzQ0N2UyZWYxMDYyMDM3ZDMxNWVkOCJ9.6qBuGpDCg4T_MEHqR1SQqKIQnWCXfEbVLq6YCt2_LB0";
     this.#getLocationServices
-      .getLocationPermission() // to get user's permission to access location services
+      .getLocationPermission()
       .then((data) => {
         this.#status = data;
       })
       .catch((error) => console.log("location error: ", error));
 
     await this.#getLocationServices.getLocation().then((data) => {
-      // to get actual location of user (latlong and postal code)
       this.#info.currentLatLong =
         JSON.stringify(data["coords"]["latitude"]) +
         "," +
@@ -75,6 +82,9 @@ export default class FavouritesScreen extends Component {
     setTimeout(() => this.flListHandler(), 2000);
   }
 
+  /**
+   * Sets list to be displayed in flatlist
+   */
   flListHandler() {
     console.log("getting list");
 
@@ -102,7 +112,14 @@ export default class FavouritesScreen extends Component {
     });
     this.#loading = false;
   }
+  /**
+   * Displays UI components of screen
+   */
   render() {
+    /**
+     * When user selects specific destination-carpark pair from favourites list, directs user to corresponding CpSummaryScreen
+     * @param {Object} item Data of destination-carpark pair selected by user
+     */
     const selectItem = (item) => {
       var postal;
       var latLong;
@@ -128,6 +145,10 @@ export default class FavouritesScreen extends Component {
       });
     };
 
+    /**
+     * When user selects "Remove" button, removes destination-carpark pair from local storage and user database
+     * @param {Object} item Data of destination-carpark pair to be deleted
+     */
     const deleteItem = (item) => {
       var postal;
       if (item.destination_address == "Current location") {
@@ -139,6 +160,12 @@ export default class FavouritesScreen extends Component {
       this.#loading = true;
       this.initializeInfo();
     };
+
+    /**
+     * Sets styling and data of each item to be displayed in flatlist
+     * @param {*} item Data of destination-carpark pair to be styled and displayed
+     * @returns {*} Styled data
+     */
     const renderListItems = ({ item }) => {
       if (item["address"] == "No carparks in favourites list") {
         return (

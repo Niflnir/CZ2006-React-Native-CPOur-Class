@@ -1,9 +1,15 @@
-// Access carpark lot availability API and return data
-
 import GetData from "../api/GetData";
 
+/**
+ * Retrieved carpark lot availability information from API
+ * @property {*} lotData Data retreived from API call
+ */
 export default class GetLots {
   #lotData;
+  /**
+   * Uses GetData.getData() to make API call and store carpark lot availability data
+   * @returns {Object[]} Data retrieved from API
+   */
   async getLots() {
     console.log("getting lot availability");
     var today = new Date();

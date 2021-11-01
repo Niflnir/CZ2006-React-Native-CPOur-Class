@@ -22,7 +22,14 @@ import {
 } from "../utils/DbServices";
 import { Icon } from "react-native-elements";
 import FavouritesTable from "../utils/db/FavouritesTable";
-// Displays screen for carpark summary feature
+
+/**
+ * Displays detailed carpark information summary and allows user access to favourites, budgeting, and journey planning features
+ * @property {Object} cpInfo Carpark information received from MainSearchScreen
+ * @property {Object} locationInfo Location information received from MainSearchScreen
+ * @property {string} currentLatLong Latitude and longitude values of current location receieved from MainSearchScreen
+ * @property {string} status Whether or not user has granted location permissios, received from MainSearchScreen
+ */
 export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
@@ -40,6 +47,9 @@ export default class CpSummaryScreen extends Component {
     };
   }
 
+  /**
+   * Displays UI components of screen
+   */
   render() {
     var address;
     var postal;
@@ -50,6 +60,13 @@ export default class CpSummaryScreen extends Component {
       address = this.#locationInfo.address;
       postal = this.#locationInfo.locationData.POSTAL;
     }
+
+    /**
+     * When user presses "Google Maps - Fastest" button, launches Google Maps application with turn-by-turn navigatoin from
+     * user's current location to selected carpark
+     *
+     * If location permissions denied, displays error message
+     */
     const proceedToMapsHandler = () => {
       if (this.#status != "granted") {
         Alert.alert(
@@ -65,10 +82,14 @@ export default class CpSummaryScreen extends Component {
         android: `google.navigation:q=${this.#cpInfo.lat_long}&mode=d`,
       });
       Linking.openURL(url);
-
-      // String url = "http://maps.google.com/maps?saddr=" + lat_A+ "," + lng_B + "&daddr=" + lat_B + "," + lng_B + "&dirflg=h,t";
     };
 
+    /**
+     * When user presses "Google Maps - Cheapest" button, launches Google Maps application to displays toll-free routes amongst others from
+     * user's current location to selected carpark
+     *
+     * If location permissions denied, displays error message
+     */
     const proceedToMapsHandler2 = () => {
       if (this.#status != "granted") {
         Alert.alert(
@@ -86,13 +107,20 @@ export default class CpSummaryScreen extends Component {
 
       Linking.openURL(url);
     };
-    // Navigates to the budgeting feature screen
+
+    /**
+     * When user presses "Budgeting" button, directs user to BudgetingScreen
+     */
     const budgetHandler = () => {
       this.#navigation.navigate("Budgeting", {
         cpInfo: this.#cpInfo,
       });
     };
-    // Remove carpark from favourties or add carpark to favourties
+
+    /**
+     * When user presses "Favourites" button, adds carpark-destination pair to favourites list, or removes it from
+     * favourites list if already there
+     */
     const favouritesHandler = () => {
       const fav = new FavouritesTable();
       if (this.state.favourited) {
@@ -105,18 +133,21 @@ export default class CpSummaryScreen extends Component {
       }
       fav.createFavouritesTable();
     };
-    // Navigates to map feature screen
+
+    /**
+     * When user presses "Routes" button, directs user to MapsScreen
+     */
     const mapHandler = () => {
       this.#navigation.navigate("Maps", {
         cpInfo: this.#cpInfo,
         locationInfo: this.#locationInfo,
       });
     };
+
     return (
       <View
         style={{
           flex: 1,
-          // padding: 20,
           alignItems: "center",
           backgroundColor: "white",
         }}

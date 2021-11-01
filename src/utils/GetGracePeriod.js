@@ -1,7 +1,13 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-// Gets the grace period for carparks
+/**
+ * Gets grace period for carparks
+ */
 export default class GetGracePeriod {
+  /**
+   * Sets value of grace period for carparks in selected table
+   * @param {number} index 1 for favourites table, 0 for nearbyCpInfo table
+   */
   getGracePeriod(index) {
     var query;
     index = 0

@@ -1,5 +1,3 @@
-// Displays list of favourited carparks/locations
-
 import React, { Component } from "react";
 import {
   Button,
@@ -23,6 +21,14 @@ import {
 } from "../components/MapMarkerInfo";
 import WebView from "react-native-webview";
 
+/**
+ * Displays integrated map with routes from current location to carpark, as well as from carpark to final destination
+ * @property {Object} cpInfo Carpark information received from CpSummaryScreen
+ * @property {Object} locationInfo Location information receieved from CpSummaryScreen
+ * @property {String[]} cpLatLong Separated latitude and longitude values of carpark
+ * @property {String[]} locationLatLong Separated latitude and longitude values of user's final destination
+ * @property {String[]} currentLocationLatLong Separated latitude and longitude values of user's current location
+ */
 export default class MapsScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
@@ -43,6 +49,10 @@ export default class MapsScreen extends Component {
     };
   }
 
+  /**
+   * Displays UI components of screen
+   * Sets values of map compnents to be used in ExpoLeaflet
+   */
   render() {
     const routeDecoder = new RouteDecoder();
     const polylinePos = routeDecoder.routeDecoder(
@@ -142,6 +152,10 @@ export default class MapsScreen extends Component {
       }
     }
 
+    /**
+     * When user clicks on mapmarker, calls function to display corresponding location information
+     * @param {*} message Message received when user interacts with ExpoLeaflet
+     */
     const onMessage = (message) => {
       switch (message.tag) {
         case "onMapMarkerClicked":
@@ -155,15 +169,31 @@ export default class MapsScreen extends Component {
           this.setState({ isVisible: true });
       }
     };
+
+    /**
+     * When user clicks on carpark mapmarker, displays carpark's location information
+     */
     const displayCpInfo = () => {
       this.setState({ display: 0 });
     };
+
+    /**
+     * When user clicks on current location mapmarker, displays current location's location information
+     */
     const displayCurrentLocationInfo = () => {
       this.setState({ display: 1 });
     };
+
+    /**
+     * When user clicks on destination mapmarker, displays destination's location information
+     */
     const displayLocationInfo = () => {
       this.setState({ display: 2 });
     };
+
+    /**
+     * When user clicks on "Details" button, displays each route's name
+     */
     const displayRouteDetails = () => {
       this.setState({ details: true });
       console.log("details");

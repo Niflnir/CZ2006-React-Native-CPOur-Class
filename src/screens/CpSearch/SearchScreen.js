@@ -1,8 +1,3 @@
-// Allows user to input destination and displays suggestions
-// User can click on suggested item and will be redirected back to CpSearchScreen
-
-// TO DO: add clear button so don't need to backspace all the way if want to clear input address
-
 import React, { Component, createRef } from "react";
 import {
   View,
@@ -21,10 +16,20 @@ import { Icon } from "react-native-elements";
 
 db = SQLite.openDatabase("cpour.db");
 
+/**
+ * Screen that allows user to input destination (or select current location)
+ * Displays recently searched destinations as well as autocomplete suggestions for user to select
+ * @property {Object[]} locationList List of destinations to be displayed in ScrollView
+ * @property {Object[]} searchHistory List of recently searched destinations to be displayed in ScrollView
+ * @property {boolean} rendered Whether or not the screen has been rendered
+ * @property {defaultAddress}  defaultAddress The default value to be set on the textInput search bar
+ * @property {NearbyCpInfoTable} nearbyCpInfoTable Object of NearbyCpInfoTable class
+ * @property {React.RefObject<any>} textInputRef Reference of textInput search bar
+ */
 export default class SearchScreen extends Component {
   #navigation = this.props.navigation;
-  #locationList = { data: [], latLong: { To: "", From: "" } };
-  #searchHistory;
+  #locationList = [];
+  #searchHistory = [];
   #rendered = false;
   #defaultAddress = this.props.route.params.defaultValue;
   #nearbyCpInfoTable = new NearbyCpInfoTable();
@@ -46,21 +51,32 @@ export default class SearchScreen extends Component {
     if (!this.#rendered) {
       this.#rendered = true;
       db.transaction((tx) => {
-        // to display search history + current location option when no input
         tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
           this.#searchHistory = results.rows["_array"];
-          this.#locationList["data"] = this.#searchHistory;
+          this.#locationList = this.#searchHistory;
           this.setState({ list: this.#searchHistory, sHistory: true });
         });
       });
     }
   }
 
+  /**
+   * Displays UI components of screen
+   */
   render() {
+    /**
+     * Opens side bar menu (Profile page) when user clicks three-line menu button on top left
+     */
     const openMenu = () => {
       this.#navigation.openDrawer();
     };
-    // updates value of address every time user inputs or deletes a character
+
+    /**
+     * Updates value of address every time user inputs or deletes a character
+     * Displays list of recently searched destinations if no user input or calls addressSubmitHandler if there is input
+     *
+     * @param {string} address Characters input by user into textInput search bar
+     */
     const addressHandler = (address) => {
       this.setState({ address: address });
       if (address == "") {
@@ -68,8 +84,7 @@ export default class SearchScreen extends Component {
         db.transaction((tx) => {
           tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
             this.#searchHistory = results.rows["_array"];
-            // console.log(searchHistory);
-            this.#locationList["data"] = this.#searchHistory;
+            this.#locationList = this.#searchHistory;
             this.setState({ list: this.#searchHistory });
           });
         });
@@ -78,7 +93,11 @@ export default class SearchScreen extends Component {
       }
     };
 
-    // to retrieve address information from API using GetData()
+    /**
+     * Retrieves address information from OneMap Search API and sets results to ScrollView
+     * @param {string} address Address input by user into textInput search bar
+     */
+
     const addressSubmitHandler = async (address) => {
       const URL =
         "https://developers.onemap.sg/commonapi/search?searchVal=" +
@@ -94,27 +113,23 @@ export default class SearchScreen extends Component {
             // if no results
             this.setState({ list: [] });
           } else {
-            this.#locationList["data"] = data["results"];
-            this.#locationList["latLong"] =
-              data["results"][0]["LATITUDE"] +
-              "," +
-              data["results"][0]["LONGITUDE"];
-            this.#locationList["latLong"]["error"] = "";
-            this.setState({ list: this.#locationList["data"] });
+            this.#locationList = data["results"];
+
+            this.setState({ list: this.#locationList });
           }
         })
         .catch((error) => {
-          this.#locationList["latLong"]["error"] = error;
-          this.#locationList["latLong"] = "";
-          this.#locationList["data"] = [];
+          this.#locationList = [];
         });
 
       await resultPromise;
       return;
     };
 
-    // when user selects a specific address result from the suggestions list
-    // app redirects user back to CpSearchScreen and sends the address info as parameters
+    /**
+     * When user selects a specific address result from the suggestions list, redirects user back to CpSearchScreen and sends the address info as parameters
+     * @param {Object} item Single autocomplete suggestion's data
+     */
     const selectItem = (item) => {
       this.#nearbyCpInfoTable.recreateNearbyCpInfoTable();
       const searchHistoryTable = new SearchHistoryTable();
@@ -128,19 +143,24 @@ export default class SearchScreen extends Component {
       );
     };
 
+    /**
+     * When user selects "Current location" button, redirects user back to CpSearchScreen and sends "Current location" as parameters
+     */
     const sendCurrentLocation = () => {
       this.#navigation.navigate("CpSearch", {
         data: { BUILDING: "Current location" },
       });
     };
 
-    // if no building name, display address as heading
+    /**
+     * If address information does not contain building name, returns road name
+     * @param {Object} item Data of individual carpark
+     * @returns {String} Building or road name
+     */
     const listHeading = (item) => {
       return item["BUILDING"] != "NIL" ? item["BUILDING"] : item["ROAD_NAME"];
     };
-
     return (
-      // <View keyboardShouldPersistTap="always" style={styles.containerWhite}>
       <View
         keyboardShouldPersistTap="always"
         style={{ backgroundColor: "white", flex: 1 }}
@@ -186,7 +206,7 @@ export default class SearchScreen extends Component {
         >
           {this.state.list.map((item) => (
             <TouchableOpacity
-              key={this.#locationList["data"].findIndex(
+              key={this.#locationList.findIndex(
                 (obj) => obj["ADDRESS"] == item["ADDRESS"]
               )}
               style={styles.containerListItems}

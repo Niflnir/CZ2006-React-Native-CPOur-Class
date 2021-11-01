@@ -23,17 +23,39 @@ import FavouritesTable from "../../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
 db = SQLite.openDatabase("cpour.db");
 
+/**
+ * Application screen that prompts user to input destination and displays nearby carparks
+ * @property {Object} info Location information of user's input destination
+ * @property {Object} info.locationData Data retrieved from OneMap Search API by SearchScreen
+ * @property {string} info.latLong Latitude and longitude of user's input destination
+ * @property {string} info.address Address of user's input destination
+ * @property {string} info.currentLatLong Latitude and longitude of user's current location
+ * @property {string} info.currentPostalCode Postal code of user's current location
+ * @property {string} info.postal Postal code of user's input destination
+ * @property {boolean} rendered Whether or not the screen has been rendered
+ * @property {string} status Whether or not location permissions have been granted by user
+ * @property {boolean} loading Whether or not the carpark list is loading
+ * @property {boolean} displaying Whether or not the carpark list is being displayed
+ * @property {boolean} loading Whether or not the carpark list is loading
+ * @property {LocationServices} getLocationServices Object of LocationServices class
+ * @property {SearchHistoryTable} searchHistoryTable Object of SearchHistoryTable class
+ * @property {CpInfoTable} cpInfoTable Object of CpInfoTable class
+ * @property {string[]} buttons Sorting option names used as button titles
+ * @property {number} sortOption Index of user's selected sort criteria
+ * @property {boolean[]} filterOption Whether or not each filter criteria available has been selected by user
+ *
+ */
 export default class MainSearchScreen extends Component {
   #info = {
     locationData: {},
-    latLong: {},
+    latLong: "",
     address: "",
     currentLatLong: "",
     currentPostalCode: "",
     postal: "",
   };
   #rendered = false;
-  #status = {};
+  #status = "";
   #loading = false;
   #displaying = false;
   #navigation = this.props.navigation;
@@ -55,7 +77,7 @@ export default class MainSearchScreen extends Component {
 
   componentDidMount() {
     this.#getLocationServices
-      .getLocationPermission() // to get user's permission to access location services
+      .getLocationPermission()
       .then((data) => {
         this.#status = data;
       })
@@ -65,9 +87,11 @@ export default class MainSearchScreen extends Component {
     this.#searchHistoryTable.createSearchHistoryTable();
     const fav = new FavouritesTable();
     fav.createFavouritesTable();
-    // fav.print();
   }
 
+  /**
+   * Sets list to be displayed in flatlist
+   */
   flListHandler() {
     const sortfilter = new SortFilter();
     const query = sortfilter.sortFilter(this.#sortOption, this.#filterOption);
@@ -80,12 +104,13 @@ export default class MainSearchScreen extends Component {
     });
   }
 
+  /**
+   * Stores relevant location information in respective variables
+   */
   async paramHandler() {
     this.#displaying = true;
     this.#loading = true;
-    // If user selects current location on SS
     if (this.#status !== "granted") {
-      // check if permission granted
       Alert.alert(
         "Warning",
         "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
@@ -93,7 +118,6 @@ export default class MainSearchScreen extends Component {
       return;
     }
     await this.#getLocationServices.getLocation().then((data) => {
-      // to get actual location of user
       this.#info.currentLatLong =
         JSON.stringify(data["coords"]["latitude"]) +
         "," +
@@ -101,7 +125,7 @@ export default class MainSearchScreen extends Component {
 
       const getData = new GetData();
       const TOKEN =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzUyNTY3MTAsImV4cCI6MTYzNTY4ODcxMCwibmJmIjoxNjM1MjU2NzEwLCJqdGkiOiIwMjkzY2ZkYTc4NzFjNTY5NTgwMjkxMDNmN2I4NmM1NCJ9.Ppc_NQFKw5NOkzjNP1xXE8S35dq9faiwzAwlv9GPEek";
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzU3MzcxMjksImV4cCI6MTYzNjE2OTEyOSwibmJmIjoxNjM1NzM3MTI5LCJqdGkiOiJhZmRlYWY3NGFkMzQ0N2UyZWYxMDYyMDM3ZDMxNWVkOCJ9.6qBuGpDCg4T_MEHqR1SQqKIQnWCXfEbVLq6YCt2_LB0";
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         this.#info.currentLatLong +
@@ -135,7 +159,7 @@ export default class MainSearchScreen extends Component {
     this.setState({
       txtStyle: true,
       defaultAddress: this.#info["locationData"]["ADDRESS"],
-    }); // change font to black, set address on search bar
+    });
 
     setTimeout(() => {
       const nearbyCpInfoTable = new NearbyCpInfoTable();
@@ -143,9 +167,9 @@ export default class MainSearchScreen extends Component {
         this.#info["latLong"],
         this.#info.currentLatLong
       );
-    }, 3000); ///////////////////////////////////// figure out a better way
+    }, 3000);
 
-    setTimeout(() => this.flListHandler(), 9000); ///////////////////////////////////////////// figure out a better way
+    setTimeout(() => this.flListHandler(), 9000);
   }
 
   componentDidUpdate() {
@@ -155,10 +179,13 @@ export default class MainSearchScreen extends Component {
     }
   }
 
+  /**
+   * Displays UI components of screen
+   */
   render() {
-    // fav.createFavouritesTable();
-    // setTimeout(() => fav.setFavouritesFromFb(), 1000);
-    // // setTimeout(() => fav.print(), 5000);
+    /**
+     * Navigates to SearchScreen when user presses search bar
+     */
     const onPressDestinationHandler = () => {
       this.#navigation.navigate("SearchSuggestions", {
         defaultValue: this.#info["address"],
@@ -166,6 +193,10 @@ export default class MainSearchScreen extends Component {
       this.#rendered = false;
     };
 
+    /**
+     * Navigates to CpSummaryScreen when user selects carpark from list
+     * @param {Object} item Data of carpark that has been selected by user
+     */
     const selectItem = (item) => {
       this.#navigation.navigate("Summary", {
         cpInfo: item,
@@ -174,6 +205,11 @@ export default class MainSearchScreen extends Component {
       });
     };
 
+    /**
+     * Sets styling and data of each item to be displayed in flatlist and returns styled data
+     * @param {*} item Data of individual carparks to be displayed in flatlist
+     * @returns {Object} Styled UI component
+     */
     const renderListItems = ({ item }) => {
       var sortColor;
       if (this.#sortOption == 0) {
@@ -298,11 +334,21 @@ export default class MainSearchScreen extends Component {
         </View>
       );
     };
+
+    /**
+     * Sets value of sortOption when user selects specific sort criteria and calls flListHandler() to reload carpark list
+     * @param {number} selectedIndex Index of sort button selected
+     */
     const onPress = (selectedIndex) => {
       this.#sortOption = selectedIndex;
       this.flListHandler();
     };
 
+    /**
+     * Sets value of filterOption when user selects specific filter criteria and calls flListHandler() to reload carpark list
+     * @param {string} title Title of filter button selected by user
+     * @param {number} index Index of filter button selected by user
+     */
     const onPressChip = (title, index) => {
       var temp = [...this.#filterOption];
       temp[index] = !this.#filterOption[index];
@@ -310,6 +356,9 @@ export default class MainSearchScreen extends Component {
       this.flListHandler();
     };
 
+    /**
+     * Opens side bar menu (Profile page) when user clicks three-line menu button on top left
+     */
     const openMenu = () => {
       this.#navigation.openDrawer();
     };

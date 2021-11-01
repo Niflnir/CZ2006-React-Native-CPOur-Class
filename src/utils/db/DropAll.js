@@ -1,6 +1,8 @@
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-// Drop all info tables
+/**
+ * Deletes all tables in local database when user logs out of account
+ */
 export default class DropAll {
   dropAll() {
     db.transaction((tx) => {

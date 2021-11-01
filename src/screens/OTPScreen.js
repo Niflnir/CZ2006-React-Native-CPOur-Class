@@ -1,17 +1,9 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  Component,
-  createRef,
-} from "react";
+import React, { Component, createRef } from "react";
 import {
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Button,
   Image,
   Alert,
 } from "react-native";
@@ -19,14 +11,28 @@ import styles from "../styles/AppStyles";
 import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
 import {
-  addToFavourites,
   checkSignedIn,
   initializeFavourites,
   setSignedIn,
-  setSignedOut,
 } from "../utils/DbServices";
 
 export default class OTPScreen extends Component {
+  /**
+   * Sends out OTP to user's input phone number, prompts user to enter OTP, and verifies OTP
+   * @property {React.RefObject<any>} ref1 Reference of first OTP digit's textInput
+   * @property {React.RefObject<any>} ref2 Reference of second OTP digit's textInput
+   * @property {React.RefObject<any>} ref3 Reference of third OTP digit's textInput
+   * @property {React.RefObject<any>} ref4 Reference of fourth OTP digit's textInput
+   * @property {React.RefObject<any>} ref5 Reference of fifth OTP digit's textInput
+   * @property {React.RefObject<any>} ref6 Reference of sixth OTP digit's textInput
+   * @property {String[]} otpArray Individual OTP digits entered by user
+   * @property {Object} FIREBASE_CONFIG Stores firebase project's configuration data
+   * @property {React.RefObject<any>} recaptchaVerifier Reference of FirebaseRecaptchaVerifierModal
+   * @property {string} phoneNumber User's input phone number receieved from WelcomeScreen
+   * @property {*} temp Temporary variable used for timer
+   * @property {string} verificationId Encrypted OTP sent out to user's phone number, used to verify user's input OTP
+   *
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -56,7 +62,6 @@ export default class OTPScreen extends Component {
   #navigation = this.props.navigation;
   #phoneNumber = this.props.route.params.phoneNumber;
   #temp;
-  // #phoneNumber = "81962165";
   #verificationId = "";
   componentDidMount() {
     try {
@@ -68,6 +73,10 @@ export default class OTPScreen extends Component {
     }
     this.sendOTP();
   }
+
+  /**
+   * Sends OTP to user's input phone number and starts timer for OTP expiry
+   */
   async sendOTP() {
     if (this.ref1.current) {
       setTimeout(() => this.ref1.current.focus(), 200);
@@ -94,6 +103,9 @@ export default class OTPScreen extends Component {
     }
   }
 
+  /**
+   * Timer for OTP expiry
+   */
   async timer() {
     for (var i = 0; i < 60; i++) {
       this.#temp = setTimeout(
@@ -103,6 +115,9 @@ export default class OTPScreen extends Component {
     }
   }
 
+  /**
+   * Verifies and validates OTP entered by OTP and displays corresponding error message if validation fails
+   */
   async verifyOTP() {
     clearTimeout(this.#temp);
     var otp = [];
@@ -133,7 +148,13 @@ export default class OTPScreen extends Component {
     }
   }
 
+  /**
+   * Displays UI components of screen
+   */
   render() {
+    /**
+     * When user presses "Verify OTP" button, calls verifyOTP() function or displays error message if OTP expired
+     */
     const onPressBtn = () => {
       if (this.state.timeLeft == 0) {
         Alert.alert(
@@ -145,9 +166,18 @@ export default class OTPScreen extends Component {
       this.verifyOTP();
     };
 
+    /**
+     * Resends OTP if user presses "Resend OTP button"
+     */
     const resendOTP = () => {
       this.sendOTP();
     };
+
+    /**
+     * Updates value of each OTP digit whenever inputs or delets a character
+     * @param {number} digit Digit input by user
+     * @param {number} index Index of textInput in which user input digit
+     */
     const onOTPInput = (digit, index) => {
       const refs = [
         this.ref1,

@@ -1,4 +1,13 @@
+/**
+ * Decodes route_geometry
+ */
+
 export default class RouteDecoder {
+  /**
+   * Decodes route_geometry of carparks
+   * @param {Object} route_info
+   * @returns {Array} Latitude and longitude values of route, and route name
+   */
   routeDecoder(route_info) {
     var polyUtil = require("polyline-encoded");
     var encoded = route_info.route_geometry;

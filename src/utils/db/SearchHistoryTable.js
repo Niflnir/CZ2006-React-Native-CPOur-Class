@@ -1,8 +1,13 @@
 import * as SQLite from "expo-sqlite";
 
 db = SQLite.openDatabase("cpour.db");
-// Create table for search history
+/**
+ * Manages searchHistoryTable in local database to store recently searched destinations
+ */
 export default class SearchHistoryTable {
+  /**
+   * Creates new searchHistoryTable is not already existing
+   */
   createSearchHistoryTable() {
     console.log("creating searchHistoryTable");
     db.transaction((tx) => {
@@ -19,21 +24,12 @@ export default class SearchHistoryTable {
           "X character varying," +
           "Y character varying)"
       );
-
-      // tx.executeSql(
-      //   "SELECT COUNT(*) FROM (SELECT 0 FROM searchHistory LIMIT 1)",
-      //   [],
-      //   (tx, results) => {
-      //     if (results.rows.item(0)["COUNT(*)"] == 0) {
-      //       tx.executeSql(
-      //         "INSERT INTO searchHistory (BUILDING) VALUES ('Current location');"
-      //       );
-      //     }
-      //   }
-      // );
     });
   }
 
+  /**
+   * Drops existing searchHistoryTable
+   */
   dropSearchHistoryTable() {
     db.transaction((tx) => {
       tx.executeSql("DROP TABLE searchHistory;");
@@ -41,6 +37,10 @@ export default class SearchHistoryTable {
     });
   }
 
+  /**
+   * Adds new destination info to searchHistoryTable whenever user searches new destination
+   * @param {*} locationInfo Location information of selected destination
+   */
   setSearchHistoryTable(locationInfo) {
     db.transaction((tx) => {
       tx.executeSql(
