@@ -8,7 +8,7 @@ export default class GetLots {
   #lotData;
   /**
    * Uses GetData.getData() to make API call and store carpark lot availability data
-   * @returns {Object[]} Data retrieved from API
+   * @returns {*} Data retrieved from API
    */
   async getLots() {
     console.log("getting lot availability");

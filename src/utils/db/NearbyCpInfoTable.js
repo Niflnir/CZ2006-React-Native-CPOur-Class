@@ -46,13 +46,14 @@ export default class NearbyCpInfoTable {
    * @param {string} toLatLong Latitude and longitude values of destination
    * @param {string} currentLatLong Latitude and longitude values of user's current location
    */
+
   async setTable(toLatLong, currentLatLong) {
     console.log("getting");
     const getLots = new GetLots();
-    const lotData = getLots.getLots();
+    const lotData = await getLots.getLots();
 
     /**
-     *
+     * Gets distance between two points
      * @param {string} toLatLong Latitude and longitude values of end point
      * @param {string} fromLatLong Latitude and longitude values of start point
      * @returns {number} Distance between start and end points in km
@@ -86,12 +87,8 @@ export default class NearbyCpInfoTable {
 
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM cpInfo;", [], async (tx, results) => {
-        /**
-         *To iterate through every carpark in database, find distance from destination, and store nearby carparks
-         * @param {number} low Starting index of loop iteration
-         * @param {number} high Ending index of loop iteration
-         */
-        function distanceHandler(low, high) {
+        // to iterate through every carpark in database, find distance from destination, and store nearby carparks
+        const distanceHandler = (low, high) => {
           for (var i = low; i < high; i++) {
             var oneCP = results.rows.item(i);
             var distance = getDistance(toLatLong, oneCP.lat_long);
@@ -125,6 +122,7 @@ export default class NearbyCpInfoTable {
                     // console.log(results);
                   }
                 );
+                // to store distance, time, and other route info
 
                 const getRoute = new GetRoute();
                 getRoute.getRoute(
@@ -149,7 +147,7 @@ export default class NearbyCpInfoTable {
               console.log("done getting");
             }
           }
-        }
+        };
         distanceHandler(0, 1000);
         setTimeout(() => {
           distanceHandler(1000, 2162);
