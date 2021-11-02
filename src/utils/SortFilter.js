@@ -9,7 +9,7 @@ export default class SortFilter {
    * @returns {String} Query to be made to database `for selected sort/filter options
    */
   sortFilter(sortOption, filterOption) {
-    var sortQuery = "";
+    var sortQuery = "c_lots_available DESC";
     var filterQueryArray = [];
     var filterQuery = "";
     const filterQueryOptions = [
@@ -21,24 +21,18 @@ export default class SortFilter {
       "type_of_parking_system == 'COUPON PARKING'",
     ];
 
-    if (sortOption == 0) {
-      sortQuery = "c_lots_available DESC";
-    } else if (sortOption == 1) {
+    if (sortOption == 1) {
       sortQuery = "total_distance ASC";
-    } else {
+    } else if (sortOption == 2) {
       sortQuery = "c_parking_rates_current ASC";
-    }
-
-    for (var i = 0; i < 6; i++) {
-      if (filterOption[i] == false) {
-        filterQueryArray.push(filterQueryOptions[i]);
-      }
     }
 
     if (filterQueryArray.length > 0) {
       filterQuery = "WHERE " + filterQueryArray[0];
-      for (var i = 1; i < filterQueryArray.length; i++) {
-        filterQuery += " AND " + filterQueryArray[i];
+      for (var i = 1; i < 6; i++) {
+        if (filterOption[i] == false) {
+          filterQuery += " AND " + filterQueryOptions[i];
+        }
       }
     }
 
