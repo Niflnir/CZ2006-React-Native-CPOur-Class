@@ -53,10 +53,8 @@ export default class ParkingRates {
               time >= 1300 &&
               time <= 2230)
           ) {
-            console.log("free");
             cParkingRateRN = 0;
           } else {
-            console.log("no free");
             if (centralArea.includes(cpInfo["car_park_no"])) {
               cParkingRateGeneral["MonSat7To5"] = 1.2;
               cParkingRateGeneral["Other"] = 0.6;
@@ -73,7 +71,6 @@ export default class ParkingRates {
             }
           }
           cParkingRateGeneral["free_parking"] = cpInfo["free_parking"];
-          console.log(queries);
           tx.executeSql(queries[1], [
             JSON.stringify(cParkingRateGeneral),
             cpInfo["car_park_no"],

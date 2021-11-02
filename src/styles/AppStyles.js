@@ -495,7 +495,6 @@ const styles = StyleSheet.create({
   txtMapRouteDetails: {
     color: "white",
     fontSize: 15,
-    letterSpacing: 1,
     textAlign: "center",
   },
   txtMapLocationHeadings: {

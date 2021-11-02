@@ -22,6 +22,7 @@ import {
 } from "../utils/DbServices";
 import { Icon } from "react-native-elements";
 import FavouritesTable from "../utils/db/FavouritesTable";
+import NearbyPgsTable from "../utils/db/NearbyPgsTable";
 
 /**
  * Displays detailed carpark information summary and allows user access to favourites, budgeting, and journey planning features
@@ -45,6 +46,12 @@ export default class CpSummaryScreen extends Component {
         this.#locationInfo.postal
       ),
     };
+  }
+
+  componentDidMount() {
+    const nearbyPgsTable = new NearbyPgsTable();
+    // nearbyPgsTable.drop();
+    nearbyPgsTable.createNearbyPgsTable(this.#cpInfo.lat_long);
   }
 
   /**

@@ -42,6 +42,39 @@ export default class NearbyCpInfoTable {
   }
 
   /**
+   * Gets distance between two points
+   * @param {string} toLatLong Latitude and longitude values of end point
+   * @param {string} fromLatLong Latitude and longitude values of start point
+   * @returns {number} Distance between start and end points in km
+   */
+  getDistance(toLatLong, fromLatLong) {
+    const deg2rad = (deg) => {
+      return deg * (Math.PI / 180);
+    };
+
+    var toLatLongSep = toLatLong.split(",");
+    var lat1 = parseFloat(toLatLongSep[0]);
+    var long1 = parseFloat(toLatLongSep[1]);
+
+    var fromLatLongSep = fromLatLong.split(",");
+    var lat2 = parseFloat(fromLatLongSep[0]);
+    var long2 = parseFloat(fromLatLongSep[1]);
+    // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1);
+    var dLong = deg2rad(long2 - long1);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLong / 2) *
+        Math.sin(dLong / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return d;
+  }
+
+  /**
    * Iterates through cpInfo table to find carparks in vicinity of users input destination and stores route info in nearbyCpInfo table
    * @param {string} toLatLong Latitude and longitude values of destination
    * @param {string} currentLatLong Latitude and longitude values of user's current location
@@ -52,46 +85,13 @@ export default class NearbyCpInfoTable {
     const getLots = new GetLots();
     const lotData = await getLots.getLots();
 
-    /**
-     * Gets distance between two points
-     * @param {string} toLatLong Latitude and longitude values of end point
-     * @param {string} fromLatLong Latitude and longitude values of start point
-     * @returns {number} Distance between start and end points in km
-     */
-    function getDistance(toLatLong, fromLatLong) {
-      const deg2rad = (deg) => {
-        return deg * (Math.PI / 180);
-      };
-
-      var toLatLongSep = toLatLong.split(",");
-      var lat1 = parseFloat(toLatLongSep[0]);
-      var long1 = parseFloat(toLatLongSep[1]);
-
-      var fromLatLongSep = fromLatLong.split(",");
-      var lat2 = parseFloat(fromLatLongSep[0]);
-      var long2 = parseFloat(fromLatLongSep[1]);
-      // https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
-      var R = 6371; // Radius of the earth in km
-      var dLat = deg2rad(lat2 - lat1);
-      var dLong = deg2rad(long2 - long1);
-      var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) *
-          Math.cos(deg2rad(lat2)) *
-          Math.sin(dLong / 2) *
-          Math.sin(dLong / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c; // Distance in km
-      return d;
-    }
-
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM cpInfo;", [], async (tx, results) => {
         // to iterate through every carpark in database, find distance from destination, and store nearby carparks
         const distanceHandler = (low, high) => {
           for (var i = low; i < high; i++) {
             var oneCP = results.rows.item(i);
-            var distance = getDistance(toLatLong, oneCP.lat_long);
+            var distance = this.getDistance(toLatLong, oneCP.lat_long);
 
             if (distance < 0.6) {
               // estimate of nearby carpark (note: distance is not proper route, only straight line)

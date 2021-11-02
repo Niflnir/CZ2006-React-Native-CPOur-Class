@@ -42,7 +42,7 @@ export default class WelcomeScreen extends Component {
     const onPressContinueHandler = () => {
       if (
         this.state.phoneNumber.length != 8 ||
-        this.state.phoneNumber.isNaN ||
+        isNaN(this.state.phoneNumber) ||
         !["3", "6", "8", "9"].includes(this.state.phoneNumber.charAt(0))
       ) {
         Alert.alert(

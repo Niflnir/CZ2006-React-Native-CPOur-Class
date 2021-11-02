@@ -15,6 +15,7 @@ import {
   initializeFavourites,
   setSignedIn,
 } from "../utils/DbServices";
+import NearbyCpInfoTable from "../utils/db/NearbyCpInfoTable";
 
 export default class OTPScreen extends Component {
   /**
@@ -133,6 +134,8 @@ export default class OTPScreen extends Component {
       this.setState({ verificationId: "", verificationCode: "" });
       const signedIn = checkSignedIn();
       if (!signedIn) {
+        const nearbyCpInfoTable = new NearbyCpInfoTable();
+        nearbyCpInfoTable.createNearbyCpInfoTable();
         initializeFavourites();
         setSignedIn();
         this.#navigation.navigate("CpSearch");

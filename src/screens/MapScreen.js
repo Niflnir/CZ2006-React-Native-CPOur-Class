@@ -18,8 +18,11 @@ import {
   CpMarkerInfo,
   CurrentMarkerInfo,
   DestinationMarkerInfo,
+  PgsMarkerInfo,
 } from "../components/MapMarkerInfo";
 import WebView from "react-native-webview";
+import * as SQLite from "expo-sqlite";
+db = SQLite.openDatabase("cpour.db");
 
 /**
  * Displays integrated map with routes from current location to carpark, as well as from carpark to final destination
@@ -35,17 +38,20 @@ export default class MapsScreen extends Component {
   #cpLatLong = this.#cpInfo.lat_long.split(",");
   #locationLatLong = this.#locationInfo.latLong.split(",");
   #currentLocationLatLong = this.#locationInfo.currentLatLong.split(",");
+  #mapMarkersPgs = [];
+  #pgsInfo = [];
+  #pgsInfo2 = [];
 
   constructor(props) {
     super(props);
     this.state = {
       isVisible: false,
-      display: -1,
+      display: -3,
       details: false,
-      amenities: false,
-      expandDetails: false,
+      pgs: false,
       whichRoute: -1,
       zoom: 13,
+      showBtn: true,
     };
   }
 
@@ -54,6 +60,35 @@ export default class MapsScreen extends Component {
    * Sets values of map compnents to be used in ExpoLeaflet
    */
   render() {
+    var mapMarkersPgs = [];
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM nearbyPgs",
+        [],
+        (tx, results) => {
+          this.#pgsInfo = results.rows._array;
+          this.#pgsInfo2 = results.rows._array;
+          for (var i = 0; i < results.rows._array.length; i++) {
+            const onePgs = results.rows.item(i);
+            const onePgsLat = onePgs.latLong.split(",")[0];
+            const onePgsLong = onePgs.latLong.split(",")[1];
+            var mapMarkerPgs = {
+              id: i + 1,
+              position: {
+                lat: onePgsLat,
+                lng: onePgsLong,
+              },
+              icon: "⛽",
+              size: [20, 20],
+            };
+
+            mapMarkersPgs.push(mapMarkerPgs);
+            this.#mapMarkersPgs = mapMarkersPgs;
+          }
+        },
+        (tx, error) => console.log("Map db error: ", error)
+      );
+    });
     const routeDecoder = new RouteDecoder();
     const polylinePos = routeDecoder.routeDecoder(
       JSON.parse(this.#cpInfo.route_info)
@@ -66,7 +101,7 @@ export default class MapsScreen extends Component {
           lat: parseFloat(this.#cpLatLong[0]),
           lng: parseFloat(this.#cpLatLong[1]),
         },
-        icon: "📍",
+        icon: "🚗",
         size: [35, 35],
       },
       {
@@ -75,7 +110,7 @@ export default class MapsScreen extends Component {
           lat: parseFloat(this.#locationLatLong[0]),
           lng: parseFloat(this.#locationLatLong[1]),
         },
-        icon: "📍",
+        icon: "🚩",
         size: [35, 35],
       },
     ];
@@ -127,7 +162,7 @@ export default class MapsScreen extends Component {
           ...mapShape,
           {
             shapeType: "polyline",
-            color: "red",
+            color: "maroon",
             weight: 4,
             id: polylinePosAlt[1],
             positions: polylinePosAlt[0],
@@ -163,10 +198,12 @@ export default class MapsScreen extends Component {
             displayCpInfo();
           } else if (message.mapMarkerId == "Current Location") {
             displayCurrentLocationInfo();
-          } else {
+          } else if (message.mapMarkerId == "Location") {
             displayLocationInfo();
+          } else {
+            displayPgsInfo(message.mapMarkerId);
           }
-          this.setState({ isVisible: true });
+          this.setState({ isVisible: true, showBtn: false });
       }
     };
 
@@ -181,14 +218,21 @@ export default class MapsScreen extends Component {
      * When user clicks on current location mapmarker, displays current location's location information
      */
     const displayCurrentLocationInfo = () => {
-      this.setState({ display: 1 });
+      this.setState({ display: -1 });
     };
 
     /**
      * When user clicks on destination mapmarker, displays destination's location information
      */
     const displayLocationInfo = () => {
-      this.setState({ display: 2 });
+      this.setState({ display: -2 });
+    };
+    /**
+     * When user clicks on petrol station mapmarker, displays petrol station's location information
+     */
+    const displayPgsInfo = (id) => {
+      console.log(id);
+      this.setState({ display: id });
     };
 
     /**
@@ -196,20 +240,10 @@ export default class MapsScreen extends Component {
      */
     const displayRouteDetails = () => {
       this.setState({ details: true });
-      console.log("details");
     };
 
-    const displayAmenities = () => {
-      this.setState({ amenities: true });
-      // fetch(
-      //   "https://www.edgeprop.sg/analytic/amenities?c=" +
-      //     this.#cpInfo.lat_long +
-      //     "&d=500"
-      // )
-      //   .then((response) => response.text())
-      //   .then((text) => console.log(text));
-
-      console.log("amenities");
+    const displayPgs = () => {
+      this.setState({ pgs: true });
     };
 
     var titles = [];
@@ -240,7 +274,9 @@ export default class MapsScreen extends Component {
                 ? mapShape.splice(1)
                 : [mapShape[this.state.whichRoute]]
             }
-            mapMarkers={mapMarker}
+            mapMarkers={
+              this.state.pgs ? this.#mapMarkersPgs.concat(mapMarker) : mapMarker
+            }
             mapCenterPosition={{
               lat: parseFloat(this.#cpLatLong[0]),
               lng: parseFloat(this.#cpLatLong[1]),
@@ -250,34 +286,39 @@ export default class MapsScreen extends Component {
 
           {this.state.isVisible ? (
             <BottomSheet
-              bottomSheetHeight={Dimensions.get("window").height * 0.3}
+              bottomSheetHeight={Dimensions.get("window").height * 0.35}
               show={this.state.isVisible}
-              onDismiss={() => this.setState({ isVisible: false })}
+              onDismiss={() =>
+                this.setState({ isVisible: false, showBtn: false })
+              }
               enableBackdropDismiss
             >
               {this.state.display == 0 ? (
                 <CpMarkerInfo cpInfo={this.#cpInfo} />
-              ) : this.state.display == 1 ? (
+              ) : this.state.display == -1 ? (
                 <CurrentMarkerInfo locationInfo={this.#locationInfo} />
-              ) : (
+              ) : this.state.display == -2 ? (
                 <DestinationMarkerInfo locationInfo={this.#locationInfo} />
+              ) : (
+                <PgsMarkerInfo
+                  info={[
+                    this.#pgsInfo2[this.state.display - 1],
+                    this.#currentLocationLatLong,
+                  ]}
+                />
               )}
             </BottomSheet>
-          ) : (
+          ) : this.state.showBtn ? (
             <BtnRouteDetails
               onPressRoute={displayRouteDetails}
-              onPressAmenities={displayAmenities}
+              onPressPgs={displayPgs}
             />
-          )}
+          ) : undefined}
           {this.state.details ? (
             <BottomSheet
-              bottomSheetHeight={
-                this.state.expandDetails
-                  ? Dimensions.get("window").height * 0.97
-                  : Dimensions.get("window").height * 0.3
-              }
+              bottomSheetHeight={Dimensions.get("window").height * 0.3}
               show={this.state.details}
-              onDismiss={() => this.setState({ details: false })}
+              onDismiss={() => this.setState({ details: false, showBtn: true })}
               enableBackdropDismiss
             >
               <ScrollView>
@@ -322,21 +363,38 @@ export default class MapsScreen extends Component {
               </ScrollView>
             </BottomSheet>
           ) : undefined}
-          {this.state.amenities ? (
+          {this.state.pgs ? (
             <BottomSheet
-              bottomSheetHeight={Dimensions.get("window").height * 0.97}
-              show={this.state.amenities}
-              onDismiss={() => this.setState({ amenities: false })}
+              bottomSheetHeight={
+                0.07 + 0.05 * this.#mapMarkersPgs.length <= 0.35
+                  ? Dimensions.get("window").height *
+                    (0.07 + 0.05 * this.#mapMarkersPgs.length)
+                  : Dimensions.get("window").height * 0.35
+              }
+              show={this.state.pgs}
+              onDismiss={() => this.setState({ pgs: false, showBtn: true })}
               enableBackdropDismiss
             >
-              <WebView
-                source={{
-                  uri:
-                    "https://www.edgeprop.sg/analytic/amenities?c=" +
-                    this.#cpInfo.lat_long +
-                    "&d=500",
-                }}
-              />
+              <Text style={styles.txtMapLocationHeadings}>Petrol Stations</Text>
+              <Text style={[styles.txtMapInfo, { fontWeight: "bold" }]}>
+                {this.#mapMarkersPgs.length} petrol station(s) found near
+                carpark
+              </Text>
+              <ScrollView>
+                {this.#pgsInfo.map((onePgs, index) => (
+                  <TouchableOpacity
+                    key={this.#pgsInfo.indexOf(onePgs)}
+                    onPress={() => {
+                      onMessage({
+                        tag: "onMapMarkerClicked",
+                        mapMarkerId: index + 1,
+                      });
+                    }}
+                  >
+                    <Text style={styles.txtMapInfo}>{onePgs.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </BottomSheet>
           ) : undefined}
         </View>

@@ -5,8 +5,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import styles from "../styles/AppStyles";
+import BtnRouteDetails from "./BtnRouteDetails";
 const CpMarkerInfo = (props) => {
   const cpInfo = props.cpInfo;
   return (
@@ -59,4 +61,48 @@ const DestinationMarkerInfo = (props) => {
   );
 };
 
-export { CpMarkerInfo, CurrentMarkerInfo, DestinationMarkerInfo };
+const PgsMarkerInfo = ({ info }) => {
+  const pgsInfo = info[0];
+  const currentLatLong = info[1];
+  const onPressPgsNav = (latLong) => {
+    const url = Platform.select({
+      ios: `maps:0,0?saddr=${currentLatLong}&daddr=${latLong}&directionsmode=driving`,
+      android: `google.navigation:q=${latLong}&mode=d`,
+    });
+    Linking.openURL(url);
+  };
+  return (
+    <View>
+      <Text style={styles.txtMapLocationHeadings}>Petrol Station</Text>
+
+      <Text style={styles.txtMapHeadings}>{pgsInfo.name}</Text>
+      <Text style={styles.txtMapHeadings}>{pgsInfo.address}</Text>
+      <Text style={styles.txtMapHeadings}>
+        {pgsInfo.total_distance.toFixed(3)} km from carpark
+      </Text>
+
+      <TouchableOpacity
+        style={[
+          styles.btnBudgetingCalculateGrey,
+          {
+            borderRadius: 40,
+
+            alignItems: "center",
+            marginVertical: 20,
+          },
+        ]}
+        onPress={() => onPressPgsNav(pgsInfo.latLong)}
+      >
+        <Text style={styles.txtBtnCpSummary1}>Start Navigation</Text>
+        <Text style={styles.txtBtnCpSummary1}>(Google Maps)</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export {
+  CpMarkerInfo,
+  CurrentMarkerInfo,
+  DestinationMarkerInfo,
+  PgsMarkerInfo,
+};

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Portal } from "react-native-paper";
 import styles from "../styles/AppStyles";
-const BtnRouteDetails = ({ onPressRoute, onPressAmenities }) => {
+const BtnRouteDetails = ({ onPressRoute, onPressPgs }) => {
   return (
     <Portal>
       <View style={styles.containerMapBtns}>
@@ -20,9 +20,9 @@ const BtnRouteDetails = ({ onPressRoute, onPressAmenities }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.btnMapRouteDetails}
-          onPress={onPressAmenities}
+          onPress={onPressPgs}
         >
-          <Text style={styles.txtMapRouteDetails}>Amenities</Text>
+          <Text style={styles.txtMapRouteDetails}>Petrol Stations</Text>
         </TouchableOpacity>
       </View>
     </Portal>

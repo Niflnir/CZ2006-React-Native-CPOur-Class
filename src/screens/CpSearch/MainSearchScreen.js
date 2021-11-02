@@ -21,6 +21,7 @@ import SortFilter from "../../utils/SortFilter";
 import GetData from "../../utils/api/GetData";
 import FavouritesTable from "../../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
+import PgsTable from "../../utils/db/PgsTable";
 db = SQLite.openDatabase("cpour.db");
 
 /**
@@ -45,6 +46,7 @@ export default class MainSearchScreen extends Component {
   #getLocationServices = new LocationServices();
   #searchHistoryTable = new SearchHistoryTable();
   #cpInfoTable = new CpInfoTable();
+
   #buttons = ["Vacancy", "Distance", "Parking Rate"];
   #sortOption = 0;
   #filterOption = [true, true, true, true, true];
@@ -59,6 +61,10 @@ export default class MainSearchScreen extends Component {
   }
 
   componentDidMount() {
+    const pgsTable = new PgsTable();
+    pgsTable.createPgsTable();
+    // pgsTable.drop();
+
     this.#getLocationServices
       .getLocationPermission()
       .then((data) => {
@@ -152,7 +158,7 @@ export default class MainSearchScreen extends Component {
       );
     }, 3000);
 
-    setTimeout(() => this.flListHandler(), 9000);
+    setTimeout(() => this.flListHandler(), 11000);
   }
 
   componentDidUpdate() {
