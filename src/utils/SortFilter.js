@@ -30,12 +30,10 @@ export default class SortFilter {
     if (filterOption.includes(false)) {
       filterQuery = "WHERE ";
       for (var i = 0; i < 6; i++) {
-        if (filterOption[i] == false) {
-          if (filterQuery == "WHERE ") {
-            filterQuery += filterQueryOptions[i];
-          } else {
-            filterQuery += " AND " + filterQueryOptions[i];
-          }
+        if (filterOption[i] == false && filterQuery == "WHERE ") {
+          filterQuery += filterQueryOptions[i];
+        } else if (filterOption[i] == false && filterQuery != "WHERE ") {
+          filterQuery += " AND " + filterQueryOptions[i];
         }
       }
     }
