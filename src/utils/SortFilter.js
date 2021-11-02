@@ -8,8 +8,7 @@ export default class SortFilter {
    * @param {boolean[]} filterOption Whether or not each filter criteria has been selected by user
    * @returns {String} Query to be made to database `for selected sort/filter options
    */
-  sortFilter(sortOption, filterOption) {
-    var sortQuery = "c_lots_available DESC";
+  sortFilter(sortQuery, filterOption) {
     var filterQueryArray = [];
     var filterQuery = "";
     const filterQueryOptions = [
@@ -21,19 +20,15 @@ export default class SortFilter {
       "type_of_parking_system == 'COUPON PARKING'",
     ];
 
-    if (sortOption == 1) {
-      sortQuery = "total_distance ASC";
-    } else if (sortOption == 2) {
-      sortQuery = "c_parking_rates_current ASC";
-    }
-
     if (filterOption.includes(false)) {
       filterQuery = "WHERE ";
       for (var i = 0; i < 6; i++) {
-        if (filterOption[i] == false && filterQuery == "WHERE ") {
-          filterQuery += filterQueryOptions[i];
-        } else if (filterOption[i] == false && filterQuery != "WHERE ") {
-          filterQuery += " AND " + filterQueryOptions[i];
+        if (filterOption[i] == false) {
+          if (filterQuery == "WHERE ") {
+            filterQuery += filterQueryOptions[i];
+          } else {
+            filterQuery += " AND " + filterQueryOptions[i];
+          }
         }
       }
     }

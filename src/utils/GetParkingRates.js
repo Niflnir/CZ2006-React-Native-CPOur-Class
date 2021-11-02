@@ -41,36 +41,26 @@ export default class ParkingRates {
       tx.executeSql(queries[0], [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {
           const cpInfo = results.rows._array[i];
-          cParkingRateRN = -1;
-          cParkingRateGeneral = {};
-          if (
-            (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM" &&
-              (day == 0 || day == 5) &&
-              time >= 700 &&
-              time <= 2230) ||
-            (cpInfo["free_parking"] == "SUN & PH FR 1PM-10.30PM" &&
-              (day == 0 || day == 5) &&
-              time >= 1300 &&
-              time <= 2230)
-          ) {
-            cParkingRateRN = 0;
-          } else {
-            if (centralArea.includes(cpInfo["car_park_no"])) {
-              cParkingRateGeneral["MonSat7To5"] = 1.2;
-              cParkingRateGeneral["Other"] = 0.6;
+          cParkingRateRN = 0.6;
+          cParkingRateGeneral = {
+            MonSat7To5: 0.6,
+            Other: 0.6,
+            free_parking: cpInfo["free_parking"],
+          };
 
-              if (hours >= 7 && hours <= 17 && day > 0) {
-                cParkingRateRN = 1.2;
-              } else {
-                cParkingRateRN = 0.6;
-              }
-            } else {
-              cParkingRateGeneral["MonSat7To5"] = 0.6;
-              cParkingRateGeneral["Other"] = 0.6;
-              cParkingRateRN = 0.6;
-            }
+          if (this.freeParking(day, time, cpFreeParking)) {
+            cParkingRateRN = 0;
           }
-          cParkingRateGeneral["free_parking"] = cpInfo["free_parking"];
+          if (centralArea.includes(cpInfo["car_park_no"])) {
+            cParkingRateGeneral["MonSat7To5"] = 1.2;
+            cParkingRateGeneral["Other"] = 0.6;
+            cParkingRateRN = this.centralParkingRate(
+              day,
+              hours,
+              cParkingRateRN
+            );
+          }
+
           tx.executeSql(queries[1], [
             JSON.stringify(cParkingRateGeneral),
             cpInfo["car_park_no"],
@@ -79,6 +69,21 @@ export default class ParkingRates {
         }
       });
     });
+  }
+  centralParkingRate(day, hours, cParkingRateRN) {
+    if (hours >= 7 && hours <= 17 && day > 0 && cParkingRateRN != 0) {
+      return 1.2;
+    }
+    return cParkingRateRN;
+  }
+  freeParking(day, time, cpFreeParking) {
+    return (
+      ((day == 0 || day == 5) &&
+        time <= 2230 &&
+        cpFreeParking == "SUN & PH FR 7AM-10.30PM" &&
+        time >= 700) ||
+      (cpFreeParking == "SUN & PH FR 1PM-10.30PM" && time >= 1300)
+    );
   }
   notCar(queries) {
     db.transaction((tx) => {

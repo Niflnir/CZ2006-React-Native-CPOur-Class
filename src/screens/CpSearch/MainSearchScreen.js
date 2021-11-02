@@ -83,7 +83,13 @@ export default class MainSearchScreen extends Component {
    */
   flListHandler() {
     const sortfilter = new SortFilter();
-    const query = sortfilter.sortFilter(this.#sortOption, this.#filterOption);
+    var sortQuery = "c_lots_available DESC";
+    if (this.#sortOption == 1) {
+      sortQuery = "total_distance ASC";
+    } else if (this.#sortOption == 2) {
+      sortQuery = "c_parking_rates_current ASC";
+    }
+    const query = sortfilter.sortFilter(sortQuery, this.#filterOption);
     console.log("getting list");
     db.transaction((tx) => {
       this.#loading = false;
