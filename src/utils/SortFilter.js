@@ -27,18 +27,22 @@ export default class SortFilter {
       sortQuery = "c_parking_rates_current ASC";
     }
 
-    if (filterQueryArray.length > 0) {
-      filterQuery = "WHERE " + filterQueryArray[0];
-      for (var i = 1; i < 6; i++) {
+    if (filterOption.includes(false)) {
+      filterQuery = "WHERE ";
+      for (var i = 0; i < 6; i++) {
         if (filterOption[i] == false) {
-          filterQuery += " AND " + filterQueryOptions[i];
+          if (filterQuery == "WHERE ") {
+            filterQuery += filterQueryOptions[i];
+          } else {
+            filterQuery += " AND " + filterQueryOptions[i];
+          }
         }
       }
     }
 
     const sortFilterQuery =
       "SELECT * FROM nearbyCpInfo " + filterQuery + " ORDER BY " + sortQuery;
-
+    console.log(sortFilterQuery);
     return sortFilterQuery;
   }
 }
