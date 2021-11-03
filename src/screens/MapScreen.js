@@ -286,11 +286,15 @@ export default class MapsScreen extends Component {
 
           {this.state.isVisible ? (
             <BottomSheet
-              bottomSheetHeight={Dimensions.get("window").height * 0.35}
+              bottomSheetHeight={Dimensions.get("window").height * 0.4}
               show={this.state.isVisible}
-              onDismiss={() =>
-                this.setState({ isVisible: false, showBtn: false })
-              }
+              onDismiss={() => {
+                if (this.state.isVisible == false) {
+                  this.setState({ isVisible: false, showBtn: false });
+                } else {
+                  this.setState({ isVisible: false, showBtn: true });
+                }
+              }}
               enableBackdropDismiss
             >
               {this.state.display == 0 ? (
@@ -308,7 +312,7 @@ export default class MapsScreen extends Component {
                 />
               )}
             </BottomSheet>
-          ) : this.state.showBtn ? (
+          ) : this.state.showBtn && !this.state.isVisible ? (
             <BtnRouteDetails
               onPressRoute={displayRouteDetails}
               onPressPgs={displayPgs}
@@ -316,7 +320,7 @@ export default class MapsScreen extends Component {
           ) : undefined}
           {this.state.details ? (
             <BottomSheet
-              bottomSheetHeight={Dimensions.get("window").height * 0.3}
+              bottomSheetHeight={Dimensions.get("window").height * 0.4}
               show={this.state.details}
               onDismiss={() => this.setState({ details: false, showBtn: true })}
               enableBackdropDismiss
@@ -365,12 +369,7 @@ export default class MapsScreen extends Component {
           ) : undefined}
           {this.state.pgs ? (
             <BottomSheet
-              bottomSheetHeight={
-                0.07 + 0.05 * this.#mapMarkersPgs.length <= 0.35
-                  ? Dimensions.get("window").height *
-                    (0.07 + 0.05 * this.#mapMarkersPgs.length)
-                  : Dimensions.get("window").height * 0.35
-              }
+              bottomSheetHeight={Dimensions.get("window").height * 0.4}
               show={this.state.pgs}
               onDismiss={() => this.setState({ pgs: false, showBtn: true })}
               enableBackdropDismiss
@@ -385,6 +384,7 @@ export default class MapsScreen extends Component {
                   <TouchableOpacity
                     key={this.#pgsInfo.indexOf(onePgs)}
                     onPress={() => {
+                      this.setState({ isVisible: true, showBtn: false });
                       onMessage({
                         tag: "onMapMarkerClicked",
                         mapMarkerId: index + 1,

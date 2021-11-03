@@ -209,7 +209,7 @@ export default class FavouritesTable {
         table +
         " SET h_parking_rates_general = ? WHERE car_park_no = ?",
     ];
-    rate.vehicles(queries1);
+    rate.getCarParkingRate(queries1);
     rate.notCar(queries2);
     const grace = new GetGracePeriod();
     grace.getGracePeriod();

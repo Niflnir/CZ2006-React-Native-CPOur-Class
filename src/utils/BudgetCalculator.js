@@ -44,13 +44,12 @@ export default class BudgetCalculator {
         duration =
           budget / JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
       }
-
-      return (
-        Math.floor(duration) +
-        " h " +
-        Math.floor((duration - Math.floor(duration)) * 60) +
-        " mins "
-      );
+      if (cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING") {
+        duration = (budget * 30) / cpInfo["c_parking_rates_current"];
+      } else {
+        duration = Math.floor(budget / cpInfo["c_parking_rates_current"]) * 30;
+      }
+      return Math.floor(duration / 60) + " h " + (duration % 60) + " mins ";
     }
 
     time = hours * 100 + minutes;
@@ -131,28 +130,40 @@ export default class BudgetCalculator {
     var day = today.getDay();
     var minutes = today.getMinutes();
     var time = (hours + minutes) / 60;
-    var duration = parseInt(durationHours) + parseInt(durationMinutes) / 60; //duration in decimal for easier calculation
-
+    var duration = parseInt(durationHours * 60) + parseInt(durationMinutes); //duration in decimal for easier calculation
+    console.log(duration);
+    var fee = 0;
     if (vehicleType == 0) {
-      if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
-        if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
-          var endTime = time + duration;
-          if (endTime > 22.5) {
-            var cost =
-              (endTime - 22.5) *
-              JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
-            return cost <= 5 ? cost : 5; //capped at $5 night parking scheme
-          } else return 0;
-        }
+      if (cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING") {
+        fee = (duration * cpInfo["c_parking_rates_current"]) / 30;
       } else {
-        return (
-          Math.round(
-            duration *
-              JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
-              100
-          ) / 100
-        );
+        fee =
+          ((duration + (duration % 30)) / 30) *
+          cpInfo["c_parking_rates_current"];
+        console.log(duration + (duration % 30));
       }
+      return fee;
+
+      // if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
+      //   if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
+      //     var endTime = time + duration;
+      //     if (endTime > 22.5) {
+      //       var cost =
+      //         (endTime - 22.5) *
+      //         JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
+      //       return cost <= 5 ? cost : 5; //capped at $5 night parking scheme
+      //     } else return 0;
+      //   }
+      // } else {
+      //   return (
+      //     Math.round(
+      //       duration *
+      //         JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
+      //         100
+      //     ) / 100
+      //   );
+
+      // }
       // Electronic parking system - per minute basis
       // Coupon parking system - per half-hour
       // Night parking scheme - capped at $5

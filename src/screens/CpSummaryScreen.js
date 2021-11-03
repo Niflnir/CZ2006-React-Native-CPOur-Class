@@ -205,7 +205,7 @@ export default class CpSummaryScreen extends Component {
 
           {this.#cpInfo["c_parking_rates_current"] != 0 ? (
             <Text style={styles.txtCpSummaryInfo}>
-              ${this.#cpInfo.c_parking_rates_current}
+              ${this.#cpInfo.c_parking_rates_current}/30 min
             </Text>
           ) : (
             <Text style={styles.txtCpSummaryInfo}>
@@ -230,9 +230,7 @@ export default class CpSummaryScreen extends Component {
             </Text>
           ) : undefined}
           {this.#cpInfo["h_lots_available"] != null ? (
-            <Text style={styles.txtCpSummaryInfo}>
-              ${this.#cpInfo.h_parking_rates_general}
-            </Text>
+            <Text style={styles.txtCpSummaryInfo}>$1.20/30 min</Text>
           ) : undefined}
 
           {this.#cpInfo["y_lots_available"] != null ? (
@@ -252,9 +250,7 @@ export default class CpSummaryScreen extends Component {
             </Text>
           ) : undefined}
           {this.#cpInfo["y_lots_available"] != null ? (
-            <Text style={styles.txtCpSummaryInfo}>
-              ${this.#cpInfo.y_parking_rates_general}
-            </Text>
+            <Text style={styles.txtCpSummaryInfo}>$0.65/slot (day)</Text>
           ) : undefined}
 
           <Text style={styles.txtCpSummaryHeadings}>Car park type</Text>

@@ -9,7 +9,7 @@ export default class ParkingRates {
    * Sets value of parking rates for carparks in selected table
    * @param {number} index 1 for favourites table, 0 for nearbyCpInfo table
    */
-  vehicles(queries) {
+  getCarParkingRate(queries) {
     const centralArea = [
       "ACB",
       "BBB",
@@ -48,7 +48,7 @@ export default class ParkingRates {
             free_parking: cpInfo["free_parking"],
           };
 
-          if (this.freeParking(day, time, cpFreeParking)) {
+          if (this.freeParking(day, time, cpInfo["free_parking"])) {
             cParkingRateRN = 0;
           }
           if (centralArea.includes(cpInfo["car_park_no"])) {

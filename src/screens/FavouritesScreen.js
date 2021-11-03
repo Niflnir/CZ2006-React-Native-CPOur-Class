@@ -7,6 +7,7 @@ import LocationServices from "../utils/locationServices/LocationServices";
 import GetData from "../utils/api/GetData";
 import FavouritesTable from "../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
+import { removeFromFavourites } from "../utils/DbServices";
 db = SQLite.openDatabase("cpour.db");
 
 /**

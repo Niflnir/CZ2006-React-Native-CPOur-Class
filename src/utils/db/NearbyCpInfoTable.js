@@ -160,7 +160,7 @@ export default class NearbyCpInfoTable {
                   table +
                   " SET h_parking_rates_general = ? WHERE car_park_no = ?",
               ];
-              getParkingRates.vehicles(queries1);
+              getParkingRates.getCarParkingRate(queries1);
               getParkingRates.notCar(queries2);
               const getGracePeriod = new GetGracePeriod();
               getGracePeriod.getGracePeriod(0);

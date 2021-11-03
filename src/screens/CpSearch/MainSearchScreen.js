@@ -49,7 +49,7 @@ export default class MainSearchScreen extends Component {
 
   #buttons = ["Vacancy", "Distance", "Parking Rate"];
   #sortOption = 0;
-  #filterOption = [true, true, true, true, true];
+  #filterOption = [true, true, true, true, true, true];
 
   constructor(props) {
     super(props);
@@ -341,10 +341,9 @@ export default class MainSearchScreen extends Component {
 
     /**
      * Sets value of filterOption when user selects specific filter criteria and calls flListHandler() to reload carpark list
-     * @param {string} title Title of filter button selected by user
      * @param {number} index Index of filter button selected by user
      */
-    const onPressChip = (title, index) => {
+    const onPressChip = (index) => {
       var temp = [...this.#filterOption];
       temp[index] = !this.#filterOption[index];
       this.#filterOption = temp;
@@ -418,7 +417,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Heavy Vehicles", 0)}
+                onPress={() => onPressChip(0)}
               />
               <Chip
                 title="Motorcycles"
@@ -434,7 +433,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Motorcycles", 1)}
+                onPress={() => onPressChip(1)}
               />
               <Chip
                 title="Free Parking"
@@ -450,7 +449,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Free Parking", 2)}
+                onPress={() => onPressChip(2)}
               />
               <Chip
                 title="Night Parking"
@@ -466,7 +465,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Night Parking", 3)}
+                onPress={() => onPressChip(3)}
               />
               <Chip
                 title="Electronic System"
@@ -482,7 +481,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Electronic System", 4)}
+                onPress={() => onPressChip(4)}
               />
               <Chip
                 title="Coupon System"
@@ -498,7 +497,7 @@ export default class MainSearchScreen extends Component {
                     ? styles.chipFilters
                     : styles.chipFiltersDisabled
                 }
-                onPress={() => onPressChip("Coupon System", 5)}
+                onPress={() => onPressChip(5)}
               />
             </ScrollView>
           </View>
