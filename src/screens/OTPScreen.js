@@ -147,7 +147,15 @@ export default class OTPScreen extends Component {
         firebase.auth().signOut();
       }
     } catch (err) {
-      Alert.alert("Error", err.message);
+      if (
+        err.message ==
+        "The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms and be sure use the verification code provided by the user."
+      ) {
+        Alert.alert(
+          "Error",
+          "OTP is incorrect. Please press “Resend OTP” to try again."
+        );
+      }
     }
   }
 

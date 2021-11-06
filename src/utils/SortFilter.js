@@ -21,6 +21,7 @@ export default class SortFilter {
     ];
 
     if (filterOption.includes(false)) {
+      // min 2 test cases
       filterQuery = "WHERE ";
       for (var i = 0; i < 6; i++) {
         if (filterOption[i] == false) {
@@ -30,8 +31,8 @@ export default class SortFilter {
             filterQuery += " AND " + filterQueryOptions[i];
           }
         }
-      }
-    }
+      } // 2 Test case
+    } // 1 test A1
 
     const sortFilterQuery =
       "SELECT * FROM nearbyCpInfo " + filterQuery + " ORDER BY " + sortQuery;

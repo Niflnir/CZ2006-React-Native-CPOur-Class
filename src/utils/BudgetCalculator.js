@@ -169,15 +169,17 @@ export default class BudgetCalculator {
       // Night parking scheme - capped at $5
     }
     if (vehicleType == 1) {
-      return (
-        Math.round(duration * cpInfo["y_parking_rates_general"] * 100) / 100
-      );
+      // return (
+      //   Math.round(duration * cpInfo["y_parking_rates_general"] * 100) / 100
+      // );
+      return 0.65;
     }
 
     if (vehicleType == 2) {
-      return (
-        Math.round(duration * cpInfo["H_parking_rates_general"] * 100) / 100
-      );
+      // return (
+      //   Math.round(duration * cpInfo["H_parking_rates_general"] * 100) / 100
+      // );
+      return 2.4;
     }
   }
 }

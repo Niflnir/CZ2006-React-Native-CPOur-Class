@@ -51,9 +51,7 @@ const DestinationMarkerInfo = (props) => {
     <View>
       <Text style={styles.txtMapLocationHeadings}>Destination</Text>
 
-      <Text style={styles.txtMapHeadings}>
-        Address: {locationInfo.locationData.ADDRESS}
-      </Text>
+      <Text style={styles.txtMapHeadings}>Address: {locationInfo.address}</Text>
       <Text style={styles.txtMapHeadings}>
         Postal Code: {locationInfo.locationData.POSTAL}
       </Text>

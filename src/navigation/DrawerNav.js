@@ -10,7 +10,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import FavouritesScreen from "../screens/FavouritesScreen";
-import StackNav from "./StackNav";
+import stackNav from "./StackNav";
 import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
@@ -18,6 +18,7 @@ import { setSignedOut } from "../utils/DbServices";
 import DropAll from "../utils/db/DropAll";
 import styles from "../styles/AppStyles";
 import StackNavFav from "./StackNavFav";
+import StackNav from "./StackNav";
 
 const Drawer = createDrawerNavigator();
 const FIREBASE_CONFIG = {
@@ -41,6 +42,8 @@ export default function DrawerNav() {
 
 // Allows navigation between Search and Favourites
 function ActualDrawer() {
+  const stackNav = new StackNav();
+  const stackNavFav = new StackNavFav();
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -50,8 +53,8 @@ function ActualDrawer() {
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Search" component={StackNav} />
-      <Drawer.Screen name="Favourites" component={StackNavFav} />
+      <Drawer.Screen name="Search" component={stackNav.stackNav} />
+      <Drawer.Screen name="Favourites" component={stackNavFav.stackNavFav} />
     </Drawer.Navigator>
   );
 }
