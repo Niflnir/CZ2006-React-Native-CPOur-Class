@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import GetData from "../api/GetData";
+import { getToken } from "../DbServices";
 db = SQLite.openDatabase("cpour.db");
 
 /**
@@ -18,8 +19,7 @@ export default class GetRoute {
   async getRoute(fromLatLong, toLatLong, key, currentLatLong) {
     const getData = new GetData();
 
-    const TOKEN =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzU3MzcxMjksImV4cCI6MTYzNjE2OTEyOSwibmJmIjoxNjM1NzM3MTI5LCJqdGkiOiJhZmRlYWY3NGFkMzQ0N2UyZWYxMDYyMDM3ZDMxNWVkOCJ9.6qBuGpDCg4T_MEHqR1SQqKIQnWCXfEbVLq6YCt2_LB0";
+    const TOKEN = getToken();
     if (currentLatLong == "no") {
       const URL0 =
         "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +

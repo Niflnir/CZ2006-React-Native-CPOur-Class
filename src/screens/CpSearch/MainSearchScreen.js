@@ -22,6 +22,7 @@ import GetData from "../../utils/api/GetData";
 import FavouritesTable from "../../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
 import PgsTable from "../../utils/db/PgsTable";
+import { getToken } from "../../utils/DbServices";
 db = SQLite.openDatabase("cpour.db");
 
 /**
@@ -119,8 +120,7 @@ export default class MainSearchScreen extends Component {
         JSON.stringify(data["coords"]["longitude"]);
 
       const getData = new GetData();
-      const TOKEN =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjc5NjAsInVzZXJfaWQiOjc5NjAsImVtYWlsIjoiYXBwLmNwLm91ckBnbWFpbC5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2MzU3MzcxMjksImV4cCI6MTYzNjE2OTEyOSwibmJmIjoxNjM1NzM3MTI5LCJqdGkiOiJhZmRlYWY3NGFkMzQ0N2UyZWYxMDYyMDM3ZDMxNWVkOCJ9.6qBuGpDCg4T_MEHqR1SQqKIQnWCXfEbVLq6YCt2_LB0";
+      const TOKEN = getToken();
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         this.#info.currentLatLong +
