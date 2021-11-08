@@ -117,16 +117,24 @@ export default class StackNav {
           checkSignedIn().then(async (signedIn) => {
             if (!signedIn) {
               setLoggedIn(true);
-            }
-            try {
-              const value = await AsyncStorage.getItem("loggedIn");
-              if (value !== null) {
-                setLoggedIn(value === "true");
-              } else {
-                await AsyncStorage.setItem("loggedIn", loggedIn.toString());
+              try {
+                await AsyncStorage.setItem("loggedIn", "true");
+              } catch (e) {
+                // saving error
               }
-            } catch (e) {
-              console.log("async error set: ", e);
+            } else {
+              try {
+                const value = await AsyncStorage.getItem("loggedIn");
+                if (value !== null) {
+                  if (value === "true") {
+                    setLoggedIn(true);
+                  } else {
+                    setLoggedIn(false);
+                  }
+                }
+              } catch (e) {
+                // error reading value
+              }
             }
           });
         }
