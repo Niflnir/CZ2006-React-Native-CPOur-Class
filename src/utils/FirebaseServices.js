@@ -43,17 +43,18 @@ export default class FirebaseServices {
    */
   async checkSignedIn() {
     var user = firebase.auth().currentUser.uid;
-    var user = firebase.auth().currentUser.uid;
-    firebase
-      .database()
-      .ref(`signedInStatus/`)
-      .update((user = { initialized: true }));
+    const temp = { initialized: true };
+    firebase.database().ref(`signedInStatus/`).update(temp);
     return new Promise(function (resolve, reject) {
       firebase
         .database()
         .ref(`signedInStatus/${user}`)
         .on("value", (snapshot) => {
-          resolve(snapshot.val().signedIn);
+          if (snapshot.val() == null || snapshot.val().signedIn == null) {
+            resolve(false);
+          } else {
+            resolve(snapshot.val().signedIn);
+          }
         });
     });
   }

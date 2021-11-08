@@ -15,12 +15,13 @@ export default class OTPScreenManager {
     const fbServices = new FirebaseServices();
     var valid = false;
     fbServices.checkSignedIn().then((data) => {
+      console.log("DATA: ", data);
       if (!data) {
+        this.setSignedIn();
         valid = true;
         const nearbyCpInfoTable = new NearbyCpInfoTable();
         nearbyCpInfoTable.createNearbyCpInfoTable();
         this.initialiseFavourites();
-        this.setSignedIn();
       } else {
         Alert.alert(
           "Error",
