@@ -170,20 +170,18 @@ export default class BudgetingScreenManager {
       // Night parking scheme - capped at $5
     }
     if (vehicleType == 1) {
-      // return (
-      //   Math.round(duration * cpInfo["y_parking_rates_general"] * 100) / 100
-      // );
+      var firstSlot = 0;
       return 0.65;
     }
 
     if (vehicleType == 2) {
+      console.log(duration);
       if (cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING") {
-        return (duration * 1.2) / 30;
+        return ((duration * 1.2) / 30).toFixed(2);
+      } else {
+        var halfHours = Math.ceil(duration / 30);
+        return (halfHours * 1.2).toFixed(2);
       }
-      // return (
-      //   Math.round(duration * cpInfo["H_parking_rates_general"] * 100) / 100
-      // );
-      return 2.4;
     }
   }
 }

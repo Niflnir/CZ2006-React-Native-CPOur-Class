@@ -43,6 +43,11 @@ export default class FirebaseServices {
    */
   async checkSignedIn() {
     var user = firebase.auth().currentUser.uid;
+    var user = firebase.auth().currentUser.uid;
+    firebase
+      .database()
+      .ref(`signedInStatus/`)
+      .update((user = { initialized: true }));
     return new Promise(function (resolve, reject) {
       firebase
         .database()
