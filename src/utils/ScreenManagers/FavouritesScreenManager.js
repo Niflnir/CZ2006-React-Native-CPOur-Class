@@ -1,7 +1,9 @@
 import FavouritesTable from "../db/FavouritesTable";
-import firebase from "firebase";
-import Services from "../Services";
+import * as firebase from "firebase";
+import ApiServices from "../ApiServices";
 import * as SQLite from "expo-sqlite";
+import LocationServices from "../LocationServices";
+import FirebaseServices from "../FirebaseServices";
 
 db = SQLite.openDatabase("cpour.db");
 /**
@@ -32,18 +34,20 @@ export default class FavouritesScreenManager {
   async initializeInfo() {
     const fav = new FavouritesTable();
     fav.createFavouritesTable();
-    const services = new Services();
-    var TOKEN = services.getToken();
-    TOKEN = services.getToken();
+    const apiServices = new ApiServices();
+    const locationServices = new LocationServices();
+    const fbServices = new FirebaseServices();
+    var TOKEN = fbServices.getToken();
+    TOKEN = fbServices.getToken();
     console.log(TOKEN);
     var info = {
       currentLatLong: "",
       currentPostalCode: "",
     };
 
-    services.getLocationPermission();
+    locationServices.getLocationPermission();
 
-    await services
+    await locationServices
       .getLocation()
       .then((data) => {
         info.currentLatLong = data;
@@ -52,7 +56,7 @@ export default class FavouritesScreenManager {
           info.currentLatLong +
           "&token=" +
           TOKEN;
-        services.getData(URL).then((data) => {
+        apiServices.getData(URL).then((data) => {
           data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
             ? (info.currentPostalCode = data["GeocodeInfo"][0]["POSTALCODE"])
             : (info.currentPostalCode = "Postal code unavailable");

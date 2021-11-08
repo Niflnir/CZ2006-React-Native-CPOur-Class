@@ -1,9 +1,11 @@
+import ApiServices from "../ApiServices";
 import CpInfoTable from "../db/CpInfoTable";
 import FavouritesTable from "../db/FavouritesTable";
 import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
 import PgsTable from "../db/PgsTable";
 import SearchHistoryTable from "../db/SearchHistoryTable";
-import Services from "../Services";
+import FirebaseServices from "../FirebaseServices";
+import LocationServices from "../LocationServices";
 /**
  * Manages interaction between MainSearchScreen and control classes
  */
@@ -16,12 +18,12 @@ export default class MainSearchScreenManager {
     const cpInfoTable = new CpInfoTable();
     const searchHistoryTable = new SearchHistoryTable();
     const fav = new FavouritesTable();
-    const services = new Services();
+    const locationServices = new LocationServices();
     cpInfoTable.createCpInfoTable();
     searchHistoryTable.createSearchHistoryTable();
     fav.createFavouritesTable();
     pgsTable.createPgsTable();
-    services.getLocationPermission();
+    locationServices.getLocationPermission();
   }
 
   /**
@@ -31,8 +33,10 @@ export default class MainSearchScreenManager {
    * @param {String} building The building name of the selected destination
    */
   async paramHandler(postal, building) {
-    const services = new Services();
-    services.getLocationPermission();
+    const apiServices = new ApiServices();
+    const locationServices = new LocationServices();
+    const fbServices = new FirebaseServices();
+    locationServices.getLocationPermission();
     var info = {
       locationData: {},
       latLong: "",
@@ -41,16 +45,16 @@ export default class MainSearchScreenManager {
       currentPostalCode: "",
       postal: "",
     };
-    await services.getLocation().then((data) => {
+    await locationServices.getLocation().then((data) => {
       info["currentLatLong"] = data;
-      var TOKEN = services.getToken();
-      TOKEN = services.getToken();
+      var TOKEN = fbServices.getToken();
+      TOKEN = fbServices.getToken();
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         info["currentLatLong"] +
         "&token=" +
         TOKEN;
-      services
+      apiServices
         .getData(URL)
         .then((data) => {
           data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")

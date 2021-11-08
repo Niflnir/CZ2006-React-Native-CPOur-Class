@@ -1,8 +1,8 @@
 import NearbyPgsTable from "../db/NearbyPgsTable";
-import firebase from "firebase";
+import * as firebase from "firebase";
 import FavouritesTable from "../db/FavouritesTable";
 import { Linking } from "react-native";
-import Services from "../Services";
+import LocationServices from "../LocationServices";
 /**
  * Manages interaction between CpSummaryScreen and control classes
  */
@@ -84,8 +84,8 @@ export default class CpSummaryScreenManager {
    * @param {String} cpLatLong The latitude and longitude values of the selected carpark
    */
   proceedToMapsHandler(currentLatLong, cpLatLong) {
-    const services = new Services();
-    services.getLocationPermission();
+    const locationServices = new LocationServices();
+    locationServices.getLocationPermission();
     const url = Platform.select({
       ios: `maps:0,0?saddr=${currentLatLong}&daddr=${cpLatLong}&directionsmode=driving`,
       android: `google.navigation:q=${cpLatLong}&mode=d`,
@@ -103,8 +103,8 @@ export default class CpSummaryScreenManager {
    * @param {String} cpLatLong The latitude and longitude values of the selected carpark
    */
   proceedToMapsHandler2(currentLatLong, cpLatLong) {
-    const services = new Services();
-    services.getLocationPermission();
+    const locationServices = new LocationServices();
+    locationServices.getLocationPermission();
     const url =
       "http://maps.google.com/maps?saddr=" +
       currentLatLong +

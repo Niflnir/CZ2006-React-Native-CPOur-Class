@@ -1,5 +1,8 @@
-import Services from "../Services";
 import * as SQLite from "expo-sqlite";
+import ParkingRatesServices from "../ParkingRatesServices";
+import DatabaseServices from "../DatabaseServices.js";
+import FirebaseServices from "../FirebaseServices";
+import ApiServices from "../ApiServices";
 db = SQLite.openDatabase("cpour.db");
 
 /**
@@ -11,8 +14,11 @@ export default class FavouritesTable {
    */
   async createFavouritesTable() {
     console.log("creating favourites");
-    const services = new Services();
-    lotData = await services.getLots();
+    const rateServices = new ParkingRatesServices();
+    const dbServices = new DatabaseServices();
+    const fbServices = new FirebaseServices();
+    const apiServices = new ApiServices();
+    lotData = await apiServices.getLots();
     db.transaction((tx) => {
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS favourites (" +
@@ -85,7 +91,7 @@ export default class FavouritesTable {
         (tx, er) => console.log("cant table")
       );
 
-      const favouritesList = services.getFavourites();
+      const favouritesList = fbServices.getFavourites();
       for (const cp in favouritesList) {
         if (cp != "initialized") {
           const oneCpInfo = favouritesList[cp];
@@ -171,7 +177,7 @@ export default class FavouritesTable {
               (d) => d.carpark_number == car_park_no
             );
             if (cpLots.length != 0) {
-              services.setLots(
+              dbServices.setLots(
                 1,
                 car_park_no,
                 cpLots[0]["carpark_info"],
@@ -201,9 +207,9 @@ export default class FavouritesTable {
         table +
         " SET h_parking_rates_general = ? WHERE car_park_no = ?",
     ];
-    services.getCarParkingRate(queries1);
-    services.notCar(queries2);
-    services.getGracePeriod();
+    rateServices.getCarParkingRate(queries1);
+    rateServices.notCar(queries2);
+    dbServices.getGracePeriod();
   }
 
   /**

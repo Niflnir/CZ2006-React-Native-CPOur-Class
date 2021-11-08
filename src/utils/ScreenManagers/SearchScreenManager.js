@@ -1,7 +1,7 @@
-import Services from "../Services";
 import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
 import SearchHistoryTable from "../db/SearchHistoryTable";
 import * as SQLite from "expo-sqlite";
+import ApiServices from "../ApiServices";
 db = SQLite.openDatabase("cpour.db");
 /**
  * Manages interaction between SearchScreen and control classes
@@ -48,8 +48,8 @@ export default class SearchScreenManager {
       "https://developers.onemap.sg/commonapi/search?searchVal=" +
       address +
       "&getAddrDetails=Y&returnGeom=Y&pageNum=1";
-    const services = new Services();
-    const results = services.getData(URL); // to store promise returned by GetData
+    const apiServices = new ApiServices();
+    const results = apiServices.getData(URL); // to store promise returned by GetData
 
     return results;
   }

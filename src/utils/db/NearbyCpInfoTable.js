@@ -1,5 +1,7 @@
 import * as SQLite from "expo-sqlite";
-import Services from "../Services";
+import ApiServices from "../ApiServices";
+import DatabaseServices from "../DatabaseServices.js";
+import ParkingRatesServices from "../ParkingRatesServices";
 db = SQLite.openDatabase("cpour.db");
 /**
  * Manages nearbyCpInfo table in local database to store information of carparks near user's input destination
@@ -45,15 +47,17 @@ export default class NearbyCpInfoTable {
    */
   async setTable(toLatLong, currentLatLong) {
     console.log("getting");
-    const services = new Services();
-    const lotData = await services.getLots();
+    const apiServices = new ApiServices();
+    const rateServices = new ParkingRatesServices();
+    const dbServices = new DatabaseServices();
+    const lotData = await apiServices.getLots();
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM cpInfo;", [], async (tx, results) => {
         // to iterate through every carpark in database, find distance from destination, and store nearby carparks
         const distanceHandler = (low, high) => {
           for (var i = low; i < high; i++) {
             var oneCP = results.rows.item(i);
-            var distance = services.getDistance(toLatLong, oneCP.lat_long);
+            var distance = dbServices.getDistance(toLatLong, oneCP.lat_long);
 
             if (distance < 0.6) {
               // estimate of nearby carpark (note: distance is not proper route, only straight line)
@@ -85,8 +89,8 @@ export default class NearbyCpInfoTable {
                   }
                 );
                 // to store distance, time, and other route info
-
-                services.getRoute(
+                const dbServices = new DatabaseServices();
+                dbServices.getRoute(
                   lat_long,
                   toLatLong,
                   car_park_no,
@@ -96,7 +100,7 @@ export default class NearbyCpInfoTable {
                   (d) => d.carpark_number == car_park_no
                 );
                 if (cpLots.length != 0) {
-                  services.setLots(0, car_park_no, cpLots[0]["carpark_info"]);
+                  dbServices.setLots(0, car_park_no, cpLots[0]["carpark_info"]);
                 }
               });
             }
@@ -120,9 +124,9 @@ export default class NearbyCpInfoTable {
                   table +
                   " SET h_parking_rates_general = ? WHERE car_park_no = ?",
               ];
-              services.getCarParkingRate(queries1);
-              services.notCar(queries2);
-              services.getGracePeriod(0);
+              rateServices.getCarParkingRate(queries1);
+              rateServices.notCar(queries2);
+              dbServices.getGracePeriod(0);
               console.log("done getting");
             }
           }

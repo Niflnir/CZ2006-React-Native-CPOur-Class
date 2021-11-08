@@ -20,8 +20,9 @@ import MapScreen from "../screens/MapScreen";
 import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
-import Services from "../utils/Services";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import FirebaseServices from "../utils/FirebaseServices";
+import DatabaseServices from "../utils/DatabaseServices.js";
 
 const Drawer = createDrawerNavigator();
 const FIREBASE_CONFIG = {
@@ -39,7 +40,8 @@ const FIREBASE_CONFIG = {
  */
 export default class StackNav {
   StackNav() {
-    const services = new Services();
+    const fbServices = new FirebaseServices();
+    const dbServices = new DatabaseServices();
 
     return (
       <NavigationContainer>
@@ -88,7 +90,7 @@ export default class StackNav {
       } catch (e) {
         // saving error
       }
-      services.dropAllTables();
+      dbServices.dropAllTables();
       var user = firebase.auth().currentUser.uid;
       firebase
         .database()
@@ -99,6 +101,7 @@ export default class StackNav {
     }
 
     function stackNav() {
+      const fbServices = new FirebaseServices();
       const Stack = createNativeStackNavigator();
       const [loggedIn, setLoggedIn] = useState(false);
       const FIREBASE_CONFIG = {
@@ -120,7 +123,7 @@ export default class StackNav {
       }
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          services.checkSignedIn().then(async (signedIn) => {
+          fbServices.checkSignedIn().then(async (signedIn) => {
             if (!signedIn) {
               setLoggedIn(true);
               try {

@@ -1,7 +1,7 @@
 import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
-import Services from "../Services";
 import * as firebase from "firebase";
 import { Alert } from "react-native";
+import FirebaseServices from "../FirebaseServices";
 /**
  * Manages interaction between OTPScreen and control classes
  */
@@ -12,9 +12,9 @@ export default class OTPScreenManager {
    * @returns {boolean} Whether the user is already logged into another device
    */
   checkValidSignIn() {
-    const services = new Services();
+    const fbServices = new FirebaseServices();
     var valid = false;
-    services.checkSignedIn().then((data) => {
+    fbServices.checkSignedIn().then((data) => {
       if (!data) {
         valid = true;
         const nearbyCpInfoTable = new NearbyCpInfoTable();

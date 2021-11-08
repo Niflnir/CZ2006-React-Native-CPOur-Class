@@ -177,6 +177,9 @@ export default class BudgetingScreenManager {
     }
 
     if (vehicleType == 2) {
+      if (cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING") {
+        return (duration * 1.2) / 30;
+      }
       // return (
       //   Math.round(duration * cpInfo["H_parking_rates_general"] * 100) / 100
       // );
