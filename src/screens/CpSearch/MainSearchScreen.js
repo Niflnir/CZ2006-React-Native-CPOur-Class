@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { Component } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
   StatusBar,
   Image,
@@ -13,21 +12,12 @@ import styles from "../../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
 import { ButtonGroup, Chip } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
-import LocationServices from "../../utils/locationServices/LocationServices";
-import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
-import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
-import CpInfoTable from "../../utils/db/CpInfoTable";
-import SortFilter from "../../utils/SortFilter";
-import GetData from "../../utils/api/GetData";
-import FavouritesTable from "../../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
-import PgsTable from "../../utils/db/PgsTable";
-import { getToken } from "../../utils/DbServices";
+import MainSearchScreenManager from "../../utils/ScreenManagers/MainSearchScreenManager";
 db = SQLite.openDatabase("cpour.db");
 
 /**
  * Application screen that prompts user to input destination and displays nearby carparks
- *
  *
  */
 export default class MainSearchScreen extends Component {
@@ -44,10 +34,7 @@ export default class MainSearchScreen extends Component {
   #loading = false;
   #displaying = false;
   #navigation = this.props.navigation;
-  #getLocationServices = new LocationServices();
-  #searchHistoryTable = new SearchHistoryTable();
-  #cpInfoTable = new CpInfoTable();
-
+  #manager = new MainSearchScreenManager();
   #buttons = ["Vacancy", "Distance", "Parking Rate"];
   #sortOption = 0;
   #filterOption = [true, true, true, true, true, true];
@@ -61,116 +48,31 @@ export default class MainSearchScreen extends Component {
     };
   }
 
-  componentDidMount() {
-    const pgsTable = new PgsTable();
-    pgsTable.createPgsTable();
-    // pgsTable.drop();
-
-    this.#getLocationServices
-      .getLocationPermission()
-      .then((data) => {
-        this.#status = data;
-      })
-      .catch((error) => console.log("location error: ", error));
-
-    this.#cpInfoTable.createCpInfoTable();
-    this.#searchHistoryTable.createSearchHistoryTable();
-    const fav = new FavouritesTable();
-    fav.createFavouritesTable();
+  async componentDidMount() {
+    this.#status = this.#manager.didMount();
   }
 
-  /**
-   * Sets list to be displayed in flatlist
-   */
-  flListHandler() {
-    const sortfilter = new SortFilter();
-    var sortQuery = "c_lots_available DESC";
-    if (this.#sortOption == 1) {
-      sortQuery = "total_distance ASC";
-    } else if (this.#sortOption == 2) {
-      sortQuery = "c_parking_rates_current ASC";
-    }
-    const query = sortfilter.sortFilter(sortQuery, this.#filterOption);
-    console.log("getting list");
-    db.transaction((tx) => {
-      this.#loading = false;
-      tx.executeSql(query, [], (tx, results) => {
-        this.setState({ list: results.rows["_array"] });
-      });
-    });
-  }
-
-  /**
-   * Stores relevant location information in respective variables
-   */
-  async paramHandler() {
-    this.#displaying = true;
-    this.#loading = true;
-    if (this.#status !== "granted") {
-      Alert.alert(
-        "Warning",
-        "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
-      );
-      return;
-    }
-    await this.#getLocationServices.getLocation().then((data) => {
-      this.#info.currentLatLong =
-        JSON.stringify(data["coords"]["latitude"]) +
-        "," +
-        JSON.stringify(data["coords"]["longitude"]);
-
-      const getData = new GetData();
-      const TOKEN = getToken();
-      const URL =
-        "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
-        this.#info.currentLatLong +
-        "&token=" +
-        TOKEN;
-      getData
-        .getData(URL)
-        .then((data) => {
-          data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
-            ? (this.#info.currentPostalCode =
-                data["GeocodeInfo"][0]["POSTALCODE"])
-            : (this.#info.currentPostalCode = "Postal code unavailable");
-        })
-        .catch((err) => console.log(err, URL));
-    });
-    this.#info.postal = this.props.route.params.data["POSTAL"];
-
-    if (this.props.route.params.data["BUILDING"] == "Current location") {
-      this.#info.postal = "000000";
-      this.#info.latLong = this.#info.currentLatLong;
-      this.#info["locationData"]["ADDRESS"] = "Current location";
-      this.#info["address"] = "";
-    } else {
-      this.#info["locationData"] = this.props.route.params.data;
-      this.#info["address"] = this.#info["locationData"]["ADDRESS"];
-      this.#info["latLong"] =
-        this.#info["locationData"]["LATITUDE"] +
-        "," +
-        this.#info["locationData"]["LONGITUDE"];
-    }
-    this.setState({
-      txtStyle: true,
-      defaultAddress: this.#info["locationData"]["ADDRESS"],
-    });
-
-    setTimeout(() => {
-      const nearbyCpInfoTable = new NearbyCpInfoTable();
-      nearbyCpInfoTable.setTable(
-        this.#info["latLong"],
-        this.#info.currentLatLong
-      );
-    }, 3000);
-
-    setTimeout(() => this.flListHandler(), 11000);
-  }
-
-  componentDidUpdate() {
+  async componentDidUpdate() {
     if (this.props.route.params !== undefined && !this.#rendered) {
+      this.#displaying = true;
+      this.#loading = true;
       this.#rendered = true;
-      this.paramHandler();
+      await this.#manager
+        .paramHandler(this.#status, this.props.route.params.data)
+        .then((data) => (this.#info = data))
+        .catch((err) => console.log(err));
+
+      this.setState({
+        txtStyle: true,
+        defaultAddress: this.#info["locationData"]["ADDRESS"],
+      });
+      setTimeout(() => {
+        console.log("getting list");
+        this.#loading = false;
+        this.#manager
+          .flListHandler(this.#sortOption, this.#filterOption)
+          .then((data) => this.setState({ list: data }));
+      }, 11000);
     }
   }
 
@@ -193,6 +95,7 @@ export default class MainSearchScreen extends Component {
      * @param {Object} item Data of carpark that has been selected by user
      */
     const selectItem = (item) => {
+      console.log(this.#info);
       this.#navigation.navigate("Summary", {
         cpInfo: item,
         locationInfo: this.#info,
@@ -336,7 +239,9 @@ export default class MainSearchScreen extends Component {
      */
     const onPress = (selectedIndex) => {
       this.#sortOption = selectedIndex;
-      this.flListHandler();
+      this.#manager
+        .flListHandler(this.#sortOption, this.#filterOption)
+        .then((data) => this.setState({ list: data }));
     };
 
     /**
@@ -347,7 +252,9 @@ export default class MainSearchScreen extends Component {
       var temp = [...this.#filterOption];
       temp[index] = !this.#filterOption[index];
       this.#filterOption = temp;
-      this.flListHandler();
+      this.#manager
+        .flListHandler(this.#sortOption, this.#filterOption)
+        .then((data) => this.setState({ list: data }));
     };
 
     /**

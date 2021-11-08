@@ -9,10 +9,8 @@ import {
 } from "react-native";
 import styles from "../../styles/AppStyles";
 import * as SQLite from "expo-sqlite";
-import NearbyCpInfoTable from "../../utils/db/NearbyCpInfoTable";
-import GetData from "../../utils/api/GetData";
-import SearchHistoryTable from "../../utils/db/SearchHistoryTable";
 import { Icon } from "react-native-elements";
+import SearchScreenManager from "../../utils/ScreenManagers/SearchScreenManager";
 
 db = SQLite.openDatabase("cpour.db");
 
@@ -32,8 +30,8 @@ export default class SearchScreen extends Component {
   #searchHistory = [];
   #rendered = false;
   #defaultAddress = this.props.route.params.defaultValue;
-  #nearbyCpInfoTable = new NearbyCpInfoTable();
   #textInputRef = createRef();
+  #manager = new SearchScreenManager();
 
   constructor(props) {
     super(props);
@@ -89,41 +87,23 @@ export default class SearchScreen extends Component {
           });
         });
       } else {
-        addressSubmitHandler(address);
+        this.#manager
+          .addressSubmitHandler(address)
+          .then((data) => {
+            this.setState({ sHistory: false });
+
+            if (data["found"] == 0) {
+              this.setState({ list: [] });
+            } else {
+              this.#locationList = data["results"];
+
+              this.setState({ list: this.#locationList });
+            }
+          })
+          .catch((error) => {
+            this.#locationList = [];
+          });
       }
-    };
-
-    /**
-     * Retrieves address information from OneMap Search API and sets results to ScrollView
-     * @param {string} address Address input by user into textInput search bar
-     */
-
-    const addressSubmitHandler = async (address) => {
-      const URL =
-        "https://developers.onemap.sg/commonapi/search?searchVal=" +
-        address +
-        "&getAddrDetails=Y&returnGeom=Y&pageNum=1";
-      const getData = new GetData();
-      var resultPromise = getData
-        .getData(URL) // to store promise returned by GetData
-        .then((data) => {
-          this.setState({ sHistory: false });
-
-          if (data["found"] == 0) {
-            // if no results
-            this.setState({ list: [] });
-          } else {
-            this.#locationList = data["results"];
-
-            this.setState({ list: this.#locationList });
-          }
-        })
-        .catch((error) => {
-          this.#locationList = [];
-        });
-
-      await resultPromise;
-      return;
     };
 
     /**
@@ -131,9 +111,8 @@ export default class SearchScreen extends Component {
      * @param {Object} item Single autocomplete suggestion's data
      */
     const selectItem = (item) => {
-      this.#nearbyCpInfoTable.recreateNearbyCpInfoTable();
-      const searchHistoryTable = new SearchHistoryTable();
-      searchHistoryTable.setSearchHistoryTable(item);
+      this.#manager.tableHandler(item);
+      console.log(item);
       setTimeout(
         () =>
           this.#navigation.navigate("CpSearch", {

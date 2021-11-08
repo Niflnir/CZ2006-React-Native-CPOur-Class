@@ -1,19 +1,14 @@
 import React, { Component } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import styles from "../styles/AppStyles";
-import * as SQLite from "expo-sqlite";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
-import LocationServices from "../utils/locationServices/LocationServices";
-import GetData from "../utils/api/GetData";
-import FavouritesTable from "../utils/db/FavouritesTable";
 import { Icon } from "react-native-elements";
-import { getToken, removeFromFavourites } from "../utils/DbServices";
-db = SQLite.openDatabase("cpour.db");
+import FavouritesScreenManager from "../utils/ScreenManagers/FavouritesScreenManager";
 
 /**
  * Displays list of destination-carpark pairs in user's favourites list
  * @property {string} status Whether or not user has granted location permissions
- * @property {LocationServices} getLocationServices Object of LocationServices class
+ * @property {API} api Object of API class
  * @property {FavouritesTable} fav Object of FavouritesTable class
  * @property {boolean} grey Whether or not current item in favourites list should be displayed with grey background
  * @property {Object} info Current location data
@@ -24,14 +19,13 @@ db = SQLite.openDatabase("cpour.db");
 export default class FavouritesScreen extends Component {
   #navigation = this.props.navigation;
   #status = "";
-  #getLocationServices = new LocationServices();
-  #fav = new FavouritesTable();
   #grey = false;
   #info = {
     currentLatLong: "",
     currentPostalCode: "",
   };
   #loading = true;
+  #manager = new FavouritesScreenManager();
   constructor(props) {
     super(props);
     this.state = {
@@ -41,77 +35,18 @@ export default class FavouritesScreen extends Component {
   componentDidMount() {
     const unsubscribe = this.props.navigation.addListener("focus", () => {
       this.#loading = true;
-      this.initializeInfo();
-      return;
-    });
-  }
-
-  /**
-   * Sets values of relevant variables so favourites list can be displayed
-   */
-  async initializeInfo() {
-    this.#fav.createFavouritesTable();
-    const TOKEN = getToken();
-    this.#getLocationServices
-      .getLocationPermission()
-      .then((data) => {
-        this.#status = data;
-      })
-      .catch((error) => console.log("location error: ", error));
-
-    await this.#getLocationServices.getLocation().then((data) => {
-      this.#info.currentLatLong =
-        JSON.stringify(data["coords"]["latitude"]) +
-        "," +
-        JSON.stringify(data["coords"]["longitude"]);
-
-      const getData = new GetData();
-      const URL =
-        "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
-        this.#info.currentLatLong +
-        "&token=" +
-        TOKEN;
-      getData.getData(URL).then((data) => {
-        data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
-          ? (this.#info.currentPostalCode =
-              data["GeocodeInfo"][0]["POSTALCODE"])
-          : (this.#info.currentPostalCode = "Postal code unavailable");
-      });
-    });
-
-    setTimeout(() => this.flListHandler(), 2000);
-  }
-
-  /**
-   * Sets list to be displayed in flatlist
-   */
-  flListHandler() {
-    console.log("getting list");
-
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM favourites",
-        [],
-        (tx, results) => {
-          if (results.rows["_array"].length == 0) {
-            this.setState({
-              list: [
-                {
-                  address: "No carparks in favourites list",
-                  c_lots_available: "",
-                  total_distance: "",
-                },
-              ],
-            });
-          } else {
-            this.setState({ list: results.rows["_array"] });
-          }
-        },
-        (tx, err) => console.log(err)
+      this.#info = this.#manager.initializeInfo();
+      setTimeout(
+        () =>
+          this.#manager
+            .flListHandler()
+            .then((data) => this.setState({ list: data })),
+        2000
       );
+      this.#loading = false;
     });
-    this.#loading = false;
   }
+
   /**
    * Displays UI components of screen
    */
@@ -156,7 +91,7 @@ export default class FavouritesScreen extends Component {
       } else {
         postal = item.destination_postal;
       }
-      removeFromFavourites(item.car_park_no, postal);
+      this.#manager.removeFromFavourites(item.car_park_no, postal);
       this.#loading = true;
       this.initializeInfo();
     };

@@ -11,22 +11,25 @@ export default class LocationServices {
    */
   async getLocation() {
     let location = await Location.getCurrentPositionAsync({});
-    return location;
+    var latLong =
+      location["coords"]["latitude"] + "," + location["coords"]["longitude"];
+    return latLong;
   }
 
   /**
    * Asks user for permission to access location services
-   * @returns {string} "Granted" if user has granted location permissions
+   * @returns {Location.PermissionStatus.GRANTED} "Granted" if user has granted location permissions
    */
   async getLocationPermission() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    var { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
         "Warning",
         "Permission to access location was denied. You will only be able to access limited features of this app."
       );
       return;
+    } else {
+      return "granted";
     }
-    return status;
   }
 }

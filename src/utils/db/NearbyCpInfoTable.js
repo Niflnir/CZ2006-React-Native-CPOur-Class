@@ -1,6 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import GetLots from "../api/GetLots";
-import GetRoute from "../api/GetRoute";
+import Services from "../Services";
 import GetGracePeriod from "../GetGracePeriod";
 import GetParkingRates from "../GetParkingRates";
 db = SQLite.openDatabase("cpour.db");
@@ -82,8 +81,8 @@ export default class NearbyCpInfoTable {
 
   async setTable(toLatLong, currentLatLong) {
     console.log("getting");
-    const getLots = new GetLots();
-    const lotData = await getLots.getLots();
+    const api = new Services();
+    const lotData = await api.getLots();
 
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM cpInfo;", [], async (tx, results) => {
@@ -124,13 +123,7 @@ export default class NearbyCpInfoTable {
                 );
                 // to store distance, time, and other route info
 
-                const getRoute = new GetRoute();
-                getRoute.getRoute(
-                  lat_long,
-                  toLatLong,
-                  car_park_no,
-                  currentLatLong
-                );
+                api.getRoute(lat_long, toLatLong, car_park_no, currentLatLong);
                 const cpLots = lotData.filter(
                   (d) => d.carpark_number == car_park_no
                 );

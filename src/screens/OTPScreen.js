@@ -10,12 +10,7 @@ import {
 import styles from "../styles/AppStyles";
 import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
-import {
-  checkSignedIn,
-  initializeFavourites,
-  setSignedIn,
-} from "../utils/DbServices";
-import NearbyCpInfoTable from "../utils/db/NearbyCpInfoTable";
+import OTPScreenManager from "../utils/ScreenManagers/OTPScreenManager";
 
 export default class OTPScreen extends Component {
   /**
@@ -64,6 +59,7 @@ export default class OTPScreen extends Component {
   #phoneNumber = this.props.route.params.phoneNumber;
   #temp;
   #verificationId = "";
+  #manager = new OTPScreenManager();
   componentDidMount() {
     try {
       if (this.#FIREBASE_CONFIG.apiKey) {
@@ -132,19 +128,11 @@ export default class OTPScreen extends Component {
       );
       const authResult = await firebase.auth().signInWithCredential(credential);
       this.setState({ verificationId: "", verificationCode: "" });
-      const signedIn = checkSignedIn();
-      if (!signedIn) {
-        const nearbyCpInfoTable = new NearbyCpInfoTable();
-        nearbyCpInfoTable.createNearbyCpInfoTable();
-        initializeFavourites();
-        setSignedIn();
+      const validSignIn = this.#manager.checkValidSignIn();
+      if (validSignIn) {
         this.#navigation.navigate("CpSearch");
       } else {
-        Alert.alert(
-          "Error",
-          "Existing account found under this phone number is currently logged into another device. Please logout and try again, or register an account under a different phone number."
-        );
-        firebase.auth().signOut();
+        this.#navigation.navigate("WelcomeScreen");
       }
     } catch (err) {
       if (

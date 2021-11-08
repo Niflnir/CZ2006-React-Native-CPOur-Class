@@ -18,16 +18,17 @@ try {
   // ignore app already initialized error on snack
 }
 // Check whether the user is signed in to the app
-export const checkSignedIn = () => {
+export const checkSignedIn = async () => {
   var user = firebase.auth().currentUser.uid;
   var status;
-  firebase
-    .database()
-    .ref(`signedInStatus/${user}`)
-    .on("value", (snapshot) => {
-      status = snapshot.val().signedIn;
-    });
-  return status;
+  return new Promise(function (resolve, reject) {
+    firebase
+      .database()
+      .ref(`signedInStatus/${user}`)
+      .on("value", (snapshot) => {
+        resolve(snapshot.val().signedIn);
+      });
+  });
 };
 // Sign out the user from the app
 export const setSignedOut = () => {
@@ -39,46 +40,13 @@ export const setSignedIn = () => {
   var user = firebase.auth().currentUser.uid;
   firebase.database().ref(`signedInStatus/${user}`).update({ signedIn: true });
 };
-// Add carpark to the favourites page
-export const addToFavourites = (cpInfo, postal, locationInfo) => {
-  var user = firebase.auth().currentUser.uid;
-  firebase
-    .database()
-    .ref(`Favourites/${user}/${cpInfo.car_park_no}/${postal}`)
-    .update({ cpInfo: cpInfo, locationInfo: locationInfo });
-};
 //
 export const initializeFavourites = () => {
   var user = firebase.auth().currentUser.uid;
   const temp = { initialized: true };
   firebase.database().ref(`Favourites/${user}`).update(temp);
 };
-// Remove carpark from favourties page
-export const removeFromFavourites = (car_park_no, postal) => {
-  var user = firebase.auth().currentUser.uid;
-  firebase
-    .database()
-    .ref(`Favourites/${user}/${car_park_no}/${postal}`)
-    .remove();
-};
-// Check if carpark is favourited
-export const checkIfFavourited = (car_park_no, postal) => {
-  var user = firebase.auth().currentUser.uid;
-  var status = false;
-  firebase
-    .database()
-    .ref(`Favourites/${user}/`)
-    .on("value", (snapshot) => {
-      if (snapshot.val() != null && snapshot.val() != undefined) {
-        if (snapshot.val().hasOwnProperty(car_park_no)) {
-          if (snapshot.val()[car_park_no].hasOwnProperty(postal)) {
-            status = true;
-          }
-        }
-      }
-    });
-  return status;
-};
+
 // Get the list of favourted carparks
 export const getFavourites = () => {
   var user = firebase.auth().currentUser.uid;
@@ -99,8 +67,8 @@ export const getToken = () => {
     .ref(`TOKEN/`)
     .on("value", (snapshot) => {
       token = snapshot.val();
-      console.log("in: ", token);
+      // console.log("in: ", token);
     });
-  console.log("out: ", token);
+  // console.log("out: ", token);
   return token;
 };

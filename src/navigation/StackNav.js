@@ -20,8 +20,9 @@ import MapScreen from "../screens/MapScreen";
 import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
-import { setSignedOut } from "../utils/DbServices";
+import { checkSignedIn, setSignedOut } from "../utils/DbServices";
 import DropAll from "../utils/db/DropAll";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
 const FIREBASE_CONFIG = {
@@ -71,13 +72,18 @@ export default class StackNav {
       setTimeout(() => searchHistoryTable.createSearchHistoryTable(), 500);
     }
 
-    function logout() {
+    async function logout() {
       try {
         if (FIREBASE_CONFIG.apiKey) {
           firebase.initializeApp(FIREBASE_CONFIG);
         }
       } catch (err) {
         // ignore app already initialized error on snack
+      }
+      try {
+        await AsyncStorage.setItem("@storage_Key", value);
+      } catch (e) {
+        // saving error
       }
       const drop = new DropAll();
       drop.dropAll();
@@ -108,7 +114,21 @@ export default class StackNav {
       }
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          setLoggedIn(true);
+          checkSignedIn().then(async (signedIn) => {
+            if (!signedIn) {
+              setLoggedIn(true);
+            }
+            try {
+              const value = await AsyncStorage.getItem("loggedIn");
+              if (value !== null) {
+                setLoggedIn(value === "true");
+              } else {
+                await AsyncStorage.setItem("loggedIn", loggedIn.toString());
+              }
+            } catch (e) {
+              console.log("async error set: ", e);
+            }
+          });
         }
       });
       if (loggedIn) {

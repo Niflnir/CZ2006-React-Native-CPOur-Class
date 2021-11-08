@@ -1,6 +1,6 @@
 /** Calculates the amount of time the user can park their car or estimated parking fee for a specified duration
  */
-export default class BudgetCalculator {
+export default class BudgetingScreenManager {
   /**
    * Calculates duration of time user can expect to park car subject to input budget
    * @param {number} budget Budget input by user

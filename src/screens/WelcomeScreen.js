@@ -1,16 +1,14 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import {
-  Button,
-  StyleSheet,
   Text,
   View,
   Image,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Alert,
 } from "react-native";
 import styles from "../styles/AppStyles";
+import WelcomeScreenManager from "../utils/ScreenManagers/WelcomeScreenManager";
 
 /**
  * When user opens app for first time after app installation or logout, user is prompted to enter phone number for login/registration
@@ -23,6 +21,7 @@ export default class WelcomeScreen extends Component {
     };
   }
   #navigation = this.props.navigation;
+  #manager = new WelcomeScreenManager();
 
   /**
    * Displays UI components of screen
@@ -40,12 +39,7 @@ export default class WelcomeScreen extends Component {
      * If user inputs valid phoneNumber, directs user to OTPScreen, otherwise displays relevant error message
      */
     const onPressContinueHandler = () => {
-      if (this.state.phoneNumber.length != 8 || isNaN(this.state.phoneNumber)) {
-        Alert.alert(
-          "Error",
-          "Please enter a valid 8 digit Singapore-registered phone number"
-        );
-      } else {
+      if (this.#manager.checkValidNumber(this.state.phoneNumber)) {
         this.#navigation.navigate("OTPScreen", {
           phoneNumber: this.state.phoneNumber,
         });

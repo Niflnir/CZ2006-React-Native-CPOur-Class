@@ -35,7 +35,7 @@ db = SQLite.openDatabase("cpour.db");
 export default class MapsScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
-  #cpLatLong = this.#cpInfo.lat_long.split(",");
+  #cpLatLong = this.#cpInfo["lat_long"].split(",");
   #locationLatLong = this.#locationInfo.latLong.split(",");
   #currentLocationLatLong = this.#locationInfo.currentLatLong.split(",");
   #mapMarkersPgs = [];
@@ -60,6 +60,7 @@ export default class MapsScreen extends Component {
    * Sets values of map compnents to be used in ExpoLeaflet
    */
   render() {
+    console.log(this.#locationInfo);
     var mapMarkersPgs = [];
     db.transaction((tx) => {
       tx.executeSql(

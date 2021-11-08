@@ -1,7 +1,7 @@
 import { getFavourites } from "../DbServices";
 import GetGracePeriod from "../GetGracePeriod";
 import ParkingRates from "../GetParkingRates";
-import GetLots from "../api/GetLots";
+import Services from "../Services";
 import * as SQLite from "expo-sqlite";
 import NearbyCpInfoTable from "./NearbyCpInfoTable";
 
@@ -18,8 +18,8 @@ export default class FavouritesTable {
     console.log("creating favourites");
     const nearby = new NearbyCpInfoTable();
 
-    const getLots = new GetLots();
-    lotData = await getLots.getLots();
+    const api = new Services();
+    lotData = await api.getLots();
     db.transaction((tx) => {
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS favourites (" +

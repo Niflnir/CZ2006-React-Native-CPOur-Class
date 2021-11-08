@@ -9,7 +9,7 @@ import {
   Keyboard,
 } from "react-native";
 import styles from "../styles/AppStyles";
-import BudgetCalculator from "../utils/BudgetCalculator";
+import BudgetingScreenManager from "../utils/ScreenManagers/BudgetingScreenManager";
 
 /**
  * Allows user to input maximum budget and displays corresponding amount of time user can park
@@ -18,6 +18,7 @@ import BudgetCalculator from "../utils/BudgetCalculator";
  */
 export default class BudgetingScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
+  #manager = new BudgetingScreenManager();
   constructor(props) {
     super(props);
     this.state = {
@@ -70,9 +71,8 @@ export default class BudgetingScreen extends Component {
      */
     const onPressCalculateTime = () => {
       Keyboard.dismiss();
-      const budgetCalculator = new BudgetCalculator();
       this.setState({
-        resultTime: budgetCalculator.calculateTime(
+        resultTime: this.#manager.calculateTime(
           this.state.budget,
           this.state.vehicleType,
           this.#cpInfo
@@ -84,10 +84,9 @@ export default class BudgetingScreen extends Component {
      * Calculates estimated parking fee when user enters duration they wish to park
      */
     const onPressCalculateBudget = () => {
-      const budgetCalculator = new BudgetCalculator();
       Keyboard.dismiss();
       this.setState({
-        resultBudget: budgetCalculator.calculateBudget(
+        resultBudget: this.#manager.calculateBudget(
           this.state.hours,
           this.state.minutes,
           this.state.vehicleType,
