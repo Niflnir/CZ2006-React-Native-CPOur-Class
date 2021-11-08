@@ -18,6 +18,8 @@ export default class WelcomeScreen extends Component {
 
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     /**

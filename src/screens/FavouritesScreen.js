@@ -7,14 +7,7 @@ import FavouritesScreenManager from "../utils/ScreenManagers/FavouritesScreenMan
 
 /**
  * Displays list of destination-carpark pairs in user's favourites list
- * @property {string} status Whether or not user has granted location permissions
- * @property {API} api Object of API class
- * @property {FavouritesTable} fav Object of FavouritesTable class
- * @property {boolean} grey Whether or not current item in favourites list should be displayed with grey background
- * @property {Object} info Current location data
- * @property {string} info.currentLatLong Latitude and longitude of current location
- * @property {string} info.currentPostalCode Postal code of current location
- * @property {boolean} loading Whether or not the favourites list is loading
+ *
  */
 export default class FavouritesScreen extends Component {
   #navigation = this.props.navigation;
@@ -49,6 +42,8 @@ export default class FavouritesScreen extends Component {
 
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     /**
@@ -106,7 +101,7 @@ export default class FavouritesScreen extends Component {
     /**
      * Sets styling and data of each item to be displayed in flatlist
      * @param {*} item Data of destination-carpark pair to be styled and displayed
-     * @returns {*} Styled data
+     * @returns {View} Styled data
      */
     const renderListItems = ({ item }) => {
       if (item["address"] == "No carparks in favourites list") {

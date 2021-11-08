@@ -15,18 +15,6 @@ import OTPScreenManager from "../utils/ScreenManagers/OTPScreenManager";
 export default class OTPScreen extends Component {
   /**
    * Sends out OTP to user's input phone number, prompts user to enter OTP, and verifies OTP
-   * @property {React.RefObject<any>} ref1 Reference of first OTP digit's textInput
-   * @property {React.RefObject<any>} ref2 Reference of second OTP digit's textInput
-   * @property {React.RefObject<any>} ref3 Reference of third OTP digit's textInput
-   * @property {React.RefObject<any>} ref4 Reference of fourth OTP digit's textInput
-   * @property {React.RefObject<any>} ref5 Reference of fifth OTP digit's textInput
-   * @property {React.RefObject<any>} ref6 Reference of sixth OTP digit's textInput
-   * @property {String[]} otpArray Individual OTP digits entered by user
-   * @property {Object} FIREBASE_CONFIG Stores firebase project's configuration data
-   * @property {React.RefObject<any>} recaptchaVerifier Reference of FirebaseRecaptchaVerifierModal
-   * @property {string} phoneNumber User's input phone number receieved from WelcomeScreen
-   * @property {*} temp Temporary variable used for timer
-   * @property {string} verificationId Encrypted OTP sent out to user's phone number, used to verify user's input OTP
    *
    */
   constructor(props) {
@@ -149,6 +137,8 @@ export default class OTPScreen extends Component {
 
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     /**

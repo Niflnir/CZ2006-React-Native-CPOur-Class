@@ -4,9 +4,14 @@ import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
 import PgsTable from "../db/PgsTable";
 import SearchHistoryTable from "../db/SearchHistoryTable";
 import Services from "../Services";
-
+/**
+ * Manages interaction between MainSearchScreen and control classes
+ */
 export default class MainSearchScreenManager {
-  async didMount() {
+  /**
+   * Initialize tables in local database and asks user for permission to access location services
+   */
+  didMount() {
     const pgsTable = new PgsTable();
     const cpInfoTable = new CpInfoTable();
     const searchHistoryTable = new SearchHistoryTable();
@@ -16,16 +21,14 @@ export default class MainSearchScreenManager {
     searchHistoryTable.createSearchHistoryTable();
     fav.createFavouritesTable();
     pgsTable.createPgsTable();
-    await services
-      .getLocationPermission()
-      .then((data) => {
-        status = data;
-      })
-      .catch((error) => console.log("location error: ", error));
+    services.getLocationPermission();
   }
 
   /**
    * Stores relevant location information in respective variables
+   *
+   * @param {String} postal The postal code of the selected destination
+   * @param {String} building The building name of the selected destination
    */
   async paramHandler(postal, building) {
     const services = new Services();
@@ -81,6 +84,9 @@ export default class MainSearchScreenManager {
 
   /**
    * Sets list to be displayed in flatlist
+   *
+   * @param {number} sortOption The index of the sort criteria selected by the user
+   * @param {boolean[]} filterOption An array which specifies whether each of the available filter criteria have been selected by the user
    */
   flListHandler(sortOption, filterOption) {
     var sortQuery = "c_lots_available DESC";
@@ -100,13 +106,13 @@ export default class MainSearchScreenManager {
     });
   }
   /**
+   * Creates a database query to obtained the sorted and filtered results as per the user's selection
    *
-   * @param {number} sortOption Index of sort criteria selected by user
-   * @param {boolean[]} filterOption Whether or not each filter criteria has been selected by user
-   * @returns {String} Query to be made to database `for selected sort/filter options
+   * @param {number} sortOption The index of the sort criteria selected by the user
+   * @param {boolean[]} filterOption An array which specifies whether each of the available filter criteria have been selected by the user
+   * @returns {String} Query to be made to database for selected sort/filter options
    */
   sortFilter(sortQuery, filterOption) {
-    var filterQueryArray = [];
     var filterQuery = "";
     const filterQueryOptions = [
       "h_lots_available IS NOT NULL",
@@ -118,7 +124,6 @@ export default class MainSearchScreenManager {
     ];
 
     if (filterOption.includes(false)) {
-      // min 2 test cases
       filterQuery = "WHERE ";
       for (var i = 0; i < 6; i++) {
         if (filterOption[i] == false) {
@@ -128,9 +133,8 @@ export default class MainSearchScreenManager {
             filterQuery += " AND " + filterQueryOptions[i];
           }
         }
-      } // 2 Test case
-    } // 1 test A1
-
+      }
+    }
     const sortFilterQuery =
       "SELECT * FROM nearbyCpInfo " + filterQuery + " ORDER BY " + sortQuery;
     console.log(sortFilterQuery);

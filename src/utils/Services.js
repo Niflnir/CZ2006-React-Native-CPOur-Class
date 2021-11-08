@@ -1,7 +1,9 @@
 import * as Location from "expo-location";
 import { Alert } from "react-native";
 import firebase from "firebase";
-
+/**
+ * Contains functions used across classes
+ */
 export default class Services {
   /**
    * Makes API calls
@@ -21,7 +23,7 @@ export default class Services {
   #lotData;
   /**
    * Uses getData() to make API call and store carpark lot availability data
-   * @returns {*} Data retrieved from API
+   * @returns {Object} Data retrieved from API
    */
   async getLots() {
     console.log("getting lot availability");
@@ -44,11 +46,12 @@ export default class Services {
 
   /**
    * Retrieves relevant route information from user's current location to carpark as well as from carpark
-   * to final destination and stores it in nearbyCpInfo tbale
+   * to final destination and stores it in nearbyCpInfo table
+   * Or, eetrieves relevant route information from carpark to petrol station and stores it in nearbyPgs table
    *
-   * @param {string} fromLatLong Latitude and longitude values of carpark
+   * @param {string} fromLatLong Latitude and longitude values of start location
    * @param {string} toLatLong Latitude and longitude values of destination
-   * @param {string} key Carpark number of selected carpark
+   * @param {string} key Carpark number of selected carpark or petrol station postal code
    * @param {string} currentLatLong Latitude and longitude values of user's current location
    */
   async getRoute(fromLatLong, toLatLong, key, currentLatLong) {
@@ -188,7 +191,8 @@ export default class Services {
 
   /**
    * Retrieves data on user's current location
-   * @returns {Location.LocationObject} User's current location data
+   *
+   * @returns {String}  Latitude and longitude values of user's current location
    */
   async getLocation() {
     let location = await Location.getCurrentPositionAsync({});
@@ -199,7 +203,7 @@ export default class Services {
 
   /**
    * Asks user for permission to access location services
-   * @returns {Location.PermissionStatus.GRANTED} "Granted" if user has granted location permissions
+   *
    */
   async getLocationPermission() {
     var { status } = await Location.requestForegroundPermissionsAsync();
@@ -208,12 +212,14 @@ export default class Services {
         "Warning",
         "Permission to access location was denied. You will only be able to access limited features of this app."
       );
-      return;
-    } else {
-      return "granted";
     }
   }
 
+  /**
+   * Retrieves OneMap API token from Firebase
+   *
+   * @returns {String} The OneMap API token
+   */
   getToken() {
     var token;
     firebase
@@ -292,12 +298,29 @@ export default class Services {
       });
     });
   }
+  /**
+   * Checks if peak central parking rates are applicable at the carpark
+   *
+   * @param {number} day The current day
+   * @param {number} hours The hours portion of the current time
+   * @param {number} cParkingRateRN The current parking rate at the carpark
+   * @returns
+   */
   centralParkingRate(day, hours, cParkingRateRN) {
     if (hours >= 7 && hours <= 17 && day > 0 && cParkingRateRN != 0) {
       return 1.2;
     }
     return cParkingRateRN;
   }
+
+  /**
+   * Checks if free parking is applicable at the carpark
+   *
+   * @param {number} day The current day
+   * @param {number} time The hours portion of the current time
+   * @param {String} cpFreeParking The details of free parking at the carpark
+   * @returns
+   */
   freeParking(day, time, cpFreeParking) {
     return (
       ((day == 0 || day == 5) &&
@@ -307,6 +330,12 @@ export default class Services {
       (cpFreeParking == "SUN & PH FR 1PM-10.30PM" && time >= 1300)
     );
   }
+
+  /**
+   * Updates nearbyCpInfo table with parking rates for non-car vehicels
+   *
+   * @param {String[]} queries The queries to be made to the database
+   */
   notCar(queries) {
     db.transaction((tx) => {
       tx.executeSql(queries[0], [], (tx, results) => {
@@ -355,6 +384,11 @@ export default class Services {
     });
   }
 
+  /**
+   * Gets the list of destination-carpark pairs in the favourites list in Firebase
+   *
+   * @returns {Object} The list of destination-carpark pairs in the favourites list in Firebase
+   */
   getFavourites() {
     var user = firebase.auth().currentUser.uid;
     var results;
@@ -481,6 +515,11 @@ export default class Services {
     return d;
   }
 
+  /**
+   * Checks whether or not the user is signed in to another device
+   *
+   * @returns {Promise} Whether or not the user is signed in to another device
+   */
   async checkSignedIn() {
     var user = firebase.auth().currentUser.uid;
     return new Promise(function (resolve, reject) {
@@ -493,6 +532,9 @@ export default class Services {
     });
   }
 
+  /**
+   * Drops all existing tables in local database
+   */
   dropAllTables() {
     db.transaction((tx) => {
       tx.executeSql(

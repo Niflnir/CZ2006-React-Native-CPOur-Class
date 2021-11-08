@@ -12,7 +12,6 @@ import BudgetingScreenManager from "../utils/ScreenManagers/BudgetingScreenManag
 /**
  * Allows user to input maximum budget and displays corresponding amount of time user can park
  * Or allows user to input time they wish to park and displays corresponding estimated parking fee
- * @property {Object} cpInfo Carpark information received from CpSummaryScreen
  */
 export default class BudgetingScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
@@ -31,6 +30,8 @@ export default class BudgetingScreen extends Component {
   }
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     /**

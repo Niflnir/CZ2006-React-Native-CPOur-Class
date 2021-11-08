@@ -14,12 +14,7 @@ import SearchScreenManager from "../../utils/ScreenManagers/SearchScreenManager"
 /**
  * Screen that allows user to input destination (or select current location)
  * Displays recently searched destinations as well as autocomplete suggestions for user to select
- * @property {Object[]} locationList List of destinations to be displayed in ScrollView
- * @property {Object[]} searchHistory List of recently searched destinations to be displayed in ScrollView
- * @property {boolean} rendered Whether or not the screen has been rendered
- * @property {defaultAddress}  defaultAddress The default value to be set on the textInput search bar
- * @property {NearbyCpInfoTable} nearbyCpInfoTable Object of NearbyCpInfoTable class
- * @property {React.RefObject<any>} textInputRef Reference of textInput search bar
+ *
  */
 export default class SearchScreen extends Component {
   #navigation = this.props.navigation;
@@ -55,10 +50,13 @@ export default class SearchScreen extends Component {
 
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     /**
      * Opens side bar menu (Profile page) when user clicks three-line menu button on top left
+     *
      */
     const openMenu = () => {
       this.#navigation.openDrawer();

@@ -57,6 +57,11 @@ export default class NearbyPgsTable {
     });
   }
 
+  /**
+   * Adds petrol stations in vicinity of carpark to nearbyPgs table
+   *
+   * @param {String} cpLatLong
+   */
   populate(cpLatLong) {
     const services = new Services();
     db.transaction((tx) => {

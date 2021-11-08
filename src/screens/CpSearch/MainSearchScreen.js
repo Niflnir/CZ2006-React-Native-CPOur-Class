@@ -16,6 +16,7 @@ import MainSearchScreenManager from "../../utils/ScreenManagers/MainSearchScreen
 
 /**
  * Application screen that prompts user to input destination and displays nearby carparks
+ * Allows user to sort/filter nearby carpark results
  *
  */
 export default class MainSearchScreen extends Component {
@@ -105,7 +106,7 @@ export default class MainSearchScreen extends Component {
     /**
      * Sets styling and data of each item to be displayed in flatlist and returns styled data
      * @param {*} item Data of individual carparks to be displayed in flatlist
-     * @returns {Object} Styled UI component
+     * @returns {View} Styled UI component
      */
     const renderListItems = ({ item }) => {
       var sortColor;

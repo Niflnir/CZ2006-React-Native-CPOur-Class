@@ -43,7 +43,6 @@ export default class NearbyCpInfoTable {
    * @param {string} toLatLong Latitude and longitude values of destination
    * @param {string} currentLatLong Latitude and longitude values of user's current location
    */
-
   async setTable(toLatLong, currentLatLong) {
     console.log("getting");
     const services = new Services();

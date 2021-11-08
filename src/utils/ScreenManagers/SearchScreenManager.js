@@ -3,8 +3,16 @@ import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
 import SearchHistoryTable from "../db/SearchHistoryTable";
 import * as SQLite from "expo-sqlite";
 db = SQLite.openDatabase("cpour.db");
-
+/**
+ * Manages interaction between SearchScreen and control classes
+ */
 export default class SearchScreenManager {
+  /**
+   * Creates nearbyCpInfoTable and updates searchHistory table if required
+   *
+   * @param {boolean} currentLocation Whether "Current location" was selected by the user
+   * @param {Object} item The details of the selected destination
+   */
   tableHandler(currentLocation, item) {
     const nearbyCpInfoTable = new NearbyCpInfoTable();
     nearbyCpInfoTable.recreateNearbyCpInfoTable();
@@ -14,6 +22,11 @@ export default class SearchScreenManager {
     }
   }
 
+  /**
+   * Obtains the list of items in the searchHistory table
+   *
+   * @returns {Promise} The list of items in the searchHistory table
+   */
   getSearchHistory() {
     return new Promise(function (resolve, reject) {
       db.transaction((tx) => {
@@ -24,6 +37,12 @@ export default class SearchScreenManager {
     });
   }
 
+  /**
+   * Obtains list of locations matching the user's input keyword address
+   *
+   * @param {String} address The keyword address input by the user
+   * @returns {Object} The list of locations matching the keyword address
+   */
   addressSubmitHandler(address) {
     const URL =
       "https://developers.onemap.sg/commonapi/search?searchVal=" +

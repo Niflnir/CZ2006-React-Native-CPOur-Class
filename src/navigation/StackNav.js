@@ -34,7 +34,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "872099527391",
   appId: "1:872099527391:web:c9f35e7bef7d4b599c876a",
 };
-
+/**
+ * Allows navigation between screens
+ */
 export default class StackNav {
   StackNav() {
     const services = new Services();

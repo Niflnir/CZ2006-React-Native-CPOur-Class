@@ -21,11 +21,6 @@ import MapScreenManager from "../utils/ScreenManagers/MapScreenManager";
 
 /**
  * Displays integrated map with routes from current location to carpark, as well as from carpark to final destination
- * @property {Object} cpInfo Carpark information received from CpSummaryScreen
- * @property {Object} locationInfo Location information receieved from CpSummaryScreen
- * @property {String[]} cpLatLong Separated latitude and longitude values of carpark
- * @property {String[]} locationLatLong Separated latitude and longitude values of user's final destination
- * @property {String[]} currentLocationLatLong Separated latitude and longitude values of user's current location
  */
 export default class MapsScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
@@ -54,6 +49,8 @@ export default class MapsScreen extends Component {
   /**
    * Displays UI components of screen
    * Sets values of map compnents to be used in ExpoLeaflet
+   *
+   * @returns {View} The UI components
    */
   render() {
     console.log(this.#locationInfo);
@@ -108,8 +105,8 @@ export default class MapsScreen extends Component {
         shapeType: "polyline",
         color: "darkblue",
         weight: 4,
-        id: polylinePos[1],
-        positions: polylinePos[0],
+        id: polylinePos["btnId"],
+        positions: polylinePos["latLong"],
       },
     ];
 
@@ -140,8 +137,8 @@ export default class MapsScreen extends Component {
           shapeType: "polyline",
           color: "darkgreen",
           weight: 4,
-          id: polylinePosCurrent[1],
-          positions: polylinePosCurrent[0],
+          id: polylinePosCurrent["btnId"],
+          positions: polylinePosCurrent["latLong"],
         },
       ];
       if (rInfo.hasOwnProperty("phyroute")) {
@@ -153,8 +150,8 @@ export default class MapsScreen extends Component {
             shapeType: "polyline",
             color: "maroon",
             weight: 4,
-            id: polylinePosAlt[1],
-            positions: polylinePosAlt[0],
+            id: polylinePosAlt["btnId"],
+            positions: polylinePosAlt["latLong"],
           },
         ];
       }
@@ -168,8 +165,8 @@ export default class MapsScreen extends Component {
               shapeType: "polyline",
               color: colors[i],
               weight: 4,
-              id: polylinePosAlt[1],
-              positions: polylinePosAlt[0],
+              id: polylinePosAlt["btnId"],
+              positions: polylinePosAlt["latLong"],
             },
           ];
         }
@@ -231,6 +228,9 @@ export default class MapsScreen extends Component {
       this.setState({ details: true });
     };
 
+    /**
+     * When user clicks on "Petrol Stations" button, displays list of nearby petrol stations and their locations on the map
+     */
     const displayPgs = () => {
       this.setState({ pgs: true });
     };

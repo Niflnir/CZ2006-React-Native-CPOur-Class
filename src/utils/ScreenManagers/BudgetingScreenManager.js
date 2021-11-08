@@ -1,4 +1,5 @@
-/** Calculates the amount of time the user can park their car or estimated parking fee for a specified duration
+/**
+ * Manages main logic behind BudgetingScreen
  */
 export default class BudgetingScreenManager {
   /**

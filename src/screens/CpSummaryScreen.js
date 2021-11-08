@@ -12,15 +12,10 @@ import CpSummaryScreenManager from "../utils/ScreenManagers/CpSummaryScreenManag
 
 /**
  * Displays detailed carpark information summary and allows user access to favourites, budgeting, and journey planning features
- * @property {Object} cpInfo Carpark information received from MainSearchScreen
- * @property {Object} locationInfo Location information received from MainSearchScreen
- * @property {string} currentLatLong Latitude and longitude values of current location receieved from MainSearchScreen
- * @property {string} status Whether or not user has granted location permissios, received from MainSearchScreen
  */
 export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
-  #currentLatLong = this.#locationInfo.currentLatLong;
   #navigation = this.props.navigation;
   #manager = new CpSummaryScreenManager();
 
@@ -40,6 +35,8 @@ export default class CpSummaryScreen extends Component {
 
   /**
    * Displays UI components of screen
+   *
+   * @returns {View} The UI components
    */
   render() {
     var address;

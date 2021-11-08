@@ -31,6 +31,9 @@ export default class PgsTable {
       );
     });
   }
+  /**
+   * Drops existing pgs table
+   */
   drop() {
     db.transaction((tx) => {
       tx.executeSql(
@@ -41,6 +44,10 @@ export default class PgsTable {
       );
     });
   }
+
+  /**
+   * Prints pgs table
+   */
   print() {
     db.transaction((tx) => {
       tx.executeSql(

@@ -205,6 +205,10 @@ export default class FavouritesTable {
     services.notCar(queries2);
     services.getGracePeriod();
   }
+
+  /**
+   * Prints Favourites table
+   */
   print() {
     db.transaction((tx) => {
       console.log("printing");

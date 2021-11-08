@@ -4,8 +4,16 @@ import Services from "../Services";
 import * as SQLite from "expo-sqlite";
 
 db = SQLite.openDatabase("cpour.db");
-
+/**
+ * Manages interaction between FavouritesScreen and control classes
+ */
 export default class FavouritesScreenManager {
+  /**
+   * Removes exisiting destination-carpark pair from local favoutites table and user account in Firebase
+   *
+   * @param {String} car_park_no The carpark number of the selected carpark
+   * @param {String} postal The postal code of the selected destination
+   */
   removeFromFavourites(car_park_no, postal) {
     const fav = new FavouritesTable();
     var user = firebase.auth().currentUser.uid;
@@ -16,6 +24,11 @@ export default class FavouritesScreenManager {
     fav.createFavouritesTable();
   }
 
+  /**
+   * Initializes the favourites table and gets the user's current location
+   *
+   * @returns {Object} The details of the user's curret location
+   */
   async initializeInfo() {
     const fav = new FavouritesTable();
     fav.createFavouritesTable();
@@ -51,6 +64,8 @@ export default class FavouritesScreenManager {
 
   /**
    * Sets list to be displayed in flatlist
+   *
+   * @returns {Promise} THe list of destination-carpark pairs in the user's favourites list
    */
   flListHandler() {
     console.log("getting list");
