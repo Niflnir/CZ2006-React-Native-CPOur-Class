@@ -16,20 +16,18 @@ export default class MainSearchScreenManager {
     searchHistoryTable.createSearchHistoryTable();
     fav.createFavouritesTable();
     pgsTable.createPgsTable();
-    var status;
     await services
       .getLocationPermission()
       .then((data) => {
         status = data;
       })
       .catch((error) => console.log("location error: ", error));
-    return status;
   }
 
   /**
    * Stores relevant location information in respective variables
    */
-  async paramHandler(status, paramData) {
+  async paramHandler(postal, building) {
     const services = new Services();
     services.getLocationPermission();
     var info = {
@@ -58,15 +56,14 @@ export default class MainSearchScreenManager {
         })
         .catch((err) => console.log(err, URL));
     });
-    info.postal = paramData["POSTAL"];
+    info.postal = postal; //////// postal :
 
-    if (paramData["BUILDING"] == "Current location") {
+    if (building == "Current location") {
       info["postal"] = "000000";
       info["latLong"] = info["currentLatLong"];
       info["locationData"]["ADDRESS"] = "Current location";
       info["address"] = "";
     } else {
-      info["locationData"] = paramData;
       info["address"] = info["locationData"]["ADDRESS"];
       info["latLong"] =
         info["locationData"]["LATITUDE"] +

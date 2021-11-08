@@ -12,7 +12,7 @@ export default class OTPScreenManager {
         valid = true;
         const nearbyCpInfoTable = new NearbyCpInfoTable();
         nearbyCpInfoTable.createNearbyCpInfoTable();
-        this.initializeFavourites();
+        this.initialiseFavourites();
         this.setSignedIn();
       } else {
         Alert.alert(
@@ -32,7 +32,7 @@ export default class OTPScreenManager {
       .update({ signedIn: true });
   }
 
-  initializeFavourites() {
+  initialiseFavourites() {
     var user = firebase.auth().currentUser.uid;
     const temp = { initialized: true };
     firebase.database().ref(`Favourites/${user}`).update(temp);

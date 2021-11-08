@@ -28,7 +28,6 @@ export default class MainSearchScreen extends Component {
     postal: "",
   };
   #rendered = false;
-  #status = "";
   #loading = false;
   #displaying = false;
   #navigation = this.props.navigation;
@@ -47,7 +46,7 @@ export default class MainSearchScreen extends Component {
   }
 
   async componentDidMount() {
-    this.#status = this.#manager.didMount();
+    this.#manager.didMount();
   }
 
   async componentDidUpdate() {
@@ -55,12 +54,15 @@ export default class MainSearchScreen extends Component {
       this.#displaying = true;
       this.#loading = true;
       this.#rendered = true;
+      const paramData = this.props.route.params.data;
+      this.#info["locationData"] = paramData;
       await this.#manager
-        .paramHandler(this.#status, this.props.route.params.data)
+        .paramHandler(paramData.POSTAL, paramData.BUILDING)
         .then((data) => {
           this.#info = data;
         })
         .catch((err) => console.log(err));
+
       this.setState({
         txtStyle: true,
         defaultAddress: this.#info["locationData"]["ADDRESS"],

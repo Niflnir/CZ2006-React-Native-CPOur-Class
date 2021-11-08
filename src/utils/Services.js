@@ -329,7 +329,7 @@ export default class Services {
    */
   getGracePeriod(index) {
     var query;
-    index = 0
+    index == 0
       ? (query = "SELECT * FROM nearbyCpInfo")
       : (query = "SELECT * FROM favourites");
     db.transaction((tx) => {
