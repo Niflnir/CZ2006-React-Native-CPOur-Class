@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import {
-  Button,
   ScrollView,
-  StyleSheet,
   Text,
   View,
   TouchableOpacity,
@@ -10,9 +8,8 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 import { ExpoLeaflet } from "expo-leaflet";
-import RouteDecoder from "../utils/RouteDecoder";
 import BottomSheet from "../components/BottomSheet";
-import { Provider, FAB } from "react-native-paper";
+import { Provider } from "react-native-paper";
 import BtnRouteDetails from "../components/BtnRouteDetails";
 import {
   CpMarkerInfo,
@@ -20,9 +17,7 @@ import {
   DestinationMarkerInfo,
   PgsMarkerInfo,
 } from "../components/MapMarkerInfo";
-import WebView from "react-native-webview";
-import * as SQLite from "expo-sqlite";
-db = SQLite.openDatabase("cpour.db");
+import MapScreenManager from "../utils/ScreenManagers/MapScreenManager";
 
 /**
  * Displays integrated map with routes from current location to carpark, as well as from carpark to final destination
@@ -41,6 +36,7 @@ export default class MapsScreen extends Component {
   #mapMarkersPgs = [];
   #pgsInfo = [];
   #pgsInfo2 = [];
+  #manager = new MapScreenManager();
 
   constructor(props) {
     super(props);
@@ -62,36 +58,28 @@ export default class MapsScreen extends Component {
   render() {
     console.log(this.#locationInfo);
     var mapMarkersPgs = [];
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM nearbyPgs",
-        [],
-        (tx, results) => {
-          this.#pgsInfo = results.rows._array;
-          this.#pgsInfo2 = results.rows._array;
-          for (var i = 0; i < results.rows._array.length; i++) {
-            const onePgs = results.rows.item(i);
-            const onePgsLat = onePgs.latLong.split(",")[0];
-            const onePgsLong = onePgs.latLong.split(",")[1];
-            var mapMarkerPgs = {
-              id: i + 1,
-              position: {
-                lat: onePgsLat,
-                lng: onePgsLong,
-              },
-              icon: "⛽",
-              size: [20, 20],
-            };
+    this.#manager.pgsList().then((results) => {
+      this.#pgsInfo = results.rows._array;
+      this.#pgsInfo2 = results.rows._array;
+      for (var i = 0; i < results.rows._array.length; i++) {
+        const onePgs = results.rows.item(i);
+        const onePgsLat = onePgs.latLong.split(",")[0];
+        const onePgsLong = onePgs.latLong.split(",")[1];
+        var mapMarkerPgs = {
+          id: i + 1,
+          position: {
+            lat: onePgsLat,
+            lng: onePgsLong,
+          },
+          icon: "⛽",
+          size: [20, 20],
+        };
 
-            mapMarkersPgs.push(mapMarkerPgs);
-            this.#mapMarkersPgs = mapMarkersPgs;
-          }
-        },
-        (tx, error) => console.log("Map db error: ", error)
-      );
+        mapMarkersPgs.push(mapMarkerPgs);
+        this.#mapMarkersPgs = mapMarkersPgs;
+      }
     });
-    const routeDecoder = new RouteDecoder();
-    const polylinePos = routeDecoder.routeDecoder(
+    const polylinePos = this.#manager.routeDecoder(
       JSON.parse(this.#cpInfo.route_info)
     );
     const colors = ["purple", "pink", "black"];
@@ -131,7 +119,7 @@ export default class MapsScreen extends Component {
       )
     ) {
       const rInfo = JSON.parse(this.#cpInfo.route_info_from_current);
-      const polylinePosCurrent = routeDecoder.routeDecoder(rInfo);
+      const polylinePosCurrent = this.#manager.routeDecoder(rInfo);
 
       mapMarker = [
         ...mapMarker,

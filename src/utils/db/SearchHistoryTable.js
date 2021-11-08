@@ -1,5 +1,4 @@
 import * as SQLite from "expo-sqlite";
-
 db = SQLite.openDatabase("cpour.db");
 /**
  * Manages searchHistoryTable in local database to store recently searched destinations

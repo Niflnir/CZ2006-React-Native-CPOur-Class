@@ -8,11 +8,8 @@ import {
   StatusBar,
 } from "react-native";
 import styles from "../../styles/AppStyles";
-import * as SQLite from "expo-sqlite";
 import { Icon } from "react-native-elements";
 import SearchScreenManager from "../../utils/ScreenManagers/SearchScreenManager";
-
-db = SQLite.openDatabase("cpour.db");
 
 /**
  * Screen that allows user to input destination (or select current location)
@@ -48,12 +45,10 @@ export default class SearchScreen extends Component {
     }
     if (!this.#rendered) {
       this.#rendered = true;
-      db.transaction((tx) => {
-        tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
-          this.#searchHistory = results.rows["_array"];
-          this.#locationList = this.#searchHistory;
-          this.setState({ list: this.#searchHistory, sHistory: true });
-        });
+      this.#manager.getSearchHistory().then((results) => {
+        this.#searchHistory = results.rows["_array"];
+        this.#locationList = this.#searchHistory;
+        this.setState({ list: this.#searchHistory, sHistory: true });
       });
     }
   }
@@ -126,6 +121,7 @@ export default class SearchScreen extends Component {
      * When user selects "Current location" button, redirects user back to CpSearchScreen and sends "Current location" as parameters
      */
     const sendCurrentLocation = () => {
+      this.#manager.tableHandler(true);
       this.#navigation.navigate("CpSearch", {
         data: { BUILDING: "Current location" },
       });

@@ -35,13 +35,13 @@ export default class FavouritesScreen extends Component {
   componentDidMount() {
     const unsubscribe = this.props.navigation.addListener("focus", () => {
       this.#loading = true;
-      this.#info = this.#manager.initializeInfo();
+      this.#manager.initializeInfo().then((data) => (this.#info = data));
       setTimeout(
         () =>
           this.#manager
             .flListHandler()
             .then((data) => this.setState({ list: data })),
-        2000
+        3000
       );
       this.#loading = false;
     });
@@ -92,8 +92,15 @@ export default class FavouritesScreen extends Component {
         postal = item.destination_postal;
       }
       this.#manager.removeFromFavourites(item.car_park_no, postal);
-      this.#loading = true;
-      this.initializeInfo();
+      this.#manager.initializeInfo().then((data) => (this.#info = data));
+      console.log(this.#info);
+      setTimeout(
+        () =>
+          this.#manager
+            .flListHandler()
+            .then((data) => this.setState({ list: data })),
+        1000
+      );
     };
 
     /**

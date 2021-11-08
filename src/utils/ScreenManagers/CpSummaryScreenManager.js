@@ -1,7 +1,8 @@
 import NearbyPgsTable from "../db/NearbyPgsTable";
 import firebase from "firebase";
 import FavouritesTable from "../db/FavouritesTable";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
+import Services from "../Services";
 
 export default class CpSummaryScreenManager {
   tableHandler(latLong) {
@@ -52,8 +53,9 @@ export default class CpSummaryScreenManager {
    *
    * If location permissions denied, displays error message
    */
-  proceedToMapsHandler(status, currentLatLong, cpLatLong) {
-    this.currentLocationError(status);
+  proceedToMapsHandler(currentLatLong, cpLatLong) {
+    const services = new Services();
+    services.getLocationPermission();
     const url = Platform.select({
       ios: `maps:0,0?saddr=${currentLatLong}&daddr=${cpLatLong}&directionsmode=driving`,
       android: `google.navigation:q=${cpLatLong}&mode=d`,
@@ -67,8 +69,9 @@ export default class CpSummaryScreenManager {
    *
    * If location permissions denied, displays error message
    */
-  proceedToMapsHandler2(status, currentLatLong, cpLatLong) {
-    this.currentLocationError(status);
+  proceedToMapsHandler2(currentLatLong, cpLatLong) {
+    const services = new Services();
+    services.getLocationPermission();
     const url =
       "http://maps.google.com/maps?saddr=" +
       currentLatLong +
@@ -77,15 +80,5 @@ export default class CpSummaryScreenManager {
       "&dirflg=d,t";
 
     Linking.openURL(url);
-  }
-
-  currentLocationError(status) {
-    if (status != "granted") {
-      Alert.alert(
-        "Warning",
-        "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
-      );
-      return;
-    }
   }
 }

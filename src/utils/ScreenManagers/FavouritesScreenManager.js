@@ -1,9 +1,7 @@
 import FavouritesTable from "../db/FavouritesTable";
 import firebase from "firebase";
 import Services from "../Services";
-import { getToken } from "../DbServices";
 import * as SQLite from "expo-sqlite";
-import { Alert } from "react-native";
 
 db = SQLite.openDatabase("cpour.db");
 
@@ -21,29 +19,18 @@ export default class FavouritesScreenManager {
   async initializeInfo() {
     const fav = new FavouritesTable();
     fav.createFavouritesTable();
-    const api = new Services();
-    const TOKEN = getToken();
-    var status;
+    const services = new Services();
+    var TOKEN = services.getToken();
+    TOKEN = services.getToken();
+    console.log(TOKEN);
     var info = {
       currentLatLong: "",
       currentPostalCode: "",
     };
 
-    api
-      .getLocationPermission()
-      .then((data) => {
-        status = data;
-        if (status != "granted") {
-          Alert.alert(
-            "Warning",
-            "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
-          );
-          return;
-        }
-      })
-      .catch((error) => console.log("location error: ", error));
+    services.getLocationPermission();
 
-    await api
+    await services
       .getLocation()
       .then((data) => {
         info.currentLatLong = data;
@@ -52,7 +39,7 @@ export default class FavouritesScreenManager {
           info.currentLatLong +
           "&token=" +
           TOKEN;
-        api.getData(URL).then((data) => {
+        services.getData(URL).then((data) => {
           data["GeocodeInfo"][0].hasOwnProperty("POSTALCODE")
             ? (info.currentPostalCode = data["GeocodeInfo"][0]["POSTALCODE"])
             : (info.currentPostalCode = "Postal code unavailable");

@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Text,
-  View,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { Text, View, Image, TextInput, TouchableOpacity } from "react-native";
 import styles from "../styles/AppStyles";
 import WelcomeScreenManager from "../utils/ScreenManagers/WelcomeScreenManager";
 

@@ -1,10 +1,5 @@
-import { getFavourites } from "../DbServices";
-import GetGracePeriod from "../GetGracePeriod";
-import ParkingRates from "../GetParkingRates";
 import Services from "../Services";
 import * as SQLite from "expo-sqlite";
-import NearbyCpInfoTable from "./NearbyCpInfoTable";
-
 db = SQLite.openDatabase("cpour.db");
 
 /**
@@ -16,10 +11,8 @@ export default class FavouritesTable {
    */
   async createFavouritesTable() {
     console.log("creating favourites");
-    const nearby = new NearbyCpInfoTable();
-
-    const api = new Services();
-    lotData = await api.getLots();
+    const services = new Services();
+    lotData = await services.getLots();
     db.transaction((tx) => {
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS favourites (" +
@@ -92,7 +85,7 @@ export default class FavouritesTable {
         (tx, er) => console.log("cant table")
       );
 
-      const favouritesList = getFavourites();
+      const favouritesList = services.getFavourites();
       for (const cp in favouritesList) {
         if (cp != "initialized") {
           const oneCpInfo = favouritesList[cp];
@@ -178,7 +171,7 @@ export default class FavouritesTable {
               (d) => d.carpark_number == car_park_no
             );
             if (cpLots.length != 0) {
-              nearby.setLots(
+              services.setLots(
                 1,
                 car_park_no,
                 cpLots[0]["carpark_info"],
@@ -189,7 +182,6 @@ export default class FavouritesTable {
         }
       }
     });
-    const rate = new ParkingRates();
     const table = "favourites";
     var queries1 = [
       "SELECT * FROM " + table,
@@ -209,10 +201,9 @@ export default class FavouritesTable {
         table +
         " SET h_parking_rates_general = ? WHERE car_park_no = ?",
     ];
-    rate.getCarParkingRate(queries1);
-    rate.notCar(queries2);
-    const grace = new GetGracePeriod();
-    grace.getGracePeriod();
+    services.getCarParkingRate(queries1);
+    services.notCar(queries2);
+    services.getGracePeriod();
   }
   print() {
     db.transaction((tx) => {

@@ -20,7 +20,7 @@ import MapScreen from "../screens/MapScreen";
 import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
-import { checkSignedIn, setSignedOut } from "../utils/DbServices";
+import Services from "../utils/Services";
 import DropAll from "../utils/db/DropAll";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -87,12 +87,18 @@ export default class StackNav {
       }
       const drop = new DropAll();
       drop.dropAll();
-      setSignedOut();
+
+      var user = firebase.auth().currentUser.uid;
+      firebase
+        .database()
+        .ref(`signedInStatus/${user}`)
+        .update({ signedIn: false });
       firebase.auth().signOut();
       Restart();
     }
 
     function stackNav() {
+      const services = new Services();
       const Stack = createNativeStackNavigator();
       const [loggedIn, setLoggedIn] = useState(false);
       const FIREBASE_CONFIG = {
@@ -114,7 +120,7 @@ export default class StackNav {
       }
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          checkSignedIn().then(async (signedIn) => {
+          services.checkSignedIn().then(async (signedIn) => {
             if (!signedIn) {
               setLoggedIn(true);
               try {

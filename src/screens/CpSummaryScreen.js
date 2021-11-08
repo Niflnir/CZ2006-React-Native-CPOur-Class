@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import styles from "../styles/AppStyles";
 import { Icon } from "react-native-elements";
-import FavouritesTable from "../utils/db/FavouritesTable";
 import CpSummaryScreenManager from "../utils/ScreenManagers/CpSummaryScreenManager";
 
 /**
@@ -22,7 +21,6 @@ export default class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
   #currentLatLong = this.#locationInfo.currentLatLong;
-  #status = this.props.route.params.status;
   #navigation = this.props.navigation;
   #manager = new CpSummaryScreenManager();
 
@@ -68,7 +66,6 @@ export default class CpSummaryScreen extends Component {
      * favourites list if already there
      */
     const favouritesHandler = () => {
-      const fav = new FavouritesTable();
       if (this.state.favourited) {
         this.#manager.removeFromFavourites(this.#cpInfo.car_park_no, postal);
 
@@ -233,7 +230,6 @@ export default class CpSummaryScreen extends Component {
           style={[styles.btnCpSummary, { flex: 0 }]}
           onPress={() =>
             this.#manager.proceedToMapsHandler(
-              this.#status,
               this.#locationInfo.currentLatLong,
               this.#cpInfo.lat_long
             )
@@ -245,7 +241,6 @@ export default class CpSummaryScreen extends Component {
           style={[styles.btnCpSummary, { flex: 0, marginTop: 10 }]}
           onPress={() =>
             this.#manager.proceedToMapsHandler2(
-              this.#status,
               this.#locationInfo.currentLatLong,
               this.#cpInfo.lat_long
             )

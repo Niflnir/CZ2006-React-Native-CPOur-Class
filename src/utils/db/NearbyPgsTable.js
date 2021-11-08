@@ -1,6 +1,5 @@
-import GetRoute from "../api/GetRoute";
-import NearbyCpInfoTable from "./NearbyCpInfoTable";
 import * as SQLite from "expo-sqlite";
+import Services from "../Services";
 db = SQLite.openDatabase("cpour.db");
 /**
  * Manages nearbyPgs table in local database to store information of all petrol station in Singapore
@@ -59,13 +58,12 @@ export default class NearbyPgsTable {
   }
 
   populate(cpLatLong) {
-    const nearbyCpInfo = new NearbyCpInfoTable();
-    const getRoute = new GetRoute();
+    const services = new Services();
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM pgs", [], (tx, results) => {
         for (var i = 0; i < results.rows._array.length; i++) {
           const onePgs = results.rows.item(i);
-          const distance = nearbyCpInfo.getDistance(onePgs.latLong, cpLatLong);
+          const distance = services.getDistance(onePgs.latLong, cpLatLong);
           if (distance <= 1.5) {
             tx.executeSql(
               "INSERT INTO nearbyPgs (name, address, postal, latLong)" +
@@ -77,7 +75,7 @@ export default class NearbyPgsTable {
               }
             );
 
-            const route_info_from_cp = getRoute.getRoute(
+            const route_info_from_cp = services.getRoute(
               cpLatLong,
               onePgs.latLong,
               onePgs.postal,

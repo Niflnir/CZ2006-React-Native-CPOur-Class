@@ -9,12 +9,10 @@ import {
   Image,
 } from "react-native";
 import styles from "../../styles/AppStyles";
-import * as SQLite from "expo-sqlite";
 import { ButtonGroup, Chip } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { Icon } from "react-native-elements";
 import MainSearchScreenManager from "../../utils/ScreenManagers/MainSearchScreenManager";
-db = SQLite.openDatabase("cpour.db");
 
 /**
  * Application screen that prompts user to input destination and displays nearby carparks
@@ -59,9 +57,10 @@ export default class MainSearchScreen extends Component {
       this.#rendered = true;
       await this.#manager
         .paramHandler(this.#status, this.props.route.params.data)
-        .then((data) => (this.#info = data))
+        .then((data) => {
+          this.#info = data;
+        })
         .catch((err) => console.log(err));
-
       this.setState({
         txtStyle: true,
         defaultAddress: this.#info["locationData"]["ADDRESS"],
@@ -95,11 +94,9 @@ export default class MainSearchScreen extends Component {
      * @param {Object} item Data of carpark that has been selected by user
      */
     const selectItem = (item) => {
-      console.log(this.#info);
       this.#navigation.navigate("Summary", {
         cpInfo: item,
         locationInfo: this.#info,
-        status: this.#status,
       });
     };
 

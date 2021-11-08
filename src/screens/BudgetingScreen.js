@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useRef, Component } from "react";
+import React, { Component } from "react";
 import {
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Button,
   Keyboard,
 } from "react-native";
 import styles from "../styles/AppStyles";

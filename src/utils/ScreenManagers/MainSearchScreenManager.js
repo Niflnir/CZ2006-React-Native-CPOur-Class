@@ -3,9 +3,7 @@ import FavouritesTable from "../db/FavouritesTable";
 import NearbyCpInfoTable from "../db/NearbyCpInfoTable";
 import PgsTable from "../db/PgsTable";
 import SearchHistoryTable from "../db/SearchHistoryTable";
-import { getToken } from "../DbServices";
 import Services from "../Services";
-import SortFilter from "../SortFilter";
 
 export default class MainSearchScreenManager {
   async didMount() {
@@ -32,13 +30,8 @@ export default class MainSearchScreenManager {
    * Stores relevant location information in respective variables
    */
   async paramHandler(status, paramData) {
-    if (status !== "granted") {
-      Alert.alert(
-        "Warning",
-        "Permission to access location was denied. Cannot get current location. Please change permissions in settings."
-      );
-      return;
-    }
+    const services = new Services();
+    services.getLocationPermission();
     var info = {
       locationData: {},
       latLong: "",
@@ -47,11 +40,10 @@ export default class MainSearchScreenManager {
       currentPostalCode: "",
       postal: "",
     };
-    const services = new Services();
     await services.getLocation().then((data) => {
       info["currentLatLong"] = data;
-      var TOKEN = getToken();
-      TOKEN = getToken();
+      var TOKEN = services.getToken();
+      TOKEN = services.getToken();
       const URL =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         info["currentLatLong"] +
@@ -94,14 +86,13 @@ export default class MainSearchScreenManager {
    * Sets list to be displayed in flatlist
    */
   flListHandler(sortOption, filterOption) {
-    const sortfilter = new SortFilter();
     var sortQuery = "c_lots_available DESC";
     if (sortOption == 1) {
       sortQuery = "total_distance ASC";
     } else if (sortOption == 2) {
       sortQuery = "c_parking_rates_current ASC";
     }
-    const query = sortfilter.sortFilter(sortQuery, filterOption);
+    const query = this.sortFilter(sortQuery, filterOption);
 
     return new Promise(function (resolve, reject) {
       db.transaction((tx) => {
@@ -110,5 +101,42 @@ export default class MainSearchScreenManager {
         });
       });
     });
+  }
+  /**
+   *
+   * @param {number} sortOption Index of sort criteria selected by user
+   * @param {boolean[]} filterOption Whether or not each filter criteria has been selected by user
+   * @returns {String} Query to be made to database `for selected sort/filter options
+   */
+  sortFilter(sortQuery, filterOption) {
+    var filterQueryArray = [];
+    var filterQuery = "";
+    const filterQueryOptions = [
+      "h_lots_available IS NOT NULL",
+      "y_lots_available IS NOT NULL",
+      "free_parking != 'NO'",
+      "night_parking != 'NO'",
+      "type_of_parking_system == 'ELECTRONIC PARKING'",
+      "type_of_parking_system == 'COUPON PARKING'",
+    ];
+
+    if (filterOption.includes(false)) {
+      // min 2 test cases
+      filterQuery = "WHERE ";
+      for (var i = 0; i < 6; i++) {
+        if (filterOption[i] == false) {
+          if (filterQuery == "WHERE ") {
+            filterQuery += filterQueryOptions[i];
+          } else {
+            filterQuery += " AND " + filterQueryOptions[i];
+          }
+        }
+      } // 2 Test case
+    } // 1 test A1
+
+    const sortFilterQuery =
+      "SELECT * FROM nearbyCpInfo " + filterQuery + " ORDER BY " + sortQuery;
+    console.log(sortFilterQuery);
+    return sortFilterQuery;
   }
 }
