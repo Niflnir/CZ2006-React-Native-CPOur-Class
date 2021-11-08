@@ -21,7 +21,6 @@ import SearchHistoryTable from "../utils/db/SearchHistoryTable";
 import * as firebase from "firebase";
 import { Restart } from "fiction-expo-restart";
 import Services from "../utils/Services";
-import DropAll from "../utils/db/DropAll";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
@@ -38,6 +37,8 @@ const FIREBASE_CONFIG = {
 
 export default class StackNav {
   StackNav() {
+    const services = new Services();
+
     return (
       <NavigationContainer>
         <Drawer.Navigator
@@ -85,9 +86,7 @@ export default class StackNav {
       } catch (e) {
         // saving error
       }
-      const drop = new DropAll();
-      drop.dropAll();
-
+      services.dropAllTables();
       var user = firebase.auth().currentUser.uid;
       firebase
         .database()
@@ -98,7 +97,6 @@ export default class StackNav {
     }
 
     function stackNav() {
-      const services = new Services();
       const Stack = createNativeStackNavigator();
       const [loggedIn, setLoggedIn] = useState(false);
       const FIREBASE_CONFIG = {

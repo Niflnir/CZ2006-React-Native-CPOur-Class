@@ -492,4 +492,45 @@ export default class Services {
         });
     });
   }
+
+  dropAllTables() {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DROP TABLE cpInfo",
+        [],
+        () => {},
+        () => {}
+      );
+      tx.executeSql(
+        "DROP TABLE favourites",
+        [],
+        () => {},
+        () => {}
+      );
+      tx.executeSql(
+        "DROP TABLE nearbyCpTable",
+        [],
+        () => {},
+        () => {}
+      );
+      tx.executeSql(
+        "DROP TABLE nearbyPgs",
+        [],
+        () => {},
+        () => {}
+      );
+      tx.executeSql(
+        "DROP TABLE pgs",
+        [],
+        () => {},
+        () => {}
+      );
+      tx.executeSql(
+        "DROP TABLE searchHistory",
+        [],
+        () => {},
+        () => {}
+      );
+    });
+  }
 }
