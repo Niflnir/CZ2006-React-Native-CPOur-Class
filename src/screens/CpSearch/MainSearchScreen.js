@@ -20,14 +20,7 @@ import MainSearchScreenManager from "../../utils/ScreenManagers/MainSearchScreen
  *
  */
 export default class MainSearchScreen extends Component {
-  #info = {
-    locationData: {},
-    latLong: "",
-    address: "",
-    currentLatLong: "",
-    currentPostalCode: "",
-    postal: "",
-  };
+  #info = {};
   #rendered = false;
   #loading = false;
   #displaying = false;
@@ -56,18 +49,20 @@ export default class MainSearchScreen extends Component {
       this.#loading = true;
       this.#rendered = true;
       const paramData = this.props.route.params.data;
-      this.#info["locationData"] = paramData;
+      console.log("MainSearchScreen.componentDidUpdate 1: ", paramData);
+      this.setState({
+        txtStyle: true,
+        defaultAddress: paramData["ADDRESS"],
+      });
       await this.#manager
-        .paramHandler(paramData.POSTAL, paramData.BUILDING)
+        .paramHandler(paramData)
         .then((data) => {
           this.#info = data;
         })
         .catch((err) => console.log(err));
+      this.#info["locationData"] = paramData;
+      console.log("MainSearchScreen.componentDidUpdate 2: ", paramData);
 
-      this.setState({
-        txtStyle: true,
-        defaultAddress: this.#info["locationData"]["ADDRESS"],
-      });
       setTimeout(() => {
         console.log("getting list");
         this.#loading = false;

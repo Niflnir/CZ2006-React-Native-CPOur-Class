@@ -65,7 +65,7 @@ export default class BudgetingScreenManager {
       var minutesLeft = 0;
       var daySlot = true;
       var durationHours = 0;
-      durationMinutes = 0;
+      var durationMinutes = 0;
       if (time >= 700 && time <= 2230) {
         if (minutes >= 30) {
           hoursLeft = 21 - hours;
@@ -128,9 +128,8 @@ export default class BudgetingScreenManager {
   calculateBudget(durationHours, durationMinutes, vehicleType, cpInfo) {
     var today = new Date();
     var hours = today.getHours();
-    var day = today.getDay();
     var minutes = today.getMinutes();
-    var time = (hours + minutes) / 60;
+    var time = hours * 100 + minutes;
     var duration = parseInt(durationHours * 60) + parseInt(durationMinutes); //duration in decimal for easier calculation
     console.log(duration);
     var fee = 0;
@@ -163,15 +162,40 @@ export default class BudgetingScreenManager {
       //         100
       //     ) / 100
       //   );
-
-      // }
-      // Electronic parking system - per minute basis
-      // Coupon parking system - per half-hour
-      // Night parking scheme - capped at $5
     }
     if (vehicleType == 1) {
-      var firstSlot = 0;
-      return 0.65;
+      var daySlot = true;
+      var hoursLeft;
+      var minutesLeft = 90 - minutes;
+      if (minutes >= 30) {
+        hoursLeft = 21 - hours;
+      } else {
+        hoursLeft = 22 - hours;
+      }
+      if (time <= 700 && time >= 2230) {
+        daySlot = false;
+        if (time <= 2230 && time >= 2359) {
+          hoursLeft = 30 - hours;
+          minutesLeft = 60 - minutes;
+        } else if (time >= 0 && time <= 700) {
+          hoursLeft = 7 - hours;
+          minutesLeft = 60 - minutes;
+        }
+      }
+      var durationLeft = duration - hoursLeft * 60 - minutesLeft;
+      console.log("durationLeft: ", durationLeft);
+      var slots = 1;
+      while (durationLeft >= 0) {
+        if (daySlot) {
+          durationLeft -= 930;
+        } else {
+          durationLeft -= 510;
+        }
+        slots++;
+        daySlot = !daySlot;
+      }
+      console.log(slots);
+      return (0.65 * slots).toFixed(2);
     }
 
     if (vehicleType == 2) {

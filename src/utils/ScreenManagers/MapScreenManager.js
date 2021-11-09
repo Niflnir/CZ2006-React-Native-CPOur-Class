@@ -7,7 +7,7 @@ export default class MapScreenManager {
   /**
    * Obtains list of petrol stations in Singapore from pgs table
    *
-   * @returns {Object} The list of petrol stations in Singapore
+   * @returns {Promise} The list of petrol stations in Singapore
    */
   pgsList() {
     return new Promise(function (resolve, reject) {
@@ -53,7 +53,7 @@ export default class MapScreenManager {
       if (route_info.hasOwnProperty("subtitle")) {
         btnId = route_info.subtitle;
       }
-      return { atLong: latLong, btnId: btnId };
+      return { latLong: latLong, btnId: btnId };
     }
   }
 }

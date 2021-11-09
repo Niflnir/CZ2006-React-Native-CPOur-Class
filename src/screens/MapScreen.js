@@ -54,6 +54,7 @@ export default class MapsScreen extends Component {
    */
   render() {
     console.log(this.#locationInfo);
+    console.log(this.#cpInfo);
     var mapMarkersPgs = [];
     this.#manager.pgsList().then((results) => {
       this.#pgsInfo = results.rows._array;

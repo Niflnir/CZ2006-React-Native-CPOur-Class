@@ -104,8 +104,8 @@ export default class SearchScreen extends Component {
      * @param {Object} item Single autocomplete suggestion's data
      */
     const selectItem = (item) => {
-      this.#manager.tableHandler(item);
-      console.log(item);
+      this.#manager.tableHandler(false, item);
+      console.log("SearchScreen.selectItem: ", item);
       setTimeout(
         () =>
           this.#navigation.navigate("CpSearch", {

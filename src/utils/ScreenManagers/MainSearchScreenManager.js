@@ -32,7 +32,7 @@ export default class MainSearchScreenManager {
    * @param {String} postal The postal code of the selected destination
    * @param {String} building The building name of the selected destination
    */
-  async paramHandler(postal, building) {
+  async paramHandler(paramData) {
     const apiServices = new ApiServices();
     const locationServices = new LocationServices();
     const fbServices = new FirebaseServices();
@@ -63,14 +63,15 @@ export default class MainSearchScreenManager {
         })
         .catch((err) => console.log(err, URL));
     });
-    info.postal = postal; //////// postal :
+    info.postal = paramData["POSTAL"];
 
-    if (building == "Current location") {
+    if (paramData["BUILDING"] == "Current location") {
       info["postal"] = "000000";
       info["latLong"] = info["currentLatLong"];
       info["locationData"]["ADDRESS"] = "Current location";
       info["address"] = "";
     } else {
+      info["locationData"] = paramData;
       info["address"] = info["locationData"]["ADDRESS"];
       info["latLong"] =
         info["locationData"]["LATITUDE"] +
@@ -141,7 +142,6 @@ export default class MainSearchScreenManager {
     }
     const sortFilterQuery =
       "SELECT * FROM nearbyCpInfo " + filterQuery + " ORDER BY " + sortQuery;
-    console.log(sortFilterQuery);
     return sortFilterQuery;
   }
 }
