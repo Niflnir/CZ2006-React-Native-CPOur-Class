@@ -13,7 +13,7 @@ export default class MapScreenManager {
     return new Promise(function (resolve, reject) {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT * FROM pgs",
+          "SELECT * FROM nearbyPgs",
           [],
           (tx, results) => {
             resolve(results);

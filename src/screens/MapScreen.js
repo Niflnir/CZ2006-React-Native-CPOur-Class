@@ -144,7 +144,7 @@ export default class MapsScreen extends Component {
       ];
       if (rInfo.hasOwnProperty("phyroute")) {
         const phy = rInfo.phyroute;
-        const polylinePosAlt = routeDecoder.routeDecoder(phy);
+        const polylinePosAlt = this.#manager.routeDecoder(phy);
         mapShape = [
           ...mapShape,
           {
@@ -159,7 +159,7 @@ export default class MapsScreen extends Component {
       if (rInfo.hasOwnProperty("alternativeroute")) {
         const alt = rInfo.alternativeroute;
         for (var i = 0; i < alt.length; i++) {
-          const polylinePosAlt = routeDecoder.routeDecoder(alt[i]);
+          const polylinePosAlt = this.#manager.routeDecoder(alt[i]);
           mapShape = [
             ...mapShape,
             {
