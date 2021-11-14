@@ -3,7 +3,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages cpInfo table in local database to store information of all HDB carparks in Singapore
  */
-export default class CpInfoTable {
+class CpInfoTable {
   /**
    * Creates new cpInfo table if not aready existing
    */
@@ -8694,3 +8694,4 @@ export default class CpInfoTable {
     });
   }
 }
+export default CpInfoTable;

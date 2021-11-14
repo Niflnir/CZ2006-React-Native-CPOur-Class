@@ -12,7 +12,7 @@ import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
 import OTPScreenManager from "../utils/ScreenManagers/OTPScreenManager";
 
-export default class OTPScreen extends Component {
+class OTPScreen extends Component {
   /**
    * Sends out OTP to user's input phone number, prompts user to enter OTP, and verifies OTP
    *
@@ -268,3 +268,5 @@ export default class OTPScreen extends Component {
     );
   }
 }
+
+export default OTPScreen;

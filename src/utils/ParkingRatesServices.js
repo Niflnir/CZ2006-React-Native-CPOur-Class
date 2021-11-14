@@ -1,4 +1,12 @@
-export default class ParkingRatesServices {
+/**
+ * Handles parking rate services
+ */
+class ParkingRatesServices {
+  /**
+   * Adds the current and general car parking rates to the nearbyCpInfo table
+   *
+   * @param {String[]} queries The queries to be made to the database
+   */
   getCarParkingRate(queries) {
     const centralArea = [
       "ACB",
@@ -66,7 +74,7 @@ export default class ParkingRatesServices {
    * @param {number} day The current day
    * @param {number} hours The hours portion of the current time
    * @param {number} cParkingRateRN The current parking rate at the carpark
-   * @returns
+   * @returns {number} The parking rate
    */
   centralParkingRate(day, hours, cParkingRateRN) {
     if (hours >= 7 && hours <= 17 && day > 0 && cParkingRateRN != 0) {
@@ -81,7 +89,7 @@ export default class ParkingRatesServices {
    * @param {number} day The current day
    * @param {number} time The hours portion of the current time
    * @param {String} cpFreeParking The details of free parking at the carpark
-   * @returns
+   * @returns {boolean} Whether or not free parking is applicable
    */
   freeParking(day, time, cpFreeParking) {
     return (
@@ -114,3 +122,4 @@ export default class ParkingRatesServices {
     });
   }
 }
+export default ParkingRatesServices;

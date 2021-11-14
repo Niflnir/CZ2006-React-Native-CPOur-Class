@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: screens/BudgetingScreen.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: screens/BudgetingScreen.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from "react";
+import {
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Keyboard,
+} from "react-native";
+import styles from "../styles/AppStyles";
+import BudgetingScreenManager from "../utils/ScreenManagers/BudgetingScreenManager";
+
+/**
+ * Allows user to input maximum budget and displays corresponding amount of time user can park
+ * Or allows user to input time they wish to park and displays corresponding estimated parking fee
+ */
+class BudgetingScreen extends Component {
+  #cpInfo = this.props.route.params.cpInfo;
+  #manager = new BudgetingScreenManager();
+  constructor(props) {
+    super(props);
+    this.state = {
+      calculateTime: true,
+      resultTime: "",
+      hours: 0,
+      minutes: 0,
+      budget: 0,
+      resultBudget: "",
+      vehicleType: 0,
+    };
+  }
+  /**
+   * Displays UI components of screen
+   *
+   * @returns {View} The UI components
+   */
+  render() {
+    /**
+     * Switches between budget calculating and time calculating mode when user presses "Switch" button
+     */
+    const onPressSwitch = () => {
+      this.setState({ calculateTime: !this.state.calculateTime });
+    };
+
+    /**
+     * Updates value of budget every time user inputs or deletes a character
+     * @param {string} budget Value of budget input by user in textInput
+     */
+    const onChangeDollar = (budget) => {
+      this.setState({ budget: budget });
+    };
+
+    /**
+     * Updates value of hours every time user inputs or deletes a character     *
+     * @param {string} hours Value of hours input by user in textInput
+     */
+    const onChangeHours = (hours) => {
+      this.setState({ hours: hours });
+    };
+
+    /**
+     * Updates value of minutes every time user inputs or deletes a character
+     * @param {string} minutes Value of minutes input by user in textInput
+     */
+    const onChangeMins = (minutes) => {
+      this.setState({ minutes: minutes });
+    };
+
+    /**
+     * Calculates duration of time user can park when user enters maximum budget
+     */
+    const onPressCalculateTime = () => {
+      Keyboard.dismiss();
+      this.setState({
+        resultTime: this.#manager.calculateTime(
+          this.state.budget,
+          this.state.vehicleType,
+          this.#cpInfo
+        ),
+      });
+    };
+
+    /**
+     * Calculates estimated parking fee when user enters duration they wish to park
+     */
+    const onPressCalculateBudget = () => {
+      Keyboard.dismiss();
+      this.setState({
+        resultBudget: this.#manager.calculateBudget(
+          this.state.hours,
+          this.state.minutes,
+          this.state.vehicleType,
+          this.#cpInfo
+        ),
+      });
+    };
+
+    /**
+     * Switches between vehicle types when user presses button
+     */
+    const onPressIndicateVehicleType = () => {
+      if (this.state.vehicleType == 0) this.setState({ vehicleType: 1 });
+      else if (this.state.vehicleType == 1) this.setState({ vehicleType: 2 });
+      else if (this.state.vehicleType == 2) this.setState({ vehicleType: 0 });
+    };
+
+    if (this.state.calculateTime) {
+      return (
+        &lt;View style={styles.containerBudgetingMainWhite}>
+          &lt;View style={[styles.containerBudgetingGrey, { height: "47%" }]}>
+            &lt;Text style={styles.txtBudgetingWhiteHeading}>Budget&lt;/Text>
+            &lt;View style={styles.containerBudgetingDollar}>
+              &lt;Text style={styles.txtBudgetingDollar}>$&lt;/Text>
+              &lt;TextInput
+                onChangeText={onChangeDollar}
+                style={styles.txtInpBudgetingWhite}
+                textAlign="left"
+                keyboardType="number-pad"
+                placeholder="0.00"
+                placeholderTextColor="lightgrey"
+              />
+            &lt;/View>
+          &lt;/View>
+          &lt;TouchableOpacity
+            style={styles.btnBudgetingSwitch}
+            onPress={onPressSwitch}
+          >
+            &lt;Text style={styles.txtBudgetingSwitch}>Switch&lt;/Text>
+          &lt;/TouchableOpacity>
+          &lt;View style={[styles.containerBudgetingWhite, { height: "35%" }]}>
+            &lt;Text style={styles.txtBudgetingGreyHeading}>Parking Time&lt;/Text>
+            &lt;Text style={styles.txtBudgetingTime}>{this.state.resultTime}&lt;/Text>
+          &lt;/View>
+          &lt;TouchableOpacity
+            style={styles.btnBudgetingCalculateGrey}
+            onPress={onPressCalculateTime}
+          >
+            &lt;Text style={styles.txtBudgetingCalculateWhite}>Calculate&lt;/Text>
+          &lt;/TouchableOpacity>
+          &lt;TouchableOpacity
+            style={styles.btnIndicateVehicleType}
+            onPress={onPressIndicateVehicleType}
+          >
+            &lt;Text style={styles.txtVehicleType}>
+              {this.state.vehicleType == 0
+                ? "C"
+                : this.state.vehicleType == 1
+                ? "Y"
+                : "H"}
+            &lt;/Text>
+          &lt;/TouchableOpacity>
+        &lt;/View>
+      );
+    }
+
+    return (
+      &lt;View style={styles.containerBudgetingMainGrey}>
+        &lt;View style={[styles.containerBudgetingWhite, { height: "47%" }]}>
+          &lt;Text style={styles.txtBudgetingGreyHeading}>Parking Time&lt;/Text>
+          &lt;View style={styles.containerBudgetingDollar}>
+            &lt;TextInput
+              onChangeText={onChangeHours}
+              style={styles.txtInpBudgetingGrey}
+              textAlign="center"
+              keyboardType="number-pad"
+              placeholder="0"
+            />
+            &lt;Text style={styles.txtBudgetingTime}>h&lt;/Text>
+
+            &lt;TextInput
+              onChangeText={onChangeMins}
+              style={styles.txtInpBudgetingGrey}
+              textAlign="center"
+              keyboardType="number-pad"
+              placeholder="00"
+            />
+            &lt;Text style={styles.txtBudgetingTime}>m&lt;/Text>
+          &lt;/View>
+        &lt;/View>
+        &lt;TouchableOpacity
+          style={styles.btnBudgetingSwitch}
+          onPress={onPressSwitch}
+        >
+          &lt;Text style={styles.txtBudgetingSwitch}>Switch&lt;/Text>
+        &lt;/TouchableOpacity>
+        &lt;View style={[styles.containerBudgetingGrey, { height: "35%" }]}>
+          &lt;Text style={styles.txtBudgetingWhiteHeading}>Parking Fee&lt;/Text>
+          &lt;Text style={styles.txtBudgetingDollar}>
+            $ {this.state.resultBudget}
+          &lt;/Text>
+        &lt;/View>
+        &lt;TouchableOpacity
+          style={styles.btnBudgetingCalculateWhite}
+          onPress={onPressCalculateBudget}
+        >
+          &lt;Text style={styles.txtBudgetingCalculateGrey}>Calculate&lt;/Text>
+        &lt;/TouchableOpacity>
+        &lt;TouchableOpacity
+          style={styles.btnIndicateVehicleType2}
+          onPress={onPressIndicateVehicleType}
+        >
+          &lt;Text style={styles.txtVehicleType2}>
+            {this.state.vehicleType == 0
+              ? "C"
+              : this.state.vehicleType == 1
+              ? "Y"
+              : "H"}
+          &lt;/Text>
+        &lt;/TouchableOpacity>
+      &lt;/View>
+    );
+  }
+}
+
+export default BudgetingScreen;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /**
  * Manages main logic behind BudgetingScreen
  */
-export default class BudgetingScreenManager {
+class BudgetingScreenManager {
   /**
    * Calculates duration of time user can expect to park car subject to input budget
    * @param {number} budget Budget input by user
@@ -143,25 +143,6 @@ export default class BudgetingScreenManager {
         console.log(duration + (duration % 30));
       }
       return fee;
-
-      // if (cpInfo["free_parking"] == "SUN & PH FR 7AM-10.30PM") {
-      //   if ((day == 0 || day == 5) && time >= 7 && time <= 22.5) {
-      //     var endTime = time + duration;
-      //     if (endTime > 22.5) {
-      //       var cost =
-      //         (endTime - 22.5) *
-      //         JSON.parse(cpInfo["c_parking_rates_general"])["Other"];
-      //       return cost <= 5 ? cost : 5; //capped at $5 night parking scheme
-      //     } else return 0;
-      //   }
-      // } else {
-      //   return (
-      //     Math.round(
-      //       duration *
-      //         JSON.parse(cpInfo["c_parking_rates_general"])["Other"] *
-      //         100
-      //     ) / 100
-      //   );
     }
     if (vehicleType == 1) {
       var daySlot = true;
@@ -209,3 +190,5 @@ export default class BudgetingScreenManager {
     }
   }
 }
+
+export default BudgetingScreenManager;

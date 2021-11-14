@@ -3,7 +3,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages searchHistoryTable in local database to store recently searched destinations
  */
-export default class SearchHistoryTable {
+class SearchHistoryTable {
   /**
    * Creates new searchHistoryTable is not already existing
    */
@@ -63,3 +63,4 @@ export default class SearchHistoryTable {
     });
   }
 }
+export default SearchHistoryTable;

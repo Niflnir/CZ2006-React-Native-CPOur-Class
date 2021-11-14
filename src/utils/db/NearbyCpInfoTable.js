@@ -6,7 +6,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages nearbyCpInfo table in local database to store information of carparks near user's input destination
  */
-export default class NearbyCpInfoTable {
+class NearbyCpInfoTable {
   /**
    * Creates new nearbyCpInfo table if not already existing
    */
@@ -198,3 +198,4 @@ export default class NearbyCpInfoTable {
     });
   }
 }
+export default NearbyCpInfoTable;

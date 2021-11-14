@@ -13,7 +13,7 @@ import CpSummaryScreenManager from "../utils/ScreenManagers/CpSummaryScreenManag
 /**
  * Displays detailed carpark information summary and allows user access to favourites, budgeting, and journey planning features
  */
-export default class CpSummaryScreen extends Component {
+class CpSummaryScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
   #navigation = this.props.navigation;
@@ -280,3 +280,5 @@ export default class CpSummaryScreen extends Component {
     );
   }
 }
+
+export default CpSummaryScreen;

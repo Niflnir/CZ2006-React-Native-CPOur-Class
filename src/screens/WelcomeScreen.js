@@ -6,7 +6,7 @@ import WelcomeScreenManager from "../utils/ScreenManagers/WelcomeScreenManager";
 /**
  * When user opens app for first time after app installation or logout, user is prompted to enter phone number for login/registration
  */
-export default class WelcomeScreen extends Component {
+class WelcomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,3 +64,5 @@ export default class WelcomeScreen extends Component {
     );
   }
 }
+
+export default WelcomeScreen;

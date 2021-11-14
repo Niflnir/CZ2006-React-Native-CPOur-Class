@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: screens/FavouritesScreen.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: screens/FavouritesScreen.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
+import styles from "../styles/AppStyles";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import { Icon } from "react-native-elements";
+import FavouritesScreenManager from "../utils/ScreenManagers/FavouritesScreenManager";
+
+/**
+ * Displays list of destination-carpark pairs in user's favourites list
+ *
+ */
+class FavouritesScreen extends Component {
+  #navigation = this.props.navigation;
+  #status = "";
+  #grey = false;
+  #info = {
+    currentLatLong: "",
+    currentPostalCode: "",
+  };
+  #loading = true;
+  #manager = new FavouritesScreenManager();
+  constructor(props) {
+    super(props);
+    this.state = {
+      list: [],
+    };
+  }
+  componentDidMount() {
+    const unsubscribe = this.props.navigation.addListener("focus", () => {
+      this.#loading = true;
+      this.#manager.initializeInfo().then((data) => (this.#info = data));
+      setTimeout(
+        () =>
+          this.#manager
+            .flListHandler()
+            .then((data) => this.setState({ list: data })),
+        3000
+      );
+      this.#loading = false;
+    });
+  }
+
+  /**
+   * Displays UI components of screen
+   *
+   * @returns {View} The UI components
+   */
+  render() {
+    /**
+     * When user selects specific destination-carpark pair from favourites list, directs user to corresponding CpSummaryScreen
+     * @param {Object} item Data of destination-carpark pair selected by user
+     */
+    const selectItem = (item) => {
+      var postal;
+      var latLong;
+      if (item.destination_address == "") {
+        latLong = this.#info.currentLatLong;
+        postal = "000000";
+      } else {
+        latLong = item.destination_latlong;
+        postal = item.destination_postal;
+      }
+      var locationInfo = {
+        address: item.destination_address,
+        currentLatLong: this.#info.currentLatLong,
+        latLong: latLong,
+        postal: postal,
+        locationData: { POSTAL: (postal = item.destination_postal) },
+        currentPostalCode: this.#info.currentPostalCode,
+      };
+      this.#navigation.navigate("Summary", {
+        cpInfo: item,
+        locationInfo: locationInfo,
+        status: this.#status,
+      });
+    };
+
+    /**
+     * When user selects "Remove" button, removes destination-carpark pair from local storage and user database
+     * @param {Object} item Data of destination-carpark pair to be deleted
+     */
+    const deleteItem = (item) => {
+      var postal;
+      if (item.destination_address == "Current location") {
+        postal = "000000";
+      } else {
+        postal = item.destination_postal;
+      }
+      this.#manager.removeFromFavourites(item.car_park_no, postal);
+      this.#manager.initializeInfo().then((data) => (this.#info = data));
+      console.log(this.#info);
+      setTimeout(
+        () =>
+          this.#manager
+            .flListHandler()
+            .then((data) => this.setState({ list: data })),
+        1000
+      );
+    };
+
+    /**
+     * Sets styling and data of each item to be displayed in flatlist
+     * @param {*} item Data of destination-carpark pair to be styled and displayed
+     * @returns {View} Styled data
+     */
+    const renderListItems = ({ item }) => {
+      if (item["address"] == "No carparks in favourites list") {
+        return (
+          &lt;TouchableOpacity
+            activeOpacity={1}
+            style={styles.containerFlatListItems}
+          >
+            &lt;Text style={styles.txtNoCarparks}>
+              No carparks in favourites list
+            &lt;/Text>
+          &lt;/TouchableOpacity>
+        );
+      }
+      var bgc = "white";
+      if (this.#grey) {
+        bgc = "#e5e5e5";
+      }
+      this.#grey = !this.#grey;
+      return (
+        &lt;View
+          style={{
+            paddingBottom: 10,
+            backgroundColor: bgc,
+          }}
+        >
+          &lt;TouchableOpacity
+            style={[styles.containerFlatListItems, { flex: 1 }]}
+            onPress={() => selectItem(item)}
+          >
+            &lt;Text style={[styles.txtDestinationTitle, { color: "black" }]}>
+              Destination
+            &lt;/Text>
+            &lt;Text style={styles.txtDestination} numberOfLines={1}>
+              {item.destination_address == ""
+                ? "Current location"
+                : item.destination_address}
+            &lt;/Text>
+            &lt;Text style={[styles.txtDestinationTitle, { color: "black" }]}>
+              Carpark
+            &lt;/Text>
+            &lt;Text style={styles.txtDestination} numberOfLines={1}>
+              {item.address}
+            &lt;/Text>
+          &lt;/TouchableOpacity>
+          &lt;View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              justifyContent: "space-between",
+            }}
+          >
+            &lt;View style={{ flexDirection: "column", paddingHorizontal: 10 }}>
+              &lt;Text style={styles.txtListItemsAddress}>
+                {item["c_lots_available"] != null
+                  ? "Lots available: " + item["c_lots_available"]
+                  : "No lot info"}
+              &lt;/Text>
+              &lt;Text style={styles.txtListItemsAddress}>
+                Distance: {item["total_distance"] * 1000} m
+              &lt;/Text>
+
+              &lt;Text style={styles.txtListItemsAddress}>
+                Parking fee: ${item["c_parking_rates_current"].toFixed(2)}/30
+                min
+              &lt;/Text>
+            &lt;/View>
+            &lt;TouchableOpacity
+              style={{
+                backgroundColor: "#444444",
+                borderRadius: 30,
+                padding: 10,
+                marginHorizontal: 10,
+                marginTop: 30,
+                flexDirection: "row",
+              }}
+              onPress={() => deleteItem(item)}
+            >
+              &lt;Text
+                style={{
+                  color: "white",
+                  marginHorizontal: 10,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Remove
+              &lt;/Text>
+              &lt;Icon
+                name="trash"
+                type="font-awesome"
+                size={17}
+                color="#d3d3d3"
+                style={{ marginTop: 3 }}
+              />
+            &lt;/TouchableOpacity>
+          &lt;/View>
+        &lt;/View>
+      );
+    };
+
+    return (
+      &lt;View style={{ flex: 1, backgroundColor: "white" }}>
+        &lt;View
+          style={{
+            backgroundColor: "#444444",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          &lt;Text style={styles.txtFavHeading}>Favourites&lt;/Text>
+          &lt;Icon
+            color="#d0312d"
+            style={{ paddingBottom: 5 }}
+            size={30}
+            name="heart"
+            type="font-awesome"
+          />
+        &lt;/View>
+        &lt;View style={styles.containerFl}>
+          {this.#loading ? (
+            &lt;ActivityIndicator size="large" color="#444444" />
+          ) : (
+            &lt;FlatList
+              style={styles.containerFlatList}
+              keyExtractor={(item, index) => index.toString()}
+              data={this.state.list}
+              renderItem={renderListItems}
+            />
+          )}
+        &lt;/View>
+      &lt;/View>
+    );
+  }
+}
+export default FavouritesScreen;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

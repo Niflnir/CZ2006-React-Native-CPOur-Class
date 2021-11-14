@@ -1,6 +1,8 @@
 import * as firebase from "firebase";
-
-export default class FirebaseServices {
+/**
+ * Handles Firebase services
+ */
+class FirebaseServices {
   /**
    * Retrieves OneMap API token from Firebase
    *
@@ -59,3 +61,4 @@ export default class FirebaseServices {
     });
   }
 }
+export default FirebaseServices;

@@ -9,7 +9,7 @@ import LocationServices from "../LocationServices";
 /**
  * Manages interaction between MainSearchScreen and control classes
  */
-export default class MainSearchScreenManager {
+class MainSearchScreenManager {
   /**
    * Initialize tables in local database and asks user for permission to access location services
    */
@@ -145,3 +145,4 @@ export default class MainSearchScreenManager {
     return sortFilterQuery;
   }
 }
+export default MainSearchScreenManager;

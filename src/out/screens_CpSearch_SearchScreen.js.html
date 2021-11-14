@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: screens/CpSearch/SearchScreen.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: screens/CpSearch/SearchScreen.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component, createRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
+import styles from "../../styles/AppStyles";
+import { Icon } from "react-native-elements";
+import SearchScreenManager from "../../utils/ScreenManagers/SearchScreenManager";
+
+/**
+ * Screen that allows user to input destination (or select current location)
+ * Displays recently searched destinations as well as autocomplete suggestions for user to select
+ *
+ */
+class SearchScreen extends Component {
+  #navigation = this.props.navigation;
+  #locationList = [];
+  #searchHistory = [];
+  #rendered = false;
+  #defaultAddress = this.props.route.params.defaultValue;
+  #textInputRef = createRef();
+  #manager = new SearchScreenManager();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      list: [],
+      address: "",
+      sHistory: true,
+    };
+  }
+
+  componentDidMount() {
+    if (this.#textInputRef.current) {
+      setTimeout(() => this.#textInputRef.current.focus(), 500);
+    }
+    if (!this.#rendered) {
+      this.#rendered = true;
+      this.#manager.getSearchHistory().then((results) => {
+        this.#searchHistory = results.rows["_array"];
+        this.#locationList = this.#searchHistory;
+        this.setState({ list: this.#searchHistory, sHistory: true });
+      });
+    }
+  }
+
+  /**
+   * Displays UI components of screen
+   *
+   * @returns {View} The UI components
+   */
+  render() {
+    /**
+     * Opens side bar menu (Profile page) when user clicks three-line menu button on top left
+     *
+     */
+    const openMenu = () => {
+      this.#navigation.openDrawer();
+    };
+
+    /**
+     * Updates value of address every time user inputs or deletes a character
+     * Displays list of recently searched destinations if no user input or calls addressSubmitHandler if there is input
+     *
+     * @param {string} address Characters input by user into textInput search bar
+     */
+    const addressHandler = (address) => {
+      this.setState({ address: address });
+      if (address == "") {
+        this.setState({ sHistory: true });
+        db.transaction((tx) => {
+          tx.executeSql("SELECT * FROM searchHistory", [], (tx, results) => {
+            this.#searchHistory = results.rows["_array"];
+            this.#locationList = this.#searchHistory;
+            this.setState({ list: this.#searchHistory });
+          });
+        });
+      } else {
+        this.#manager
+          .addressSubmitHandler(address)
+          .then((data) => {
+            this.setState({ sHistory: false });
+
+            if (data["found"] == 0) {
+              this.setState({ list: [] });
+            } else {
+              this.#locationList = data["results"];
+
+              this.setState({ list: this.#locationList });
+            }
+          })
+          .catch((error) => {
+            this.#locationList = [];
+          });
+      }
+    };
+
+    /**
+     * When user selects a specific address result from the suggestions list, redirects user back to CpSearchScreen and sends the address info as parameters
+     * @param {Object} item Single autocomplete suggestion's data
+     */
+    const selectItem = (item) => {
+      this.#manager.tableHandler(false, item);
+      console.log("SearchScreen.selectItem: ", item);
+      setTimeout(
+        () =>
+          this.#navigation.navigate("CpSearch", {
+            data: item,
+          }),
+        300
+      );
+    };
+
+    /**
+     * When user selects "Current location" button, redirects user back to CpSearchScreen and sends "Current location" as parameters
+     */
+    const sendCurrentLocation = () => {
+      this.#manager.tableHandler(true);
+      this.#navigation.navigate("CpSearch", {
+        data: { BUILDING: "Current location" },
+      });
+    };
+
+    /**
+     * If address information does not contain building name, returns road name
+     * @param {Object} item Data of individual carpark
+     * @returns {String} Building or road name
+     */
+    const listHeading = (item) => {
+      return item["BUILDING"] != "NIL" ? item["BUILDING"] : item["ROAD_NAME"];
+    };
+    return (
+      &lt;View
+        keyboardShouldPersistTap="always"
+        style={{ backgroundColor: "white", flex: 1 }}
+      >
+        &lt;StatusBar backgroundColor="#444444" />
+        &lt;View style={styles.container}>
+          &lt;TextInput
+            ref={this.#textInputRef}
+            style={styles.txtinpSearchBorder}
+            autoFocus={true}
+            placeholder="Search Here"
+            defaultValue={this.#defaultAddress}
+            onChangeText={addressHandler}
+          />
+          &lt;Icon
+            containerStyle={{ paddingHorizontal: 15, marginTop: 24 }}
+            color="white"
+            size={36}
+            name="bars"
+            type="font-awesome"
+            onPress={openMenu}
+          />
+        &lt;/View>
+        &lt;Text
+          style={{
+            alignSelf: "center",
+            padding: 20,
+            fontSize: 17,
+            fontWeight: "bold",
+          }}
+          onPress={sendCurrentLocation}
+        >
+          Current location
+        &lt;/Text>
+
+        &lt;ScrollView
+          keyboardShouldPersistTaps="always"
+          style={{
+            borderTopColor: "lightgrey",
+            borderTopWidth: 1,
+            backgroundColor: "white",
+          }}
+        >
+          {this.state.list.map((item) => (
+            &lt;TouchableOpacity
+              key={this.#locationList.findIndex(
+                (obj) => obj["ADDRESS"] == item["ADDRESS"]
+              )}
+              style={styles.containerListItems}
+              onPress={() => selectItem(item)}
+            >
+              {this.state.sHistory ? (
+                &lt;Icon
+                  name="history"
+                  type="font-awesome"
+                  color="grey"
+                  containerStyle={{
+                    flexDirection: "row",
+                    paddingRight: 20,
+                    paddingLeft: 15,
+                    paddingTop: 3,
+                  }}
+                />
+              ) : undefined}
+              &lt;View style={{ flex: 1 }}>
+                &lt;Text style={styles.txtListItemsBuilding}>
+                  {listHeading(item)}
+                &lt;/Text>
+                &lt;Text style={styles.txtListItemsAddress}>
+                  {item["ADDRESS"]}
+                &lt;/Text>
+              &lt;/View>
+            &lt;/TouchableOpacity>
+          ))}
+        &lt;/ScrollView>
+      &lt;/View>
+    );
+  }
+}
+
+export default SearchScreen;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages pgs table in local database to store information of all petrol station in Singapore
  */
-export default class PgsTable {
+class PgsTable {
   /**
    * Creates new pgs table if not aready existing
    */
@@ -1349,3 +1349,5 @@ export default class PgsTable {
     });
   }
 }
+
+export default PgsTable;

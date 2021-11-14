@@ -3,7 +3,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages main logic behind MapScreen
  */
-export default class MapScreenManager {
+class MapScreenManager {
   /**
    * Obtains list of petrol stations in Singapore from pgs table
    *
@@ -57,3 +57,5 @@ export default class MapScreenManager {
     }
   }
 }
+
+export default MapScreenManager;

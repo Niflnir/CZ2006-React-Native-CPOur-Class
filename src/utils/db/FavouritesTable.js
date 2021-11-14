@@ -8,7 +8,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages favourites table in local database to store information of favourited destination-carpark pairs
  */
-export default class FavouritesTable {
+class FavouritesTable {
   /**
    * Creates new favourites table if not already exisiting and populates it with data stored in user database
    */
@@ -229,3 +229,4 @@ export default class FavouritesTable {
     });
   }
 }
+export default FavouritesTable;

@@ -16,7 +16,7 @@ import SearchScreenManager from "../../utils/ScreenManagers/SearchScreenManager"
  * Displays recently searched destinations as well as autocomplete suggestions for user to select
  *
  */
-export default class SearchScreen extends Component {
+class SearchScreen extends Component {
   #navigation = this.props.navigation;
   #locationList = [];
   #searchHistory = [];
@@ -213,3 +213,5 @@ export default class SearchScreen extends Component {
     );
   }
 }
+
+export default SearchScreen;

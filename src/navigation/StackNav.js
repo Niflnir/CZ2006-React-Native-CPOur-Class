@@ -38,7 +38,7 @@ const FIREBASE_CONFIG = {
 /**
  * Allows navigation between screens
  */
-export default class StackNav {
+class StackNav {
   StackNav() {
     const fbServices = new FirebaseServices();
     const dbServices = new DatabaseServices();
@@ -196,3 +196,5 @@ export default class StackNav {
     }
   }
 }
+
+export default StackNav;

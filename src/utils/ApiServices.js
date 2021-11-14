@@ -1,4 +1,7 @@
-export default class ApiServices {
+/**
+ * Handles API related services
+ */
+class ApiServices {
   /**
    * Makes API calls
    * @param {string} url Url to be used to make API calls
@@ -38,3 +41,5 @@ export default class ApiServices {
     return this.#lotData["items"][0]["carpark_data"];
   }
 }
+
+export default ApiServices;

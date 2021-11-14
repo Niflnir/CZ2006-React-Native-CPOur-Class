@@ -5,7 +5,7 @@ import FirebaseServices from "../FirebaseServices";
 /**
  * Manages interaction between OTPScreen and control classes
  */
-export default class OTPScreenManager {
+class OTPScreenManager {
   /**
    * Checks whether the user is already logged into another device
    *
@@ -53,3 +53,4 @@ export default class OTPScreenManager {
     firebase.database().ref(`Favourites/${user}`).update(temp);
   }
 }
+export default OTPScreenManager;

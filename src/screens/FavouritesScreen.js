@@ -9,7 +9,7 @@ import FavouritesScreenManager from "../utils/ScreenManagers/FavouritesScreenMan
  * Displays list of destination-carpark pairs in user's favourites list
  *
  */
-export default class FavouritesScreen extends Component {
+class FavouritesScreen extends Component {
   #navigation = this.props.navigation;
   #status = "";
   #grey = false;
@@ -238,3 +238,4 @@ export default class FavouritesScreen extends Component {
     );
   }
 }
+export default FavouritesScreen;

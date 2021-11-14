@@ -1,7 +1,9 @@
 import * as Location from "expo-location";
 import { Alert } from "react-native";
-
-export default class LocationServices {
+/**
+ * Handles location services
+ */
+class LocationServices {
   /**
    * Retrieves data on user's current location
    *
@@ -28,3 +30,4 @@ export default class LocationServices {
     }
   }
 }
+export default LocationServices;

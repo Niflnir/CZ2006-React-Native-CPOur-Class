@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: screens/OTPScreen.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: screens/OTPScreen.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component, createRef } from "react";
+import {
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Image,
+  Alert,
+} from "react-native";
+import styles from "../styles/AppStyles";
+import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
+import * as firebase from "firebase";
+import OTPScreenManager from "../utils/ScreenManagers/OTPScreenManager";
+
+class OTPScreen extends Component {
+  /**
+   * Sends out OTP to user's input phone number, prompts user to enter OTP, and verifies OTP
+   *
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      otpDigit: [],
+      timeLeft: 60,
+    };
+  }
+  ref1 = createRef();
+  ref2 = createRef();
+  ref3 = createRef();
+  ref4 = createRef();
+  ref5 = createRef();
+  ref6 = createRef();
+  #otpArray = [];
+  #FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBvPpAz5raqy8-K3walmdScxLJoTjbj-Dc",
+    authDomain: "otpauth-a7ce0.firebaseapp.com",
+    databaseURL:
+      "https://otpauth-a7ce0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "otpauth-a7ce0",
+    storageBucket: "otpauth-a7ce0.appspot.com",
+    messagingSenderId: "872099527391",
+    appId: "1:872099527391:web:c9f35e7bef7d4b599c876a",
+  };
+
+  #recaptchaVerifier = createRef(null);
+  #navigation = this.props.navigation;
+  #phoneNumber = this.props.route.params.phoneNumber;
+  #temp;
+  #verificationId = "";
+  #manager = new OTPScreenManager();
+  componentDidMount() {
+    try {
+      if (this.#FIREBASE_CONFIG.apiKey) {
+        firebase.initializeApp(this.#FIREBASE_CONFIG);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    this.sendOTP();
+  }
+
+  /**
+   * Sends OTP to user's input phone number and starts timer for OTP expiry
+   */
+  async sendOTP() {
+    if (this.ref1.current) {
+      setTimeout(() => this.ref1.current.focus(), 200);
+    }
+    this.ref1.current.clear();
+    this.ref2.current.clear();
+    this.ref3.current.clear();
+    this.ref4.current.clear();
+    this.ref5.current.clear();
+    this.ref6.current.clear();
+
+    this.setState({ timeLeft: 60 });
+    const phoneProvider = new firebase.auth.PhoneAuthProvider();
+    try {
+      this.#verificationId = "";
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        "+65" + this.#phoneNumber,
+        this.#recaptchaVerifier.current
+      );
+      this.#verificationId = verificationId;
+      this.timer();
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
+  }
+
+  /**
+   * Timer for OTP expiry
+   */
+  async timer() {
+    for (var i = 0; i &lt; 60; i++) {
+      this.#temp = setTimeout(
+        () => this.setState({ timeLeft: --this.state.timeLeft }),
+        1000 * i
+      );
+    }
+  }
+
+  /**
+   * Verifies and validates OTP entered by OTP and displays corresponding error message if validation fails
+   */
+  async verifyOTP() {
+    clearTimeout(this.#temp);
+    var otp = [];
+    for (var i = 0; i &lt; 6; i++) {
+      otp += this.#otpArray[i];
+    }
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(
+        this.#verificationId,
+        otp
+      );
+      const authResult = await firebase.auth().signInWithCredential(credential);
+      this.setState({ verificationId: "", verificationCode: "" });
+      const validSignIn = this.#manager.checkValidSignIn();
+      if (validSignIn) {
+        this.#navigation.navigate("CpSearch");
+      } else {
+        this.#navigation.navigate("WelcomeScreen");
+      }
+    } catch (err) {
+      if (
+        err.message ==
+        "The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms and be sure use the verification code provided by the user."
+      ) {
+        Alert.alert(
+          "Error",
+          "OTP is incorrect. Please press “Resend OTP” to try again."
+        );
+      }
+    }
+  }
+
+  /**
+   * Displays UI components of screen
+   *
+   * @returns {View} The UI components
+   */
+  render() {
+    /**
+     * When user presses "Verify OTP" button, calls verifyOTP() function or displays error message if OTP expired
+     */
+    const onPressBtn = () => {
+      if (this.state.timeLeft == 0) {
+        Alert.alert(
+          "Error",
+          "OTP has expired. Please press 'Resend OTP' to retry"
+        );
+        return;
+      }
+      this.verifyOTP();
+    };
+
+    /**
+     * Resends OTP if user presses "Resend OTP button"
+     */
+    const resendOTP = () => {
+      this.sendOTP();
+    };
+
+    /**
+     * Updates value of each OTP digit whenever inputs or delets a character
+     * @param {number} digit Digit input by user
+     * @param {number} index Index of textInput in which user input digit
+     */
+    const onOTPInput = (digit, index) => {
+      const refs = [
+        this.ref1,
+        this.ref2,
+        this.ref3,
+        this.ref4,
+        this.ref5,
+        this.ref6,
+      ];
+
+      this.setState({ otpDigit: digit });
+      if (index &lt;= 5 &amp;&amp; !isNaN(digit) &amp;&amp; digit != "") {
+        if (index &lt; 5) {
+          refs[index + 1].current.focus();
+        }
+        this.#otpArray[index] = digit;
+      } else if (index > 0 &amp;&amp; digit == "") {
+        refs[index - 1].current.focus();
+        this.#otpArray[index] = null;
+      }
+    };
+    return (
+      &lt;View style={styles.containerLogo}>
+        &lt;FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
+          ref={this.#recaptchaVerifier}
+          firebaseConfig={this.#FIREBASE_CONFIG}
+        />
+        &lt;Image
+          style={styles.logo}
+          source={require("../assets/images/carparkourlogo.png")}
+        >&lt;/Image>
+        &lt;View style={styles.containerOTP}>
+          &lt;TextInput
+            ref={this.ref1}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 0)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          &lt;TextInput
+            ref={this.ref2}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 1)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          &lt;TextInput
+            ref={this.ref3}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 2)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          &lt;TextInput
+            ref={this.ref4}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 3)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          &lt;TextInput
+            ref={this.ref5}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 4)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+          &lt;TextInput
+            ref={this.ref6}
+            style={styles.txtInpOTP}
+            keyboardType="numeric"
+            onChangeText={(otpDigit) => onOTPInput(otpDigit, 5)}
+            secureTextEntry={true}
+            maxLength={1}
+          />
+        &lt;/View>
+        {this.state.timeLeft > 0 ? (
+          &lt;Text style={styles.txtGrey}>
+            This OTP will expire in {this.state.timeLeft}s
+          &lt;/Text>
+        ) : (
+          &lt;Text style={styles.txtRed}>Warning: OTP has expired&lt;/Text>
+        )}
+        &lt;View style={styles.containerResendOTP}>
+          &lt;Text style={styles.txtGrey}>Didn't receive OTP? &lt;/Text>
+          &lt;TouchableOpacity style={styles.btnContinue} onPress={resendOTP}>
+            &lt;Text style={styles.txtResendOTP}>Resend OTP&lt;/Text>
+          &lt;/TouchableOpacity>
+        &lt;/View>
+        &lt;TouchableOpacity style={styles.btnContinue} onPress={onPressBtn}>
+          &lt;Text style={styles.txtContinue}>Verify OTP&lt;/Text>
+        &lt;/TouchableOpacity>
+      &lt;/View>
+    );
+  }
+}
+
+export default OTPScreen;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

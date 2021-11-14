@@ -9,7 +9,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages interaction between FavouritesScreen and control classes
  */
-export default class FavouritesScreenManager {
+class FavouritesScreenManager {
   /**
    * Removes exisiting destination-carpark pair from local favoutites table and user account in Firebase
    *
@@ -99,3 +99,4 @@ export default class FavouritesScreenManager {
     });
   }
 }
+export default FavouritesScreenManager;

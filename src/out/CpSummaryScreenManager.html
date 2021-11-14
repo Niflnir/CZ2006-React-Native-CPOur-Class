@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: CpSummaryScreenManager</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: CpSummaryScreenManager</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>CpSummaryScreenManager<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Manages interaction between CpSummaryScreen and control classes</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="CpSummaryScreenManager"><span class="type-signature"></span>new CpSummaryScreenManager<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="addToFavourites"><span class="type-signature"></span>addToFavourites<span class="signature">(cpInfo, postal, locationInfo)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Adds selected destination-carpark pair to local favourites table and user account in Firebase
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cpInfo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The details of the selected carpark</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>postal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The postal code of the selected destination</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>locationInfo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The details of the selected destination</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line27">line 27</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkIfFavourited"><span class="type-signature"></span>checkIfFavourited<span class="signature">(car_park_no, postal)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Checks whether or not the selected destination-carpark pair is already in the favourites list
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>car_park_no</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The carpark number of the selected carpark</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>postal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The postal code of the selected destination</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line60">line 60</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Whether or not the selected destination-carpark pair is already in the favourites list
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="proceedToMapsHandler"><span class="type-signature"></span>proceedToMapsHandler<span class="signature">(currentLatLong, cpLatLong)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    When user presses "Google Maps - Fastest" button, launches Google Maps application with turn-by-turn navigatoin fromuser's current location to selected carparkIf location permissions denied, displays error message
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>currentLatLong</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude and longitude values of the user's current location</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cpLatLong</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude and longitude values of the selected carpark</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="proceedToMapsHandler2"><span class="type-signature"></span>proceedToMapsHandler2<span class="signature">(currentLatLong, cpLatLong)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    When user presses "Google Maps - Cheapest" button, launches Google Maps application to displays toll-free routes amongst others fromuser's current location to selected carparkIf location permissions denied, displays error message
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>currentLatLong</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude and longitude values of the user's current location</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cpLatLong</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude and longitude values of the selected carpark</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="removeFromFavourites"><span class="type-signature"></span>removeFromFavourites<span class="signature">(car_park_no, postal)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Removes exisiting destination-carpark pair from local favoutites table and user account in Firebase
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>car_park_no</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The carpark number of the selected carpark</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>postal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The postal code of the selected destination</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line43">line 43</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="tableHandler"><span class="type-signature"></span>tableHandler<span class="signature">(latLong)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates nearbyPgsTable and populates with petrol stations near selected carpark
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>latLong</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude and longitude values of the selected carpark</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html">utils/ScreenManagers/CpSummaryScreenManager.js</a>, <a href="utils_ScreenManagers_CpSummaryScreenManager.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

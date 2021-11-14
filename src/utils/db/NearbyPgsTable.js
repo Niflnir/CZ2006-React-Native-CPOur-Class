@@ -4,7 +4,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages nearbyPgs table in local database to store information of all petrol station in Singapore
  */
-export default class NearbyPgsTable {
+class NearbyPgsTable {
   /**
    * Creates new nearbyPgs table if not aready existing
    */
@@ -112,3 +112,4 @@ export default class NearbyPgsTable {
     });
   }
 }
+export default NearbyPgsTable;

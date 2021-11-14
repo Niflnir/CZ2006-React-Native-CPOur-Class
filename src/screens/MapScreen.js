@@ -22,7 +22,7 @@ import MapScreenManager from "../utils/ScreenManagers/MapScreenManager";
 /**
  * Displays integrated map with routes from current location to carpark, as well as from carpark to final destination
  */
-export default class MapsScreen extends Component {
+class MapsScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #locationInfo = this.props.route.params.locationInfo;
   #cpLatLong = this.#cpInfo["lat_long"].split(",");
@@ -392,3 +392,4 @@ export default class MapsScreen extends Component {
     );
   }
 }
+export default MapsScreen;

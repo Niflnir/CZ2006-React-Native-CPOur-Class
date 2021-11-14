@@ -2,7 +2,7 @@ import { Alert } from "react-native";
 /**
  * Manages main logic behind WelcomeScreen class
  */
-export default class WelcomeScreenManager {
+class WelcomeScreenManager {
   /**
    * Checks if the input phone number is valid
    *
@@ -20,3 +20,5 @@ export default class WelcomeScreenManager {
     return true;
   }
 }
+
+export default WelcomeScreenManager;

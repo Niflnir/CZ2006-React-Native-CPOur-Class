@@ -6,7 +6,7 @@ import LocationServices from "../LocationServices";
 /**
  * Manages interaction between CpSummaryScreen and control classes
  */
-export default class CpSummaryScreenManager {
+class CpSummaryScreenManager {
   /**
    * Creates nearbyPgsTable and populates with petrol stations near selected carpark
    *
@@ -115,3 +115,4 @@ export default class CpSummaryScreenManager {
     Linking.openURL(url);
   }
 }
+export default CpSummaryScreenManager;

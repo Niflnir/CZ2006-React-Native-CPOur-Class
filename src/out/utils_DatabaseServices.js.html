@@ -1,7 +1,38 @@
-import ApiServices from "./ApiServices";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/DatabaseServices.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/DatabaseServices.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import ApiServices from "./ApiServices";
 import FirebaseServices from "./FirebaseServices";
 
-export default class DatabaseServices {
+/**
+ * Handles database services
+ */
+class DatabaseServices {
   /**
    * Retrieves relevant route information from user's current location to carpark as well as from carpark
    * to final destination and stores it in nearbyCpInfo table
@@ -20,9 +51,9 @@ export default class DatabaseServices {
       const URL0 =
         "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
         fromLatLong +
-        "&end=" +
+        "&amp;end=" +
         toLatLong +
-        "&routeType=drive&token=" +
+        "&amp;routeType=drive&amp;token=" +
         TOKEN;
       await apiServices
         .getData(URL0)
@@ -63,21 +94,21 @@ export default class DatabaseServices {
       const URL1 =
         "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
         fromLatLong +
-        "&end=" +
+        "&amp;end=" +
         toLatLong +
-        "&routeType=walk&token=" +
+        "&amp;routeType=walk&amp;token=" +
         TOKEN;
       const URL2 =
         "https://developers.onemap.sg/privateapi/commonsvc/revgeocode?location=" +
         fromLatLong +
-        "&token=" +
+        "&amp;token=" +
         TOKEN;
       const URL3 =
         "https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
         currentLatLong +
-        "&end=" +
+        "&amp;end=" +
         toLatLong +
-        "&routeType=drive&token=" +
+        "&amp;routeType=drive&amp;token=" +
         TOKEN;
       await apiServices
         .getData(URL1)
@@ -164,12 +195,12 @@ export default class DatabaseServices {
       : (query = "SELECT * FROM favourites");
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM nearbyCpInfo", [], (tx, results) => {
-        for (var i = 0; i < results.rows._array.length; i++) {
+        for (var i = 0; i &lt; results.rows._array.length; i++) {
           const cpInfo = results.rows._array[i];
           var grace_period;
           const exceptions = ["HG55", "HG97", "HG47"];
           if (
-            cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING" &&
+            cpInfo["type_of_parking_system"] == "ELECTRONIC PARKING" &amp;&amp;
             !exceptions.includes(cpInfo["car_park_no"])
           ) {
             grace_period = 10;
@@ -226,7 +257,7 @@ export default class DatabaseServices {
         var typeH = cpLots.filter((d) => d.lot_type == "H")[0];
         console.log("Y: ", typeY, car_park_no);
 
-        if (typeY != {} && typeY != undefined) {
+        if (typeY != {} &amp;&amp; typeY != undefined) {
           var params = [typeY["lots_available"], car_park_no];
           if (index == 1) {
             params = [
@@ -244,7 +275,7 @@ export default class DatabaseServices {
             }
           );
         }
-        if (typeH != {} && typeH != undefined) {
+        if (typeH != {} &amp;&amp; typeH != undefined) {
           var params = [typeH["lots_available"], car_park_no];
           if (index == 1) {
             params = [
@@ -343,3 +374,28 @@ export default class DatabaseServices {
     });
   }
 }
+
+export default DatabaseServices;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

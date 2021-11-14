@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/ScreenManagers/CpSummaryScreenManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/ScreenManagers/CpSummaryScreenManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import NearbyPgsTable from "../db/NearbyPgsTable";
+import * as firebase from "firebase";
+import FavouritesTable from "../db/FavouritesTable";
+import { Linking } from "react-native";
+import LocationServices from "../LocationServices";
+/**
+ * Manages interaction between CpSummaryScreen and control classes
+ */
+class CpSummaryScreenManager {
+  /**
+   * Creates nearbyPgsTable and populates with petrol stations near selected carpark
+   *
+   * @param {String} latLong The latitude and longitude values of the selected carpark
+   */
+  tableHandler(latLong) {
+    const nearbyPgsTable = new NearbyPgsTable();
+    nearbyPgsTable.createNearbyPgsTable(latLong);
+  }
+
+  /**
+   * Adds selected destination-carpark pair to local favourites table and user account in Firebase
+   *
+   * @param {Object} cpInfo The details of the selected carpark
+   * @param {String} postal The postal code of the selected destination
+   * @param {Object} locationInfo The details of the selected destination
+   */
+  addToFavourites(cpInfo, postal, locationInfo) {
+    const fav = new FavouritesTable();
+    var user = firebase.auth().currentUser.uid;
+    firebase
+      .database()
+      .ref(`Favourites/${user}/${cpInfo.car_park_no}/${postal}`)
+      .update({ cpInfo: cpInfo, locationInfo: locationInfo });
+    fav.createFavouritesTable();
+  }
+
+  /**
+   * Removes exisiting destination-carpark pair from local favoutites table and user account in Firebase
+   *
+   * @param {String} car_park_no The carpark number of the selected carpark
+   * @param {String} postal The postal code of the selected destination
+   */
+  removeFromFavourites(car_park_no, postal) {
+    const fav = new FavouritesTable();
+    var user = firebase.auth().currentUser.uid;
+    firebase
+      .database()
+      .ref(`Favourites/${user}/${car_park_no}/${postal}`)
+      .remove();
+    fav.createFavouritesTable();
+  }
+
+  /**
+   * Checks whether or not the selected destination-carpark pair is already in the favourites list
+   *
+   * @param {String} car_park_no The carpark number of the selected carpark
+   * @param {String} postal The postal code of the selected destination
+   * @returns {boolean} Whether or not the selected destination-carpark pair is already in the favourites list
+   */
+  checkIfFavourited(car_park_no, postal) {
+    var user = firebase.auth().currentUser.uid;
+    var status = false;
+    firebase
+      .database()
+      .ref(`Favourites/${user}/`)
+      .on("value", (snapshot) => {
+        if (snapshot.val() != null &amp;&amp; snapshot.val() != undefined) {
+          if (snapshot.val().hasOwnProperty(car_park_no)) {
+            if (snapshot.val()[car_park_no].hasOwnProperty(postal)) {
+              status = true;
+            }
+          }
+        }
+      });
+    return status;
+  }
+  /**
+   * When user presses "Google Maps - Fastest" button, launches Google Maps application with turn-by-turn navigatoin from
+   * user's current location to selected carpark
+   *
+   * If location permissions denied, displays error message
+   *
+   * @param {String} currentLatLong The latitude and longitude values of the user's current location
+   * @param {String} cpLatLong The latitude and longitude values of the selected carpark
+   */
+  proceedToMapsHandler(currentLatLong, cpLatLong) {
+    const locationServices = new LocationServices();
+    locationServices.getLocationPermission();
+    const url = Platform.select({
+      ios: `maps:0,0?saddr=${currentLatLong}&amp;daddr=${cpLatLong}&amp;directionsmode=driving`,
+      android: `google.navigation:q=${cpLatLong}&amp;mode=d`,
+    });
+    Linking.openURL(url);
+  }
+
+  /**
+   * When user presses "Google Maps - Cheapest" button, launches Google Maps application to displays toll-free routes amongst others from
+   * user's current location to selected carpark
+   *
+   * If location permissions denied, displays error message
+   *
+   * @param {String} currentLatLong The latitude and longitude values of the user's current location
+   * @param {String} cpLatLong The latitude and longitude values of the selected carpark
+   */
+  proceedToMapsHandler2(currentLatLong, cpLatLong) {
+    const locationServices = new LocationServices();
+    locationServices.getLocationPermission();
+    const url =
+      "http://maps.google.com/maps?saddr=" +
+      currentLatLong +
+      "&amp;daddr=" +
+      cpLatLong +
+      "&amp;dirflg=d,t";
+
+    Linking.openURL(url);
+  }
+}
+export default CpSummaryScreenManager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

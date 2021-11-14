@@ -13,7 +13,7 @@ import BudgetingScreenManager from "../utils/ScreenManagers/BudgetingScreenManag
  * Allows user to input maximum budget and displays corresponding amount of time user can park
  * Or allows user to input time they wish to park and displays corresponding estimated parking fee
  */
-export default class BudgetingScreen extends Component {
+class BudgetingScreen extends Component {
   #cpInfo = this.props.route.params.cpInfo;
   #manager = new BudgetingScreenManager();
   constructor(props) {
@@ -210,3 +210,5 @@ export default class BudgetingScreen extends Component {
     );
   }
 }
+
+export default BudgetingScreen;

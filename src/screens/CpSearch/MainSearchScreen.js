@@ -19,7 +19,7 @@ import MainSearchScreenManager from "../../utils/ScreenManagers/MainSearchScreen
  * Allows user to sort/filter nearby carpark results
  *
  */
-export default class MainSearchScreen extends Component {
+class MainSearchScreen extends Component {
   #info = {};
   #rendered = false;
   #loading = false;
@@ -487,3 +487,5 @@ export default class MainSearchScreen extends Component {
     );
   }
 }
+
+export default MainSearchScreen;

@@ -6,7 +6,7 @@ db = SQLite.openDatabase("cpour.db");
 /**
  * Manages interaction between SearchScreen and control classes
  */
-export default class SearchScreenManager {
+class SearchScreenManager {
   /**
    * Creates nearbyCpInfoTable and updates searchHistory table if required
    *
@@ -54,3 +54,4 @@ export default class SearchScreenManager {
     return results;
   }
 }
+export default SearchScreenManager;

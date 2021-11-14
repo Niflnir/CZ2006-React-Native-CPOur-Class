@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/db/NearbyCpInfoTable.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/db/NearbyCpInfoTable.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as SQLite from "expo-sqlite";
+import ApiServices from "../ApiServices";
+import DatabaseServices from "../DatabaseServices.js";
+import ParkingRatesServices from "../ParkingRatesServices";
+db = SQLite.openDatabase("cpour.db");
+/**
+ * Manages nearbyCpInfo table in local database to store information of carparks near user's input destination
+ */
+class NearbyCpInfoTable {
+  /**
+   * Creates new nearbyCpInfo table if not already existing
+   */
+  createNearbyCpInfoTable() {
+    console.log("creating nearbyCpTable");
+    db.transaction((tx) => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
+          "car_park_no character varying(10) PRIMARY KEY," +
+          "address character varying(80)," +
+          "postal character varying," +
+          "car_park_type character varying(40)," +
+          "type_of_parking_system character varying(20)," +
+          "short_term_parking character varying(30)," +
+          "free_parking character varying(30)," +
+          "night_parking character varying(30)," +
+          "grace_period integer," +
+          "lat_long character varying(50)," +
+          "total_time integer," +
+          "total_distance integer," +
+          "c_lots_available integer," +
+          "c_parking_rates_current double_precision," +
+          "c_parking_rates_general character varying," +
+          "h_lots_available integer," +
+          "h_parking_rates_general double precision," +
+          "y_lots_available integer," +
+          "y_parking_rates_general double precision," +
+          "route_info character varying," +
+          "route_info_from_current character varying);"
+      );
+    });
+  }
+
+  /**
+   * Iterates through cpInfo table to find carparks in vicinity of users input destination and stores route info in nearbyCpInfo table
+   * @param {string} toLatLong Latitude and longitude values of destination
+   * @param {string} currentLatLong Latitude and longitude values of user's current location
+   */
+  async setTable(toLatLong, currentLatLong) {
+    console.log("getting");
+    const apiServices = new ApiServices();
+    const rateServices = new ParkingRatesServices();
+    const dbServices = new DatabaseServices();
+    const lotData = await apiServices.getLots();
+    db.transaction((tx) => {
+      tx.executeSql("SELECT * FROM cpInfo;", [], async (tx, results) => {
+        // to iterate through every carpark in database, find distance from destination, and store nearby carparks
+        const distanceHandler = (low, high) => {
+          for (var i = low; i &lt; high; i++) {
+            var oneCP = results.rows.item(i);
+            var distance = dbServices.getDistance(toLatLong, oneCP.lat_long);
+
+            if (distance &lt; 0.6) {
+              // estimate of nearby carpark (note: distance is not proper route, only straight line)
+              const car_park_no = oneCP.car_park_no;
+              const address = oneCP.address;
+              const car_park_type = oneCP.car_park_type;
+              const type_of_parking_system = oneCP.type_of_parking_system;
+              const short_term_parking = oneCP.short_term_parking;
+              const free_parking = oneCP.free_parking;
+              const night_parking = oneCP.night_parking;
+              const lat_long = oneCP.lat_long;
+
+              db.transaction((tx) => {
+                tx.executeSql(
+                  "INSERT INTO nearbyCpInfo (car_park_no, address, car_park_type, type_of_parking_system, short_term_parking, free_parking, night_parking, lat_long)" +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                  [
+                    car_park_no,
+                    address,
+                    car_park_type,
+                    type_of_parking_system,
+                    short_term_parking,
+                    free_parking,
+                    night_parking,
+                    lat_long,
+                  ],
+                  (tx, results) => {
+                    // console.log(results);
+                  }
+                );
+                // to store distance, time, and other route info
+                const dbServices = new DatabaseServices();
+                dbServices.getRoute(
+                  lat_long,
+                  toLatLong,
+                  car_park_no,
+                  currentLatLong
+                );
+                const cpLots = lotData.filter(
+                  (d) => d.carpark_number == car_park_no
+                );
+                if (cpLots.length != 0) {
+                  dbServices.setLots(0, car_park_no, cpLots[0]["carpark_info"]);
+                }
+              });
+            }
+            if (i == 2161) {
+              const table = "nearbyCpInfo";
+              var queries1 = [
+                "SELECT * FROM " + table,
+                "UPDATE " +
+                  table +
+                  " SET c_parking_rates_general = ? WHERE car_park_no = ?",
+                "UPDATE " +
+                  table +
+                  " SET c_parking_rates_current = ? WHERE car_park_no = ?",
+              ];
+              var queries2 = [
+                "SELECT * FROM " + table,
+                "UPDATE " +
+                  table +
+                  " SET y_parking_rates_general = ? WHERE car_park_no = ?",
+                "UPDATE " +
+                  table +
+                  " SET h_parking_rates_general = ? WHERE car_park_no = ?",
+              ];
+              rateServices.getCarParkingRate(queries1);
+              rateServices.notCar(queries2);
+              dbServices.getGracePeriod(0);
+              console.log("done getting");
+            }
+          }
+        };
+        distanceHandler(0, 1000);
+        setTimeout(() => {
+          distanceHandler(1000, 2162);
+        }, 500);
+      });
+    });
+  }
+
+  /**
+   * Recreates nearbyCpInfo table whenever new destination is searched
+   */
+  recreateNearbyCpInfoTable() {
+    db.transaction((tx) => {
+      console.log("recreating nearbyCpInfoTable");
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
+          "car_park_no character varying(10) PRIMARY KEY," +
+          "address character varying(80)," +
+          "postal character varying," +
+          "car_park_type character varying(40)," +
+          "type_of_parking_system character varying(20)," +
+          "short_term_parking character varying(30)," +
+          "free_parking character varying(30)," +
+          "night_parking character varying(30)," +
+          "grace_period integer," +
+          "lat_long character varying(50)," +
+          "total_time integer," +
+          "total_distance integer," +
+          "c_lots_available integer," +
+          "c_parking_rates_current double_precision," +
+          "c_parking_rates_general character varying," +
+          "h_lots_available integer," +
+          "h_parking_rates_general double precision," +
+          "y_lots_available integer," +
+          "y_parking_rates_general double precision," +
+          "route_info character varying," +
+          "route_info_from_current character varying);"
+      );
+
+      tx.executeSql("DROP TABLE nearbyCpInfo;");
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS nearbyCpInfo (" +
+          "car_park_no character varying(10) PRIMARY KEY," +
+          "address character varying(80)," +
+          "postal character varying," +
+          "car_park_type character varying(40)," +
+          "type_of_parking_system character varying(20)," +
+          "short_term_parking character varying(30)," +
+          "free_parking character varying(30)," +
+          "night_parking character varying(30)," +
+          "grace_period integer," +
+          "lat_long character varying(50)," +
+          "total_time integer," +
+          "total_distance integer," +
+          "c_lots_available integer," +
+          "c_parking_rates_current double_precision," +
+          "c_parking_rates_general character varying," +
+          "h_lots_available integer," +
+          "h_parking_rates_general double precision," +
+          "y_lots_available integer," +
+          "y_parking_rates_general double precision," +
+          "route_info character varying," +
+          "route_info_from_current character varying);"
+      );
+    });
+  }
+}
+export default NearbyCpInfoTable;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ApiServices.html">ApiServices</a></li><li><a href="BudgetingScreen.html">BudgetingScreen</a></li><li><a href="BudgetingScreenManager.html">BudgetingScreenManager</a></li><li><a href="CpInfoTable.html">CpInfoTable</a></li><li><a href="CpSummaryScreen.html">CpSummaryScreen</a></li><li><a href="CpSummaryScreenManager.html">CpSummaryScreenManager</a></li><li><a href="DatabaseServices.html">DatabaseServices</a></li><li><a href="FavouritesScreen.html">FavouritesScreen</a></li><li><a href="FavouritesScreenManager.html">FavouritesScreenManager</a></li><li><a href="FavouritesTable.html">FavouritesTable</a></li><li><a href="FirebaseServices.html">FirebaseServices</a></li><li><a href="LocationServices.html">LocationServices</a></li><li><a href="MainSearchScreen.html">MainSearchScreen</a></li><li><a href="MainSearchScreenManager.html">MainSearchScreenManager</a></li><li><a href="MapScreenManager.html">MapScreenManager</a></li><li><a href="MapsScreen.html">MapsScreen</a></li><li><a href="NearbyCpInfoTable.html">NearbyCpInfoTable</a></li><li><a href="NearbyPgsTable.html">NearbyPgsTable</a></li><li><a href="OTPScreen.html">OTPScreen</a></li><li><a href="OTPScreenManager.html">OTPScreenManager</a></li><li><a href="ParkingRatesServices.html">ParkingRatesServices</a></li><li><a href="PgsTable.html">PgsTable</a></li><li><a href="SearchHistoryTable.html">SearchHistoryTable</a></li><li><a href="SearchScreen.html">SearchScreen</a></li><li><a href="SearchScreenManager.html">SearchScreenManager</a></li><li><a href="StackNav.html">StackNav</a></li><li><a href="WelcomeScreen.html">WelcomeScreen</a></li><li><a href="WelcomeScreenManager.html">WelcomeScreenManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Nov 14 2021 21:14:43 GMT+0800 (Singapore Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
